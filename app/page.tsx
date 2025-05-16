@@ -1,0 +1,25 @@
+"use client"; // Importante para habilitar React Client Component no Next.js App Router
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import remarkGfm from "remark-gfm";
+
+import { useState } from "react";
+import Header from "./components/Header";
+
+import Chat from "./components/ChatBoot";
+import ChatBoot from "./components/ChatBoot";
+
+
+export default function HomePage() {
+
+
+
+  return (
+    <main style={{ maxWidth: 1200, margin: "2rem auto", padding: "0 1rem" }}>
+      <Header />
+   
+    <ChatBoot />
+    </main>
+  );
+}
