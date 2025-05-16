@@ -131,7 +131,7 @@ export default function DataGridTable({ children }: { children: ReactNode }) {
                   onChange={() => handleCheckboxChange(idx)}
                 />
               </td>
-              {React.Children.map(row.props.children, (cell, cidx) =>
+              {React.Children.map(row.props.children, (cell) =>
                 React.isValidElement(cell)
                   ? React.cloneElement(cell, {
                       style: {

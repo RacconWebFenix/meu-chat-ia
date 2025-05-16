@@ -20,10 +20,10 @@ export default function MessageItem({ message }: Props) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          table: ({ node, ...props }) => (
+          table: ({ ...props }) => (
             <DataGridTable {...props}>{props.children}</DataGridTable>
           ),
-          th: ({ node, ...props }) => (
+          th: ({  ...props }) => (
             <th
               style={{
                 border: "1px solid #ccc",
@@ -36,7 +36,7 @@ export default function MessageItem({ message }: Props) {
               {props.children}
             </th>
           ),
-          td: ({ node, ...props }) => (
+          td: ({  ...props }) => (
             <td
               style={{ border: "1px solid #ccc", padding: "8px", color: "#111" }}
               {...props}
