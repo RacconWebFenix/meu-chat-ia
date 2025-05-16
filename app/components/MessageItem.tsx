@@ -44,7 +44,7 @@ export default function MessageItem({ message }: Props) {
               {props.children}
             </td>
           ),
-          p: ({ node, ...props }) => (
+          p: ({  ...props }) => (
             <p style={{ color: "#111" }} {...props}>
               {props.children}
             </p>
