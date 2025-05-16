@@ -8,8 +8,8 @@ export default function DataGridTable({ children }: { children: React.ReactNode 
   const rows = React.Children.toArray(children);
 
   // Extrai cabeçalho e corpo
-  const header = rows.find((row: any) => row.type === "thead");
-  const body = rows.find((row: any) => row.type === "tbody");
+  const header = rows.find((row) => React.isValidElement(row) && row.type === "thead") as React.ReactElement | undefined;
+  const body = rows.find((row) => React.isValidElement(row) && row.type === "tbody") as React.ReactElement | undefined;
 
   // Extrai dados das linhas do corpo
   const bodyRows = body
