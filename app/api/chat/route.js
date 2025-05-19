@@ -4,7 +4,7 @@ export async function POST(request) {
     const { message } = await request.json();
 
 const body = {
-      model: "sonar",
+      model: "sonar-pro",
       messages: [
         {
           role: "system",
@@ -15,8 +15,8 @@ const body = {
           content: message
         }
       ],
-      temperature: 0.3,
-      top_p: 0.9,
+      temperature: 0.1,
+      top_p: 1,
       return_images: true,
       return_related_questions: false,
       stream: false,
