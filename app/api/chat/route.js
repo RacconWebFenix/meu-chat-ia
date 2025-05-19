@@ -15,8 +15,8 @@ const body = {
           content: message
         }
       ],
-      temperature: 0.1,
-      top_p: 1,
+      temperature: 0.5,
+      top_p: 0.5,
       return_images: true,
       return_related_questions: false,
       stream: false,
