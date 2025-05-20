@@ -4,7 +4,7 @@ export async function POST(request) {
     const { message } = await request.json();
 
 const body = {
-      model: "sonar",
+      model: "sonar-pro",
       messages: [
         {
           role: "system",
