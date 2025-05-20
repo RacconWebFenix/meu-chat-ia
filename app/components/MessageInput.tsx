@@ -1,26 +1,44 @@
-interface Props {
-  input: string;
-  setInput: React.Dispatch<React.SetStateAction<string>>;
+import React from "react";
+
+interface MessageInputProps {
+  descricao: string;
+  setDescricao: (value: string) => void;
+  referencia: string;
+  setReferencia: (value: string) => void;
   onSend: () => void;
-  disabled: boolean;
+  disabled?: boolean;
 }
 
-export default function MessageInput({ input, setInput, onSend, disabled }: Props) {
+export default function MessageInput({
+  descricao,
+  setDescricao,
+  referencia,
+  setReferencia,
+  onSend,
+  disabled,
+}: MessageInputProps) {
   return (
-    <div style={{ display: "flex", gap: 8 }}>
+    <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
       <input
         type="text"
-        placeholder="Material, produto ou serviço, Fabricante, Marca de referência"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && onSend()}
-        style={{ flex: 1, padding: 10, borderRadius: 8, border: "1px solid #ccc" }}
+        placeholder="Descrição"
+        value={descricao}
+        onChange={e => setDescricao(e.target.value)}
         disabled={disabled}
+        style={{ flex: 2, padding: 8 }}
+      />
+      <input
+        type="text"
+        placeholder="Fabricante/Marca/Referência"
+        value={referencia}
+        onChange={e => setReferencia(e.target.value)}
+        disabled={disabled}
+        style={{ flex: 2, padding: 8 }}
       />
       <button
         onClick={onSend}
-        disabled={disabled || !input.trim()}
-        style={{ padding: "0 16px" }}
+        disabled={disabled}
+        style={{ padding: "8px 16px" }}
       >
         Enviar
       </button>
