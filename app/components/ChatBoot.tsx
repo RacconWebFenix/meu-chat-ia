@@ -56,7 +56,9 @@ export default function ChatBoot() {
 
   return (
     <div style={{ maxWidth: 1200, margin: "2rem auto", padding: "0 1rem" }}>
+
       <MessageList messages={messages} />
+
       {loading && <LoadingIndicator />}
       <MessageInput
         descricao={descricao}
