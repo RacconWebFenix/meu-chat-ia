@@ -16,7 +16,7 @@ const body = {
         }
       ],
       temperature: 0.1,
-      top_p: 0.2,
+      top_p: 0.6,
       return_images: true,
       return_related_questions: false,
       stream: false,
