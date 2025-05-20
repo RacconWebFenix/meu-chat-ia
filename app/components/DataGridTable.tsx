@@ -1,88 +1,96 @@
-import React, { useState } from "react";
+import React, { useState, ReactNode, ReactElement } from "react";
 
-export default function DataGridTable({ children }: { children: React.ReactNode }) {
+function isReactElementWithProps(
+  element: unknown
+): element is ReactElement<{
+  style: any; children?: ReactNode 
+}> {
+  return React.isValidElement(element) && typeof element.props === "object";
+}
+
+
+export default function DataGridTable({ children }: { children: ReactNode }) {
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [showSuccess, setShowSuccess] = useState(false);
+
+
 
   // Converte children para array de linhas
   const rows = React.Children.toArray(children);
 
   // Extrai cabeçalho e corpo
-  const header = rows.find((row: any) => row.type === "thead");
-  const body = rows.find((row: any) => row.type === "tbody");
+  const header = rows.find(
+    (row): row is ReactElement<any, any> =>
+      React.isValidElement(row) && row.type === "thead"
+  );
+  const body = rows.find(
+    (row): row is ReactElement<any, any> =>
+      React.isValidElement(row) && row.type === "tbody"
+  );
 
-  // Extrai dados das linhas do corpo
-  const bodyRows = body
-    ? React.Children.toArray((body as any).props.children)
-    : [];
-
-   
+  // Extrai dados das linhas do corpo (tipagem correta)
+  const bodyRows: ReactElement<any, any>[] =
+    body && body.props && body.props.children
+      ? (React.Children.toArray(body.props.children).filter(React.isValidElement) as ReactElement<any, any>[])
+      : [];
 
   // Extrai os dados das células para exibir ao selecionar
-  const getRowData = (row: any) =>
-    React.Children.toArray(row.props.children).map(
-      (cell: any) => cell.props.children
-    );
+  const getRowData = (row: ReactElement<any, any>): ReactNode[] =>
+    React.Children.toArray(row.props.children).map((cell) => {
+      if (isReactElementWithProps(cell) && cell.props.children !== undefined) {
+        return cell.props.children;
+      }
+      return cell;
+    });
 
   // Extrai cabeçalhos das colunas
-  const columnHeaders = header
-    ? (
-        React.Children.toArray((header as any).props.children)[0] &&
-        React.isValidElement(
-          React.Children.toArray((header as any).props.children)[0]
-        )
-          ? React.Children.toArray(
-              ((React.Children.toArray((header as any).props.children)[0]) as React.ReactElement<any, any>)
-                .props.children
-            )
-              .filter(React.isValidElement)
-              .map((cell: any) => cell.props.children)
-          : []
+  const columnHeaders: string[] =
+    header &&
+      React.Children.toArray(header.props.children)[0] &&
+      React.isValidElement(React.Children.toArray(header.props.children)[0])
+      ? (React.Children.toArray(
+        (
+          React.Children.toArray(header.props.children)[0] as ReactElement<any, any>
+        ).props.children
       )
-    : [];
+        .filter(React.isValidElement)
+        .map((cell) => (cell as ReactElement<any, any>).props.children as string)) as string[]
+      : [];
 
   // Manipula seleção de linhas
   const handleCheckboxChange = (idx: number) => {
     setSelectedRows((prev) =>
-      prev.includes(idx)
-        ? prev.filter((i) => i !== idx)
-        : [...prev, idx]
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
     );
   };
 
   // Dados das linhas selecionadas
-  const selectedRowsData = selectedRows.map((idx) => getRowData(bodyRows[idx]));
+  const selectedRowsData: ReactNode[][] = selectedRows.map((idx) => getRowData(bodyRows[idx]));
 
   // Função para salvar
   const handleSave = () => {
-    const objetosSelecionados = selectedRowsData.map((row) => {
-      const obj: Record<string, any> = {};
-      columnHeaders.forEach((header: string, idx: number) => {
-        // Se for o campo Fabricante e for um React element, pega só o children
-        if (
-          typeof header === "string" &&
-          header.trim().toLowerCase() === "fabricante"
-        ) {
-          const cell = row[idx];
-          if (React.isValidElement(cell)) {
-            if (React.isValidElement(cell)) {
-              obj[header] = React.isValidElement(cell) ? ((cell as React.ReactElement<any, any>).props.children) : cell;
-            } else {
-              obj[header] = cell;
-            }
-          } else {
-            obj[header] = cell;
-          }
+  const objetosSelecionados = selectedRowsData.map((row) => {
+    const obj: Record<string, unknown> = {};
+    columnHeaders.forEach((header: string, idx: number) => {
+      // Se for o campo Fabricante e for um React element, pega só o children
+      if (typeof header === "string" && header.trim().toLowerCase() === "fabricante") {
+        const cell = row[idx];
+        if (isReactElementWithProps(cell)) {
+          obj[header] = cell.props.children;
         } else {
-          obj[header] = row[idx];
+          obj[header] = cell;
         }
-      });
-      return obj;
+      } else {
+        obj[header] = row[idx];
+      }
     });
-    console.log("Linhas selecionadas:", objetosSelecionados);
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 2000);
-  };
+    return obj;
+  });
+  console.log("Linhas selecionadas:", objetosSelecionados);
+  setShowSuccess(true);
+  setTimeout(() => setShowSuccess(false), 2000);
+};
+
 
   return (
     <div style={{ overflowX: "auto", margin: "16px 0" }}>
@@ -99,7 +107,7 @@ export default function DataGridTable({ children }: { children: React.ReactNode 
         <thead>
           <tr>
             <th style={{ border: "1px solid #ccc", padding: "8px", background: "#f3f3f3" }}></th>
-            {columnHeaders.map((header: any, i: number) => (
+            {columnHeaders.map((header, i) => (
               <th
                 key={i}
                 style={{
@@ -115,7 +123,7 @@ export default function DataGridTable({ children }: { children: React.ReactNode 
           </tr>
         </thead>
         <tbody>
-          {bodyRows.map((row: any, idx: number) => (
+          {bodyRows.map((row, idx) => (
             <tr
               key={idx}
               style={{
@@ -135,15 +143,18 @@ export default function DataGridTable({ children }: { children: React.ReactNode 
                   onChange={() => handleCheckboxChange(idx)}
                 />
               </td>
-              {React.Children.map(row.props.children, (cell: any, cidx: number) =>
-                React.cloneElement(cell, {
-                  style: {
-                    ...cell.props.style,
-                    border: "1px solid #ccc",
-                    padding: "8px",
-                  },
-                })
-              )}
+              {React.Children.map(row.props.children, (cell) => {
+                if (isReactElementWithProps(cell)) {
+                  return React.cloneElement(cell, {
+                    style: {
+                      ...cell.props.style,
+                      border: "1px solid #ccc",
+                      padding: "8px",
+                    },
+                  });
+                }
+                return cell;
+              })}
             </tr>
           ))}
         </tbody>
@@ -159,7 +170,7 @@ export default function DataGridTable({ children }: { children: React.ReactNode 
             border: "1px solid #ddd",
           }}
         >
-          <strong style={{color: "GrayText"}}>Linhas selecionadas:</strong>
+          <strong style={{ color: "GrayText" }}>Linhas selecionadas:</strong>
           <table
             style={{
               width: "100%",
@@ -171,7 +182,7 @@ export default function DataGridTable({ children }: { children: React.ReactNode 
           >
             <thead>
               <tr>
-                {columnHeaders.map((header: any, i: number) => (
+                {columnHeaders.map((header, i) => (
                   <th
                     key={i}
                     style={{
@@ -189,7 +200,7 @@ export default function DataGridTable({ children }: { children: React.ReactNode 
             <tbody>
               {selectedRowsData.map((row, idx) => (
                 <tr key={idx}>
-                  {row.map((cell: any, cidx: number) => (
+                  {row.map((cell, cidx) => (
                     <td
                       key={cidx}
                       style={{
