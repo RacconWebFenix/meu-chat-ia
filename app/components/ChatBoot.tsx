@@ -3,7 +3,6 @@ import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
 import LoadingIndicator from "./LoadingIndicator";
 
-
 export interface Image {
   image_url: string;
 }
@@ -16,26 +15,27 @@ export interface Message {
 
 export default function ChatBoot() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
+  const [descricao, setDescricao] = useState("");
+  const [referencia, setReferencia] = useState("");
   const [loading, setLoading] = useState(false);
 
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    if (!descricao.trim() && !referencia.trim()) return;
     setLoading(true);
-
-    // Limpa as mensagens antes de enviar a nova
     setMessages([]);
+
+    // Monta o texto único para enviar
+    const texto = `Referência: ${referencia}\nDescrição: ${descricao}`;
 
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ message: texto }),
       });
 
       const data = await response.json();
 
-      // Adiciona apenas as mensagens vindas da API
       setMessages([
         {
           role: "bot",
@@ -48,18 +48,23 @@ export default function ChatBoot() {
         { role: "bot", text: "Erro ao se comunicar com a IA." },
       ]);
     } finally {
-      setInput("");
+      setDescricao("");
+      setReferencia("");
       setLoading(false);
     }
   };
 
   return (
     <div style={{ maxWidth: 1200, margin: "2rem auto", padding: "0 1rem" }}>
+
       <MessageList messages={messages} />
+
       {loading && <LoadingIndicator />}
       <MessageInput
-        input={input}
-        setInput={setInput}
+        descricao={descricao}
+        setDescricao={setDescricao}
+        referencia={referencia}
+        setReferencia={setReferencia}
         onSend={sendMessage}
         disabled={loading}
       />

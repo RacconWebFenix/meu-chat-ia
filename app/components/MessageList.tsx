@@ -16,19 +16,22 @@ export default function MessageList({ messages }: Props) {
   }
 
   return (
-    <div
-      style={{
-        border: "1px solid #ccc",
-        borderRadius: 8,
-        padding: 16,
-        minHeight: 300,
-        marginBottom: 12,
-        overflowY: "auto",
-      }}
-    >
-      {messages.map((msg, i) => (
-        <MessageItem key={i} message={msg} />
-      ))}
+    <div>
+      <p>Imagens:</p>
+      <div
+        style={{
+          border: "1px solid #ccc",
+          borderRadius: 8,
+          padding: 16,
+          minHeight: 300,
+          marginBottom: 12,
+          overflowY: "auto",
+        }}
+      >
+        {messages.map((msg, i) => (
+          <MessageItem key={i} message={msg} />
+        ))}
+      </div>
     </div>
   );
 }

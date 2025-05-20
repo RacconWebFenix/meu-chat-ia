@@ -1,6 +1,6 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import ImageCarousel from "./ImageCarousel";
+import ImageGrid from "./ImageGrid/ImageGrid";
 import { Message } from "./ChatBoot";
 import DataGridTable from "./DataGridTable";
 
@@ -9,18 +9,20 @@ interface Props {
 }
 
 export default function MessageItem({ message }: Props) {
+  const hasImages = message.images && message.images.length > 0;
+
   return (
     <div style={{ marginBottom: 16 }}>
-      {message.images && message.images.length > 0 && (
+      {hasImages && (
         <div style={{ maxWidth: 600, margin: "0 auto", padding: "0 40px" }}>
-          <ImageCarousel images={message.images} />
+          <ImageGrid images={message.images || []} />
         </div>
       )}
 
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          table: ({ ...props }) => (
+          table: ({  ...props }) => (
             <DataGridTable {...props}>{props.children}</DataGridTable>
           ),
           th: ({  ...props }) => (
@@ -45,7 +47,7 @@ export default function MessageItem({ message }: Props) {
             </td>
           ),
           p: ({  ...props }) => (
-            <p style={{ color: "#111" }} {...props}>
+            <p style={{ color: "--white" }} {...props}>
               {props.children}
             </p>
           ),
