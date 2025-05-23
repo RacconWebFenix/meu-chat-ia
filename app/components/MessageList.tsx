@@ -17,7 +17,6 @@ export default function MessageList({ messages }: Props) {
 
   return (
     <div>
-      <p>Imagens:</p>
       <div
         style={{
           border: "1px solid #ccc",
@@ -29,7 +28,7 @@ export default function MessageList({ messages }: Props) {
         }}
       >
         {messages.map((msg, i) => (
-          <MessageItem key={i} message={msg} />
+          <MessageItem key={i} message={msg} citations={msg.citations} />
         ))}
       </div>
     </div>
