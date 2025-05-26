@@ -43,7 +43,7 @@ export default function MessageInput({
       />
       <input
         type="text"
-        placeholder="Referência"
+        placeholder="Código de Referência"
         value={referencia}
         onChange={(e) => setReferencia(e.target.value)}
         disabled={disabled}
@@ -52,7 +52,7 @@ export default function MessageInput({
       />
       <input
         type="text"
-        placeholder="Fabricante"
+        placeholder="Marca / Fabricante"
         value={fabricante}
         onChange={(e) => setFabricante(e.target.value)}
         disabled={disabled}

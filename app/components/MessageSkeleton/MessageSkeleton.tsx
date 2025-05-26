@@ -13,6 +13,16 @@ export default function MessageSkeleton() {
         <div style={skeletonLineLarge} />
         <div style={skeletonLineSmall} />
       </div>
+       <div className="animate-pulse flex-1 w-full">
+        <div style={skeletonLineLarge} />
+        <div style={skeletonLineLarge} />
+        <div style={skeletonLineSmall} />
+      </div>
+       <div className="animate-pulse flex-1 w-full">
+        <div style={skeletonLineLarge} />
+        <div style={skeletonLineLarge} />
+        <div style={skeletonLineSmall} />
+      </div>
     </div>
   );
 }
