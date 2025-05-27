@@ -27,24 +27,23 @@ async function getDynamicPrompt() {
 }
 
 export async function POST(request) {
-
   try {
     const { message } = await request.json();
 
-    // Gere o prompt dinâmico
-    const dynamicPrompt = await getDynamicPrompt();
+    // Sanitiza/remover espaços extras (opcional)
+    const sanitizedPrompt = message.trim();
 
-    console.log(dynamicPrompt, "Dynamic prompt generated");
-
-    // 1. Armazene o prompt e um placeholder para a resposta no início
+    // Salva no banco de feedback
     const feedbackEntry = await prisma.feedback.create({
       data: {
-        prompt: message,
+        prompt: sanitizedPrompt,
         response: "PENDING_RESPONSE",
       },
     });
 
-    // Use o prompt dinâmico na chamada à IA
+    // Gere o prompt dinâmico
+    const dynamicPrompt = await getDynamicPrompt();
+
     const body = {
       model: process.env.API_PERPLEXITY_MODEL,
       messages: [
@@ -63,7 +62,7 @@ export async function POST(request) {
       return_related_questions: false,
       stream: false,
       web_search_options: {
-        search_depth: "deep",
+        search_depth: process.env.API_PERPLEXITY_SEARCH_DEPTH,
       },
     };
 

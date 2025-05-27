@@ -11,7 +11,7 @@ interface FeedbackFormProps {
     userComment: string,
     // Este booleano indica se o feedback geral foi positivo (true) ou negativo (false)
     isPositive: boolean | null // Alterado para null também, para permitir que o usuário não selecione
-  ) => void;
+  ) => Promise<void> | void;
 }
 
 export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
@@ -21,9 +21,13 @@ export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
   const [comment, setComment] = useState<string>("");
   // Estado local para o feedback geral (positivo/negativo), pode ser null inicialmente
   const [isPositive, setIsPositive] = useState<boolean | null>(null);
+  // Estado local para controlar o carregamento do envio do feedback
+  const [loading, setLoading] = useState(false);
+  // Estado local para controlar se o feedback foi enviado
+  const [sent, setSent] = useState(false);
 
   // Função chamada quando o botão "Enviar Feedback" é clicado
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Validação básica: garante que pelo menos uma opção de feedback foi fornecida
     if (isPositive === null && rating === null && !comment.trim()) {
       alert(
@@ -31,13 +35,37 @@ export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
       );
       return;
     }
-    // Chama a função passada via props para enviar o feedback para o componente pai
-    onSendFeedback(rating, comment, isPositive);
-    // Opcional: Você pode resetar os estados aqui se quiser que o formulário fique limpo após o envio
-    setRating(null);
-    setComment('');
-    setIsPositive(null);
+    setLoading(true);
+    try {
+      // Chama a função passada via props para enviar o feedback para o componente pai
+      await onSendFeedback(rating, comment, isPositive);
+      setSent(true); // Marca como enviado
+      // Opcional: Você pode resetar os estados aqui se quiser que o formulário fique limpo após o envio
+      setRating(null);
+      setComment("");
+      setIsPositive(null);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // Se estiver enviando, mostra uma mensagem de carregamento
+  if (loading) {
+    return (
+      <div style={styles.container}>
+        <p>Enviando feedback...</p>
+      </div>
+    );
+  }
+
+  // Se o feedback foi enviado, mostra uma mensagem de agradecimento
+  if (sent) {
+    return (
+      <div style={styles.container}>
+        <p>Obrigado pelo seu feedback!</p>
+      </div>
+    );
+  }
 
   return (
     <div style={styles.container}>
@@ -47,6 +75,7 @@ export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
         <button
           onClick={() => setIsPositive(true)}
           style={styles.positive(isPositive === true)}
+          disabled={loading}
         >
           👍 Positivo
         </button>
@@ -54,6 +83,7 @@ export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
         <button
           onClick={() => setIsPositive(false)}
           style={styles.negative(isPositive === false)}
+          disabled={loading}
         >
           👎 Negativo
         </button>
@@ -65,7 +95,7 @@ export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
         {[1, 2, 3, 4, 5].map((star) => (
           <span
             key={star}
-            onClick={() => setRating(star)}
+            onClick={() => !loading && setRating(star)}
             style={styles.star(star <= (rating || 0))}
           >
             ★
@@ -87,14 +117,17 @@ export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
           boxSizing: "border-box" as const,
           marginBottom: "12px",
         }}
+        disabled={loading}
       />
       {/* Botão para enviar o feedback */}
       <button
         onClick={handleSubmit}
         // O botão é desabilitado se nenhum feedback (positivo/negativo, nota ou comentário) foi fornecido
-        disabled={isPositive === null && rating === null && !comment.trim()}
+        disabled={
+          loading || (isPositive === null && rating === null && !comment.trim())
+        }
         style={styles.submit(
-          isPositive === null && rating === null && !comment.trim()
+          loading || (isPositive === null && rating === null && !comment.trim())
         )}
       >
         Enviar Feedback

@@ -52,6 +52,8 @@ export default function ChatBoot() {
     setFeedbackSent(false); // Reseta o estado do feedback enviado
 
     const userPrompt = `Referência: ${referencia}\nDescrição: ${descricao}\nFabricante: ${fabricante}`;
+
+ // Log para depuração
     try {
       const response = await fetch("/api/chat", {
         // Sua rota de API /api/chat
@@ -67,7 +69,6 @@ export default function ChatBoot() {
           url,
           siteName: getSiteName(url),
         }));
-
 
         setMessages([
           {

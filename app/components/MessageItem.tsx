@@ -1,3 +1,4 @@
+import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import ImageGrid from "./ImageGrid/ImageGrid";
@@ -19,8 +20,21 @@ interface Props {
 
 export default function MessageItem({ message, citations }: Props) {
   const hasImages = message.images && message.images.length > 0;
-  console.log(message);
   const hasCitations = citations && citations.length > 0;
+
+  // Regex para encontrar a primeira tabela markdown
+  const tableRegex = /\n(\|.*\|.*\n(\|[-:]+.*\n)((?:.*\|.*\n?)+))/;
+  const match = message.text.match(tableRegex);
+
+  let explanation = message.text;
+  let table = "";
+
+  if (match) {
+    // Tudo antes da tabela
+    explanation = message.text.slice(0, match.index);
+    // A tabela completa (incluindo \n inicial)
+    table = match[0];
+  }
 
   return (
     <div style={{ marginBottom: 16 }}>
@@ -64,46 +78,58 @@ export default function MessageItem({ message, citations }: Props) {
         </div>
       )}
 
+      {/* Renderiza explicação (antes da tabela) */}
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          table: ({ ...props }) => (
-            <DataGridTable {...props}>{props.children}</DataGridTable>
-          ),
-          th: ({ ...props }) => (
-            <th
-              style={{
-                border: "1px solid #ccc",
-                padding: "8px",
-                background: "#f3f3f3",
-                fontWeight: "bold",
-              }}
-              {...props}
-            >
-              {props.children}
-            </th>
-          ),
-          td: ({ ...props }) => (
-            <td
-              style={{
-                border: "1px solid #ccc",
-                padding: "8px",
-                color: "#111",
-              }}
-              {...props}
-            >
-              {props.children}
-            </td>
-          ),
           p: ({ ...props }) => (
-            <p style={{ color: "--white" }} {...props}>
+            <p style={{ color: "#111" }} {...props}>
               {props.children}
             </p>
           ),
         }}
       >
-        {message.text}
+        {explanation}
       </ReactMarkdown>
+
+      {/* Renderiza tabela separadamente, se existir */}
+      {table && (
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            table: ({ ...props }) => (
+              <DataGridTable {...props}>{props.children}</DataGridTable>
+            ),
+            th: ({ ...props }) => (
+              <th
+                style={{
+                  border: "1px solid #ccc",
+                  padding: "8px",
+                  background: "#f3f3f3",
+                  fontWeight: "bold",
+                }}
+                {...props}
+              >
+                {props.children}
+              </th>
+            ),
+            td: ({ ...props }) => (
+              <td
+                style={{
+                  border: "1px solid #ccc",
+                  padding: "8px",
+                  color: "#111",
+                }}
+                {...props}
+              >
+                {props.children}
+              </td>
+            ),
+          }}
+        >
+          {table}
+        </ReactMarkdown>
+      )}
     </div>
   );
 }
