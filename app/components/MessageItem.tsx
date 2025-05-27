@@ -19,11 +19,11 @@ interface Props {
 
 export default function MessageItem({ message, citations }: Props) {
   const hasImages = message.images && message.images.length > 0;
-
+  console.log(message);
   const hasCitations = citations && citations.length > 0;
 
   return (
-    <div style={{ marginBottom: 16 }}>  
+    <div style={{ marginBottom: 16 }}>
       {hasImages && (
         <div style={{ maxWidth: 600, margin: "0 auto", padding: "0 40px" }}>
           <ImageGrid images={message.images || []} />

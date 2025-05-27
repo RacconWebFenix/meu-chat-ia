@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #53b5e6;         /* Azul principal da imagem */
+  --background: #0173bc;         /* Azul principal da imagem */
   --foreground: #003c67;         /* Azul escuro para textos */
   --primary: #005c99;            /* Azul intermediário para botões/destaques */
   --secondary: #fbe4e0;          /* Rosa claro para faixas, cards, etc */
