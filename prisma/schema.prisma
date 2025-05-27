@@ -1,0 +1,20 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Feedback {
+  id           String    @id @default(uuid())
+  prompt       String
+  response     String
+  userFeedback String? // Ex: 'positivo', 'negativo', 'neutro'
+  rating       Int?      // Ex: 1 a 5 estrelas
+  comment      String?
+  timestamp    DateTime  @default(now())
+  userId       String?   // Para associar o feedback a um usuário, se tiver autenticação
+}
