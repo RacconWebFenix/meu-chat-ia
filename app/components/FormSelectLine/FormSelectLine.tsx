@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import LineInputs from "../LineInputs/LineInputs";
-import styles from "./SelectLine.module.scss";
+import styles from "./FormSelectLine.module.scss";
 
 // Tipagem para os campos da linha automotiva
 export type AutomotivaFields = {
@@ -154,16 +154,16 @@ Aplicação: ${industrial.aplicacao}`;
           <option value="automotiva">Linha Automotiva</option>
           <option value="industrial">Linha Industrial / Multiaplicação</option>
         </select>
-      </div>
 
-      <LineInputs
-        linha={linha}
-        automotiva={automotiva}
-        setAutomotiva={setAutomotiva}
-        industrial={industrial}
-        setIndustrial={setIndustrial}
-        disabled={disabled}
-      />
+        <LineInputs
+          linha={linha}
+          automotiva={automotiva}
+          setAutomotiva={setAutomotiva}
+          industrial={industrial}
+          setIndustrial={setIndustrial}
+          disabled={disabled}
+        />
+      </div>
 
       <button type="submit" className={styles.buttonSubmit} disabled={disabled}>
         Enviar

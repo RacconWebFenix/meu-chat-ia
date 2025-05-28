@@ -1,7 +1,10 @@
 .selectLineForm {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  border: 0.2rem solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
 }
 
 .selectLineSelect {
@@ -25,6 +28,7 @@
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .buttonSubmit:disabled {
   background: #bdbdbd;
   cursor: not-allowed;

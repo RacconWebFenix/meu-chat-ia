@@ -3,7 +3,7 @@ import { useState } from "react";
 import MessageList from "../MessageList/MessageList";
 import MessageSkeleton from "../MessageSkeleton/MessageSkeleton";
 import FeedbackForm from "../FeedbackForm/FeedbackForm";
-import SelectLine from "../SelectLine/SelectLine";
+import SelectLine from "../FormSelectLine/FormSelectLine";
 import styles from "./ChatBoot.module.scss";
 
 export interface Citation {

@@ -1,5 +1,8 @@
 import React from "react";
-import { AutomotivaFields, IndustrialFields } from "../SelectLine/SelectLine";
+import {
+  AutomotivaFields,
+  IndustrialFields,
+} from "../FormSelectLine/FormSelectLine";
 import styles from "./LineInputs.module.scss";
 
 interface LineInputsProps {

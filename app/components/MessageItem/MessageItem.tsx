@@ -4,6 +4,7 @@ import remarkGfm from "remark-gfm";
 import ImageGrid from "../ImageGrid/ImageGrid";
 import { Message } from "../ChatBoot/ChatBoot";
 import DataGridTable from "../DataGridTable/DataGridTable";
+import styles from "./MessageItem.module.scss";
 
 interface Image {
   image_url: string;
@@ -37,40 +38,22 @@ export default function MessageItem({ message, citations }: Props) {
   }
 
   return (
-    <div style={{ marginBottom: 16 }}>
+    <div className={styles.messageItem}>
       {hasImages && (
-        <div style={{ maxWidth: 600, margin: "0 auto", padding: "0 40px" }}>
+        <div className={styles.imagesWrapper}>
           <ImageGrid images={message.images || []} />
         </div>
       )}
 
       {hasCitations && (
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 12,
-            margin: "16px 0",
-          }}
-        >
+        <div className={styles.citationsWrapper}>
           {citations.map((citation) => (
             <a
               key={citation.url}
               href={citation.url}
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                display: "inline-block",
-                padding: "10px 18px",
-                background: "#eaf6ff",
-                borderRadius: 8,
-                color: "#0074cc",
-                fontWeight: 500,
-                textDecoration: "none",
-                boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-                transition: "background 0.2s",
-                marginBottom: 4,
-              }}
+              className={styles.citationLink}
             >
               {citation.siteName}
             </a>
@@ -83,7 +66,7 @@ export default function MessageItem({ message, citations }: Props) {
         remarkPlugins={[remarkGfm]}
         components={{
           p: ({ ...props }) => (
-            <p style={{ color: "#111" }} {...props}>
+            <p className={styles.markdownText} {...props}>
               {props.children}
             </p>
           ),
@@ -101,27 +84,12 @@ export default function MessageItem({ message, citations }: Props) {
               <DataGridTable {...props}>{props.children}</DataGridTable>
             ),
             th: ({ ...props }) => (
-              <th
-                style={{
-                  border: "1px solid #ccc",
-                  padding: "8px",
-                  background: "#f3f3f3",
-                  fontWeight: "bold",
-                }}
-                {...props}
-              >
+              <th className={styles.tableTh} {...props}>
                 {props.children}
               </th>
             ),
             td: ({ ...props }) => (
-              <td
-                style={{
-                  border: "1px solid #ccc",
-                  padding: "8px",
-                  color: "#111",
-                }}
-                {...props}
-              >
+              <td className={styles.tableTd} {...props}>
                 {props.children}
               </td>
             ),
