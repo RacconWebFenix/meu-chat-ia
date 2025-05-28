@@ -1,0 +1,42 @@
+.header {
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(83, 181, 230, 0.08);
+  border-radius: 12px;
+}
+
+.headerContent {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 1rem;
+
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  font-size: 1.85rem;
+  font-weight: bold;
+  color: #242424;
+  text-align: center;
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .headerContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .title {
+        margin-top: 0.8rem;
+      font-size: 1.5rem;
+    }
+  }
+}

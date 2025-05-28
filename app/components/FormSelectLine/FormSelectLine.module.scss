@@ -1,0 +1,35 @@
+.selectLineForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  border: 0.2rem solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+.selectLineSelect {
+  margin-bottom: 16px;
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #bdbdbd;
+  background: #bdbdbd;
+  color: #2c2b2b;
+}
+
+.buttonSubmit {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background: #007bff;
+  color: #fff;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.buttonSubmit:disabled {
+  background: #bdbdbd;
+  cursor: not-allowed;
+}

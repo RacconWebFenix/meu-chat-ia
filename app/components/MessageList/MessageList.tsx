@@ -1,5 +1,6 @@
-import MessageItem from "./MessageItem";
-import { Message } from "./ChatBoot";
+import MessageItem from "../MessageItem/MessageItem";
+import { Message } from "../ChatBoot/ChatBoot";
+import styles from "./MessageList.module.scss";
 
 interface Props {
   messages: Message[];
@@ -8,7 +9,7 @@ interface Props {
 export default function MessageList({ messages }: Props) {
   if (messages.length === 0) {
     return (
-      <p>
+      <p className={styles.emptyMessage}>
         Olá! Sou sua assistente virtual especializada em cadastro e busca de
         materiais. Como posso ajudar você hoje?
       </p>
@@ -17,16 +18,7 @@ export default function MessageList({ messages }: Props) {
 
   return (
     <div>
-      <div
-        style={{
-          border: "1px solid #ccc",
-          borderRadius: 8,
-          padding: 16,
-          minHeight: 300,
-          marginBottom: 12,
-          overflowY: "auto",
-        }}
-      >
+      <div className={styles.messageListContainer}>
         {messages.map((msg, i) => (
           <MessageItem key={i} message={msg} citations={msg.citations} />
         ))}
