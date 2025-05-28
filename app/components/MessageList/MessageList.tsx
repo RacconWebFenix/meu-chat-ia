@@ -1,5 +1,5 @@
-import MessageItem from "./MessageItem";
-import { Message } from "./ChatBoot";
+import MessageItem from "../MessageItem/MessageItem";
+import { Message } from "../ChatBoot/ChatBoot";
 
 interface Props {
   messages: Message[];

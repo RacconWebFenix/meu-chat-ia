@@ -1,9 +1,9 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import ImageGrid from "./ImageGrid/ImageGrid";
-import { Message } from "./ChatBoot";
-import DataGridTable from "./DataGridTable";
+import ImageGrid from "../ImageGrid/ImageGrid";
+import { Message } from "../ChatBoot/ChatBoot";
+import DataGridTable from "../DataGridTable/DataGridTable";
 
 interface Image {
   image_url: string;

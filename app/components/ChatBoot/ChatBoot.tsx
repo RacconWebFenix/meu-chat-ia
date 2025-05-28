@@ -1,10 +1,10 @@
 // components/ChatBoot.tsx
 import { useState } from "react";
-import MessageList from "./MessageList";
-import MessageSkeleton from "./MessageSkeleton/MessageSkeleton";
-import FeedbackForm from "./FeedbackForm/FeedbackForm";
-import SelectLine from "./SelectLine/SelectLine";
-// import iaResponseMock from "../mocks/iaResponse.mock"; // Remova ou comente esta linha para usar a API real
+import MessageList from "../MessageList/MessageList";
+import MessageSkeleton from "../MessageSkeleton/MessageSkeleton";
+import FeedbackForm from "../FeedbackForm/FeedbackForm";
+import SelectLine from "../SelectLine/SelectLine";
+import styles from "./ChatBoot.module.scss";
 
 export interface Citation {
   url: string;
@@ -28,11 +28,9 @@ export default function ChatBoot() {
   const [prompt, setPrompt] = useState("");
 
   const [loading, setLoading] = useState(false);
-  // Novo estado para o ID do feedback da resposta atual
   const [currentFeedbackId, setCurrentFeedbackId] = useState<string | null>(
     null
   );
-  // Novo estado para controlar se o feedback já foi enviado para a resposta atual
   const [feedbackSent, setFeedbackSent] = useState<boolean>(false);
 
   function getSiteName(url: string) {
@@ -71,11 +69,11 @@ export default function ChatBoot() {
           {
             role: "bot",
             text: data.reply?.text.content,
-            images: data.reply?.images || [], // Se houver imagens na resposta
+            images: data.reply?.images || [],
             citations: citations,
           },
         ]);
-        setCurrentFeedbackId(data.feedbackId); // Salva o feedbackId recebido da API
+        setCurrentFeedbackId(data.feedbackId);
       } else {
         setMessages([
           {
@@ -95,36 +93,32 @@ export default function ChatBoot() {
         },
       ]);
     } finally {
-      // Limpa os campos conforme a linha selecionada
-
       setLoading(false);
     }
   };
 
-  // Função para lidar com o envio do feedback
   const handleSendFeedback = async (
     userRating: number | null,
     userComment: string,
-    isPositive: boolean | null // Este booleano indica se o feedback geral foi positivo (true) ou negativo (false), pode ser null se não selecionado
+    isPositive: boolean | null
   ) => {
     if (!currentFeedbackId || feedbackSent) return;
 
     try {
       const res = await fetch("/api/feedback", {
-        // Sua rota de API /api/feedback
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           feedbackId: currentFeedbackId,
           rating: userRating,
           comment: userComment,
-          userFeedback: isPositive ? "positivo" : "negativo", // 'positivo' ou 'negativo'
+          userFeedback: isPositive ? "positivo" : "negativo",
         }),
       });
 
       if (res.ok) {
         alert("Feedback enviado com sucesso!");
-        setFeedbackSent(true); // Marca que o feedback foi enviado para esta interação
+        setFeedbackSent(true);
       } else {
         alert("Falha ao enviar feedback.");
       }
@@ -135,11 +129,10 @@ export default function ChatBoot() {
   };
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className={styles.chatBootContainer}>
       <MessageList messages={messages} />
       {loading && <MessageSkeleton />}
 
-      {/* Condicional para exibir o formulário de feedback */}
       {currentFeedbackId && !feedbackSent && messages.length > 0 && (
         <FeedbackForm onSendFeedback={handleSendFeedback} />
       )}
