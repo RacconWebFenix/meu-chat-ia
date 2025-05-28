@@ -1,9 +1,9 @@
 // components/ChatBoot.tsx
 import { useState } from "react";
 import MessageList from "./MessageList";
-import MessageInput from "./MessageInput";
 import MessageSkeleton from "./MessageSkeleton/MessageSkeleton";
 import FeedbackForm from "./FeedbackForm/FeedbackForm";
+import SelectLine from "./SelectLine/SelectLine";
 // import iaResponseMock from "../mocks/iaResponse.mock"; // Remova ou comente esta linha para usar a API real
 
 export interface Citation {
@@ -24,9 +24,9 @@ export interface Message {
 
 export default function ChatBoot() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [descricao, setDescricao] = useState("");
-  const [referencia, setReferencia] = useState("");
-  const [fabricante, setFabricante] = useState("");
+  const [linha, setLinha] = useState<"automotiva" | "industrial">("automotiva");
+  const [prompt, setPrompt] = useState("");
+
   const [loading, setLoading] = useState(false);
   // Novo estado para o ID do feedback da resposta atual
   const [currentFeedbackId, setCurrentFeedbackId] = useState<string | null>(
@@ -45,21 +45,18 @@ export default function ChatBoot() {
   }
 
   const sendMessage = async () => {
-    if (!descricao.trim() && !referencia.trim() && !fabricante.trim()) return;
+    if (!prompt.replace(/(Nome:|Nome da Peça ou Componente:)/, "").trim())
+      return;
     setLoading(true);
-    setMessages([]); // Limpa as mensagens anteriores
-    setCurrentFeedbackId(null); // Reseta o ID do feedback
-    setFeedbackSent(false); // Reseta o estado do feedback enviado
+    setMessages([]);
+    setCurrentFeedbackId(null);
+    setFeedbackSent(false);
 
-    const userPrompt = `Referência: ${referencia}\nDescrição: ${descricao}\nFabricante: ${fabricante}`;
-
- // Log para depuração
     try {
       const response = await fetch("/api/chat", {
-        // Sua rota de API /api/chat
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userPrompt }),
+        body: JSON.stringify({ message: prompt }),
       });
 
       const data = await response.json();
@@ -98,9 +95,8 @@ export default function ChatBoot() {
         },
       ]);
     } finally {
-      setDescricao("");
-      setReferencia("");
-      setFabricante("");
+      // Limpa os campos conforme a linha selecionada
+
       setLoading(false);
     }
   };
@@ -139,7 +135,7 @@ export default function ChatBoot() {
   };
 
   return (
-    <div style={{ maxWidth: 1200, margin: "2rem auto", padding: "0 1rem" }}>
+    <div className="flex h-screen flex-col">
       <MessageList messages={messages} />
       {loading && <MessageSkeleton />}
 
@@ -148,13 +144,10 @@ export default function ChatBoot() {
         <FeedbackForm onSendFeedback={handleSendFeedback} />
       )}
 
-      <MessageInput
-        descricao={descricao}
-        setDescricao={setDescricao}
-        referencia={referencia}
-        setReferencia={setReferencia}
-        fabricante={fabricante}
-        setFabricante={setFabricante}
+      <SelectLine
+        linha={linha}
+        setLinha={setLinha}
+        setPrompt={setPrompt}
         onSend={sendMessage}
         disabled={loading}
       />

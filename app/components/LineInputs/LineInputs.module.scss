@@ -1,0 +1,17 @@
+.inputsAutomotiva {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.inputsIndustrial {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.inputField {
+  flex: 1;
+  padding: 8px;
+}

@@ -1,6 +1,6 @@
 // components/FeedbackForm.tsx
 import React, { useState } from "react";
-import styles from "./styles";
+import styles from "./FeedbackForm.module.scss";
 
 // Define a interface para as props que o componente vai receber
 interface FeedbackFormProps {
@@ -52,7 +52,7 @@ export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
   // Se estiver enviando, mostra uma mensagem de carregamento
   if (loading) {
     return (
-      <div style={styles.container}>
+      <div className={styles.container}>
         <p>Enviando feedback...</p>
       </div>
     );
@@ -61,42 +61,56 @@ export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
   // Se o feedback foi enviado, mostra uma mensagem de agradecimento
   if (sent) {
     return (
-      <div style={styles.container}>
+      <div className={styles.container}>
         <p>Obrigado pelo seu feedback!</p>
       </div>
     );
   }
 
   return (
-    <div style={styles.container}>
+    <div className={styles.container}>
       <h4>Sua opinião é importante! Avalie a resposta:</h4>
-      <div style={styles.buttonGroup}>
+      <div className={styles.buttonGroup}>
         {/* Botão Positivo */}
         <button
+          type="button"
+          className={
+            isPositive === true
+              ? `${styles.positive} ${styles.positiveActive}`
+              : styles.positive
+          }
           onClick={() => setIsPositive(true)}
-          style={styles.positive(isPositive === true)}
           disabled={loading}
         >
           👍 Positivo
         </button>
         {/* Botão Negativo */}
         <button
+          type="button"
+          className={
+            isPositive === false
+              ? `${styles.negative} ${styles.negativeActive}`
+              : styles.negative
+          }
           onClick={() => setIsPositive(false)}
-          style={styles.negative(isPositive === false)}
           disabled={loading}
         >
           👎 Negativo
         </button>
       </div>
 
-      <div style={styles.stars}>
+      <div className={styles.stars}>
         Nota:
         {/* Renderiza 5 estrelas para seleção de nota */}
         {[1, 2, 3, 4, 5].map((star) => (
           <span
             key={star}
+            className={
+              star <= (rating || 0)
+                ? `${styles.star} ${styles.starFilled}`
+                : styles.star
+            }
             onClick={() => !loading && setRating(star)}
-            style={styles.star(star <= (rating || 0))}
           >
             ★
           </span>
@@ -105,30 +119,25 @@ export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
 
       {/* Área de texto para o comentário */}
       <textarea
+        className={styles.textarea}
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         placeholder="Deixe um comentário (opcional)..."
         rows={3}
-        style={{
-          width: "100%",
-          padding: "8px",
-          borderRadius: "4px",
-          border: "1px solid #ccc",
-          boxSizing: "border-box" as const,
-          marginBottom: "12px",
-        }}
         disabled={loading}
       />
       {/* Botão para enviar o feedback */}
       <button
+        type="button"
+        className={
+          loading || (isPositive === null && rating === null && !comment.trim())
+            ? `${styles.submit} ${styles.submitDisabled}`
+            : styles.submit
+        }
         onClick={handleSubmit}
-        // O botão é desabilitado se nenhum feedback (positivo/negativo, nota ou comentário) foi fornecido
         disabled={
           loading || (isPositive === null && rating === null && !comment.trim())
         }
-        style={styles.submit(
-          loading || (isPositive === null && rating === null && !comment.trim())
-        )}
       >
         Enviar Feedback
       </button>
