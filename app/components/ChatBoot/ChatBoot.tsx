@@ -5,6 +5,7 @@ import MessageSkeleton from "../MessageSkeleton/MessageSkeleton";
 import FeedbackForm from "../FeedbackForm/FeedbackForm";
 import SelectLine from "../FormSelectLine/FormSelectLine";
 import styles from "./ChatBoot.module.scss";
+import { API_BASE_URL } from "@/app/config/api";
 
 export interface Citation {
   url: string;
@@ -53,7 +54,7 @@ export default function ChatBoot() {
     setFeedbackSent(false);
 
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch(`${API_BASE_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: prompt }),
@@ -75,6 +76,7 @@ export default function ChatBoot() {
             citations: citations,
           },
         ]);
+        console.log(data);
         setCurrentFeedbackId(data.feedbackId);
       } else {
         setMessages([
@@ -107,8 +109,8 @@ export default function ChatBoot() {
     if (!currentFeedbackId || feedbackSent) return;
 
     try {
-      const res = await fetch("/api/feedback", {
-        method: "POST",
+      const res = await fetch(`${API_BASE_URL}/feedbacks`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           feedbackId: currentFeedbackId,
