@@ -1,19 +1,27 @@
 import React, { useState, ReactNode, ReactElement } from "react";
+import styles from "./DataGridTable.module.scss";
 
-function isReactElementWithProps(
-  element: unknown
-): element is ReactElement<{
-  style: any; children?: ReactNode 
+function isReactElementWithProps(element: unknown): element is ReactElement<{
+  style: any;
+  children?: ReactNode;
 }> {
   return React.isValidElement(element) && typeof element.props === "object";
 }
 
+interface DataGridTableProps {
+  children: ReactNode;
+  userInputHeaders?: string[];
+  userInputRow?: (string | undefined)[];
+}
 
-export default function DataGridTable({ children }: { children: ReactNode }) {
+export default function DataGridTable({
+  children,
+  userInputHeaders,
+  userInputRow,
+}: DataGridTableProps) {
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [showSuccess, setShowSuccess] = useState(false);
-
-
+  const [userInputSelected, setUserInputSelected] = useState(false);
 
   // Converte children para array de linhas
   const rows = React.Children.toArray(children);
@@ -31,7 +39,9 @@ export default function DataGridTable({ children }: { children: ReactNode }) {
   // Extrai dados das linhas do corpo (tipagem correta)
   const bodyRows: ReactElement<any, any>[] =
     body && body.props && body.props.children
-      ? (React.Children.toArray(body.props.children).filter(React.isValidElement) as ReactElement<any, any>[])
+      ? (React.Children.toArray(body.props.children).filter(
+          React.isValidElement
+        ) as ReactElement<any, any>[])
       : [];
 
   // Extrai os dados das células para exibir ao selecionar
@@ -46,15 +56,20 @@ export default function DataGridTable({ children }: { children: ReactNode }) {
   // Extrai cabeçalhos das colunas
   const columnHeaders: string[] =
     header &&
-      React.Children.toArray(header.props.children)[0] &&
-      React.isValidElement(React.Children.toArray(header.props.children)[0])
+    React.Children.toArray(header.props.children)[0] &&
+    React.isValidElement(React.Children.toArray(header.props.children)[0])
       ? (React.Children.toArray(
-        (
-          React.Children.toArray(header.props.children)[0] as ReactElement<any, any>
-        ).props.children
-      )
-        .filter(React.isValidElement)
-        .map((cell) => (cell as ReactElement<any, any>).props.children as string)) as string[]
+          (
+            React.Children.toArray(header.props.children)[0] as ReactElement<
+              any,
+              any
+            >
+          ).props.children
+        )
+          .filter(React.isValidElement)
+          .map(
+            (cell) => (cell as ReactElement<any, any>).props.children as string
+          ) as string[])
       : [];
 
   // Manipula seleção de linhas
@@ -65,58 +80,81 @@ export default function DataGridTable({ children }: { children: ReactNode }) {
   };
 
   // Dados das linhas selecionadas
-  const selectedRowsData: ReactNode[][] = selectedRows.map((idx) => getRowData(bodyRows[idx]));
+  const selectedRowsData: ReactNode[][] = selectedRows.map((idx) =>
+    getRowData(bodyRows[idx])
+  );
 
   // Função para salvar
   const handleSave = () => {
-  const objetosSelecionados = selectedRowsData.map((row) => {
-    const obj: Record<string, unknown> = {};
-    columnHeaders.forEach((header: string, idx: number) => {
-      // Se for o campo Fabricante e for um React element, pega só o children
-      if (typeof header === "string" && header.trim().toLowerCase() === "fabricante") {
-        const cell = row[idx];
-        if (isReactElementWithProps(cell)) {
-          obj[header] = cell.props.children;
-        } else {
-          obj[header] = cell;
-        }
-      } else {
-        obj[header] = row[idx];
-      }
-    });
-    return obj;
-  });
-  console.log("Linhas selecionadas:", objetosSelecionados);
-  setShowSuccess(true);
-  setTimeout(() => setShowSuccess(false), 2000);
-};
+    const objetosSelecionados: any[] = [];
 
+    // Adiciona a linha do usuário se selecionada
+    if (userInputSelected && userInputHeaders && userInputRow) {
+      const obj: Record<string, unknown> = {};
+      userInputHeaders.forEach((header, idx) => {
+        obj[header] = userInputRow[idx];
+      });
+      objetosSelecionados.push(obj);
+    }
+
+    // Adiciona as linhas selecionadas da tabela principal
+    selectedRowsData.forEach((row) => {
+      const obj: Record<string, unknown> = {};
+      columnHeaders.forEach((header: string, idx: number) => {
+        obj[header] = row[idx];
+      });
+      objetosSelecionados.push(obj);
+    });
+
+    console.log("Linhas selecionadas:", objetosSelecionados);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 2000);
+  };
 
   return (
-    <div style={{ overflowX: "auto", margin: "16px 0" }}>
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          background: "#fff",
-          color: "#111",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-          borderRadius: 8,
-        }}
-      >
+    <div className={styles.dataGridTableContainer}>
+      {/* Tabela do usuário (prompt) */}
+      {userInputHeaders && userInputRow && (
+        <div className={styles.userInputTableWrapper}>
+          <strong className={styles.userInputTitle}>Pesquisa:</strong>
+          <table className={styles.dataGridTable}>
+            <thead>
+              <tr>
+                <th className={styles.dataGridTableTh}></th>
+                {userInputHeaders.map((header, i) => (
+                  <th key={i} className={styles.dataGridTableTh}>
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className={styles.dataGridTableTdCheckbox}>
+                  <input
+                    type="checkbox"
+                    checked={userInputSelected}
+                    onChange={() => setUserInputSelected((v) => !v)}
+                  />
+                </td>
+                {userInputRow.map((cell, idx) => (
+                  <td key={idx} className={styles.dataGridTableTd}>
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Tabela principal */}
+      <table className={styles.dataGridTable}>
         <thead>
           <tr>
-            <th style={{ border: "1px solid #ccc", padding: "8px", background: "#f3f3f3" }}></th>
+            <th className={styles.dataGridTableTh}></th>
             {columnHeaders.map((header, i) => (
-              <th
-                key={i}
-                style={{
-                  border: "1px solid #ccc",
-                  padding: "8px",
-                  background: "#f3f3f3",
-                  fontWeight: "bold",
-                }}
-              >
+              <th key={i} className={styles.dataGridTableTh}>
                 {header}
               </th>
             ))}
@@ -126,17 +164,11 @@ export default function DataGridTable({ children }: { children: ReactNode }) {
           {bodyRows.map((row, idx) => (
             <tr
               key={idx}
-              style={{
-                background: selectedRows.includes(idx) ? "#e3f2fd" : undefined,
-              }}
+              className={
+                selectedRows.includes(idx) ? styles.selectedRow : undefined
+              }
             >
-              <td
-                style={{
-                  border: "1px solid #ccc",
-                  padding: "8px",
-                  textAlign: "center",
-                }}
-              >
+              <td className={styles.dataGridTableTdCheckbox}>
                 <input
                   type="checkbox"
                   checked={selectedRows.includes(idx)}
@@ -144,14 +176,19 @@ export default function DataGridTable({ children }: { children: ReactNode }) {
                 />
               </td>
               {React.Children.map(row.props.children, (cell) => {
-                if (isReactElementWithProps(cell)) {
-                  return React.cloneElement(cell, {
-                    style: {
-                      ...cell.props.style,
-                      border: "1px solid #ccc",
-                      padding: "8px",
-                    },
-                  });
+                if (
+                  React.isValidElement(cell) &&
+                  typeof cell.type === "string" &&
+                  ["td", "th"].includes(cell.type)
+                ) {
+                  return React.cloneElement(
+                    cell as React.ReactElement<
+                      React.HTMLAttributes<HTMLElement>
+                    >,
+                    {
+                      className: styles.dataGridTableTd,
+                    }
+                  );
                 }
                 return cell;
               })}
@@ -160,55 +197,35 @@ export default function DataGridTable({ children }: { children: ReactNode }) {
         </tbody>
       </table>
 
-      {selectedRows.length > 0 && (
-        <div
-          style={{
-            marginTop: 24,
-            padding: 12,
-            background: "#f5f5f5",
-            borderRadius: 6,
-            border: "1px solid #ddd",
-          }}
-        >
-          <strong style={{ color: "GrayText" }}>Linhas selecionadas:</strong>
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              background: "#fff",
-              color: "#111",
-              marginTop: 8,
-            }}
-          >
+      {/* Linhas selecionadas e botão salvar */}
+      {(selectedRows.length > 0 || userInputSelected) && (
+        <div className={styles.selectedRowsContainer}>
+          <strong className={styles.selectedRowsTitle}>
+            Linhas selecionadas:
+          </strong>
+          {/* Aviso personalizado */}
+          <div className={styles.selectedRowsInfo}>
+            Você selecionou {selectedRows.length + (userInputSelected ? 1 : 0)}{" "}
+            linha
+            {selectedRows.length + (userInputSelected ? 1 : 0) !== 1 ? "s" : ""}
+            .
+          </div>
+          <table className={styles.dataGridTable}>
             <thead>
               <tr>
                 {columnHeaders.map((header, i) => (
-                  <th
-                    key={i}
-                    style={{
-                      border: "1px solid #ccc",
-                      padding: "8px",
-                      background: "#f3f3f3",
-                      fontWeight: "bold",
-                    }}
-                  >
+                  <th key={i} className={styles.dataGridTableTh}>
                     {header}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
+              {/* Apenas linhas da tabela principal selecionadas */}
               {selectedRowsData.map((row, idx) => (
                 <tr key={idx}>
                   {row.map((cell, cidx) => (
-                    <td
-                      key={cidx}
-                      style={{
-                        border: "1px solid #ccc",
-                        padding: "8px",
-                        color: "#111",
-                      }}
-                    >
+                    <td key={cidx} className={styles.dataGridTableTd}>
                       {cell}
                     </td>
                   ))}
@@ -216,32 +233,11 @@ export default function DataGridTable({ children }: { children: ReactNode }) {
               ))}
             </tbody>
           </table>
-          <button
-            style={{
-              marginTop: 16,
-              padding: "8px 24px",
-              background: "#2196f3",
-              color: "#fff",
-              border: "none",
-              borderRadius: 4,
-              fontWeight: "bold",
-              cursor: "pointer",
-            }}
-            onClick={handleSave}
-          >
+          <button className={styles.saveButton} onClick={handleSave}>
             Salvar
           </button>
           {showSuccess && (
-            <div
-              style={{
-                marginTop: 12,
-                color: "#388e3c",
-                background: "#e8f5e9",
-                padding: "8px 16px",
-                borderRadius: 4,
-                fontWeight: "bold",
-              }}
-            >
+            <div className={styles.successMessage}>
               Dados cadastrados com sucesso
             </div>
           )}
