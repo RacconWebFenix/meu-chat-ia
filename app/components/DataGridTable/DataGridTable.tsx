@@ -176,8 +176,12 @@ export default function DataGridTable({
                 />
               </td>
               {React.Children.map(row.props.children, (cell) => {
-                if (React.isValidElement(cell)) {
-                  return React.cloneElement(cell as React.ReactElement, {
+                if (
+                  React.isValidElement(cell) &&
+                  typeof cell.type === "string" &&
+                  ["td", "th"].includes(cell.type)
+                ) {
+                  return React.cloneElement(cell, {
                     className: styles.dataGridTableTd,
                   });
                 }
