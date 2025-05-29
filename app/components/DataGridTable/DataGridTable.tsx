@@ -181,9 +181,14 @@ export default function DataGridTable({
                   typeof cell.type === "string" &&
                   ["td", "th"].includes(cell.type)
                 ) {
-                  return React.cloneElement(cell, {
-                    className: styles.dataGridTableTd,
-                  });
+                  return React.cloneElement(
+                    cell as React.ReactElement<
+                      React.HTMLAttributes<HTMLElement>
+                    >,
+                    {
+                      className: styles.dataGridTableTd,
+                    }
+                  );
                 }
                 return cell;
               })}
