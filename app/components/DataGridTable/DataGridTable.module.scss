@@ -3,24 +3,44 @@
   margin: 16px 0;
 }
 
+.userInputTableWrapper {
+  margin-bottom: 24px;
+}
+
+.userInputTitle {
+  color: #fff; // branco
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+}
+
 .dataGridTable {
   width: 100%;
   border-collapse: collapse;
   background: #fff;
   color: #111;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   border-radius: 8px;
 }
 
-.dataGridTable th,
-.dataGridTable td {
+.dataGridTableTh {
   border: 1px solid #ccc;
   padding: 8px;
-}
-
-.dataGridTable th {
   background: #f3f3f3;
   font-weight: bold;
+}
+
+.dataGridTableTd {
+  border: 1px solid #ccc;
+  padding: 8px;
+  color: #111;
+}
+
+.dataGridTableTdCheckbox {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
 }
 
 .selectedRow {
@@ -37,21 +57,13 @@
 
 .selectedRowsTitle {
   color: GrayText;
-  font-weight: bold;
+  font-weight: 600;
 }
 
-.selectedRowsTable {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  color: #111;
-  margin-top: 8px;
-}
-
-.selectedRowsTable th,
-.selectedRowsTable td {
-  border: 1px solid #ccc;
-  padding: 8px;
+.selectedRowsInfo {
+  margin: 8px 0;
+  color: #1976d2;
+  font-weight: 500;
 }
 
 .saveButton {

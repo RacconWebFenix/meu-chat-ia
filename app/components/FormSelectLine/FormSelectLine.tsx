@@ -24,11 +24,15 @@ interface SelectLineProps {
   linha: "automotiva" | "industrial";
   setLinha: (v: "automotiva" | "industrial") => void;
   setPrompt: (v: string) => void;
-  onSend?: (prompt: string) => void;
+  onSend?: (
+    prompt: string,
+    userInputHeaders: string[],
+    userInputRow: (string | undefined)[]
+  ) => void;
   disabled?: boolean;
 }
 
-export default function SelectLine({
+export default function FormSelectLine({
   linha,
   setLinha,
   setPrompt,
@@ -135,8 +139,38 @@ Norma Aplicável: ${industrial.norma}
 Aplicação: ${industrial.aplicacao}`;
     }
 
-    if (onSend) onSend(prompt);
+    if (onSend) onSend(prompt, userInputHeaders, userInputRow);
   }
+
+  // Exemplo para ambos os tipos de linha:
+  const userInputHeaders =
+    linha === "automotiva"
+      ? ["Nome", "Características físicas", "Referência", "Marca/Fabricante"]
+      : [
+          "Nome da Peça ou Componente",
+          "Características físicas",
+          "Referência da Marca ou Fabricante",
+          "Marca ou Fabricante",
+          "Norma Aplicável",
+          "Aplicação",
+        ];
+
+  const userInputRow =
+    linha === "automotiva"
+      ? [
+          automotiva.nome,
+          automotiva.caracteristicas,
+          automotiva.referenciaAutomotiva,
+          automotiva.marcaFabricante,
+        ]
+      : [
+          industrial.nomePeca,
+          industrial.caracteristicasInd,
+          industrial.referenciaInd,
+          industrial.marcaInd,
+          industrial.norma,
+          industrial.aplicacao,
+        ];
 
   return (
     <form className={styles.selectLineForm} onSubmit={handleSubmit}>

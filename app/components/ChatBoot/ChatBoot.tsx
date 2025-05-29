@@ -32,6 +32,8 @@ export default function ChatBoot() {
     null
   );
   const [feedbackSent, setFeedbackSent] = useState<boolean>(false);
+  const [userInputHeaders, setUserInputHeaders] = useState<string[]>([]);
+  const [userInputRow, setUserInputRow] = useState<(string | undefined)[]>([]);
 
   function getSiteName(url: string) {
     try {
@@ -128,9 +130,24 @@ export default function ChatBoot() {
     }
   };
 
+  const handleSend = (
+    prompt: string,
+    headers: string[],
+    row: (string | undefined)[]
+  ) => {
+    setPrompt(prompt);
+    setUserInputHeaders(headers);
+    setUserInputRow(row);
+    sendMessage(); // envia para a API logo após salvar os dados
+  };
+
   return (
     <div className={styles.chatBootContainer}>
-      <MessageList messages={messages} />
+      <MessageList
+        messages={messages}
+        userInputHeaders={userInputHeaders}
+        userInputRow={userInputRow}
+      />
       {loading && <MessageSkeleton />}
 
       {currentFeedbackId && !feedbackSent && messages.length > 0 && (
@@ -141,7 +158,7 @@ export default function ChatBoot() {
         linha={linha}
         setLinha={setLinha}
         setPrompt={setPrompt}
-        onSend={sendMessage}
+        onSend={handleSend}
         disabled={loading}
       />
     </div>

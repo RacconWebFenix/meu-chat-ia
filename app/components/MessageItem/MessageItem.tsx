@@ -17,9 +17,16 @@ interface Props {
   message: Message;
   citations?: { url: string; siteName: string }[];
   images?: Image[];
+  userInputHeaders?: string[];
+  userInputRow?: (string | undefined)[];
 }
 
-export default function MessageItem({ message, citations }: Props) {
+export default function MessageItem({
+  message,
+  citations,
+  userInputHeaders,
+  userInputRow,
+}: Props) {
   const hasImages = message.images && message.images.length > 0;
   const hasCitations = citations && citations.length > 0;
 
@@ -81,7 +88,13 @@ export default function MessageItem({ message, citations }: Props) {
           remarkPlugins={[remarkGfm]}
           components={{
             table: ({ ...props }) => (
-              <DataGridTable {...props}>{props.children}</DataGridTable>
+              <DataGridTable
+                {...props}
+                userInputHeaders={userInputHeaders}
+                userInputRow={userInputRow}
+              >
+                {props.children}
+              </DataGridTable>
             ),
             th: ({ ...props }) => (
               <th className={styles.tableTh} {...props}>

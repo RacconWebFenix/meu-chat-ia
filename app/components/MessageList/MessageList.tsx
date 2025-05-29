@@ -4,9 +4,15 @@ import styles from "./MessageList.module.scss";
 
 interface Props {
   messages: Message[];
+  userInputHeaders?: string[];
+  userInputRow?: (string | undefined)[];
 }
 
-export default function MessageList({ messages }: Props) {
+export default function MessageList({
+  messages,
+  userInputHeaders,
+  userInputRow,
+}: Props) {
   if (messages.length === 0) {
     return (
       <p className={styles.emptyMessage}>
@@ -20,7 +26,13 @@ export default function MessageList({ messages }: Props) {
     <div>
       <div className={styles.messageListContainer}>
         {messages.map((msg, i) => (
-          <MessageItem key={i} message={msg} citations={msg.citations} />
+          <MessageItem
+            key={i}
+            message={msg}
+            citations={msg.citations}
+            userInputHeaders={userInputHeaders}
+            userInputRow={userInputRow}
+          />
         ))}
       </div>
     </div>
