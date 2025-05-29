@@ -116,9 +116,7 @@ export default function DataGridTable({
       {/* Tabela do usuário (prompt) */}
       {userInputHeaders && userInputRow && (
         <div className={styles.userInputTableWrapper}>
-          <strong className={styles.userInputTitle}>
-            Pesquisa:
-          </strong>
+          <strong className={styles.userInputTitle}>Pesquisa:</strong>
           <table className={styles.dataGridTable}>
             <thead>
               <tr>
@@ -178,8 +176,8 @@ export default function DataGridTable({
                 />
               </td>
               {React.Children.map(row.props.children, (cell) => {
-                if (isReactElementWithProps(cell)) {
-                  return React.cloneElement(cell, {
+                if (React.isValidElement(cell)) {
+                  return React.cloneElement(cell as React.ReactElement, {
                     className: styles.dataGridTableTd,
                   });
                 }
