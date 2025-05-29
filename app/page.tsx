@@ -3,6 +3,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 import Header from "./components/Header/Header";
+import Link from "next/link";
 
 import ChatBoot from "./components/ChatBoot/ChatBoot";
 
@@ -11,6 +12,7 @@ export default function HomePage() {
     <main style={{ maxWidth: 1200, margin: "2rem auto", padding: "0 1rem" }}>
       <Header />
       <ChatBoot />
+      <Link href="/feedbacks">Ver Feedbacks</Link>
     </main>
   );
 }
