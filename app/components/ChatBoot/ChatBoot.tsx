@@ -1,11 +1,11 @@
 // components/ChatBoot.tsx
 import { useState } from "react";
 import MessageList from "../MessageList/MessageList";
-import MessageSkeleton from "../MessageSkeleton/MessageSkeleton";
 import FeedbackForm from "../FeedbackForm/FeedbackForm";
 import SelectLine from "../FormSelectLine/FormSelectLine";
 import styles from "./ChatBoot.module.scss";
 import { API_BASE_URL } from "@/app/config/api";
+import ChatLoading from "../ChatLoading/ChatLoading";
 
 export interface Citation {
   url: string;
@@ -150,7 +150,7 @@ export default function ChatBoot() {
         userInputHeaders={userInputHeaders}
         userInputRow={userInputRow}
       />
-      {loading && <MessageSkeleton />}
+      {loading && <ChatLoading />}
 
       {currentFeedbackId && !feedbackSent && messages.length > 0 && (
         <FeedbackForm onSendFeedback={handleSendFeedback} />
