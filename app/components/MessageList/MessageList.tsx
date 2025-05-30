@@ -16,8 +16,7 @@ export default function MessageList({
   if (messages.length === 0) {
     return (
       <p className={styles.emptyMessage}>
-        Olá! Sou sua assistente virtual especializada em cadastro e busca de
-        materiais. Como posso ajudar você hoje?
+        Bem vindo ao ambiente de pesquisa da Comércio Integrado?
       </p>
     );
   }
