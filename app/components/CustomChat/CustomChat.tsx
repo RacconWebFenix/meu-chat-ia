@@ -12,13 +12,14 @@ export default function CustomChat() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const sendMessage = async () => {
+    const url = process.env.NEXT_PUBLIC_API_URL + "/chatpdm";
     if (!input.trim()) return;
     setMessages([{ text: input, from: "user" }]);
     setLoading(true);
     setInput("");
 
     try {
-      const res = await fetch("/api/ia-response", {
+      const res = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -28,7 +29,12 @@ export default function CustomChat() {
       const data = await res.json();
       setMessages([
         { text: input, from: "user" },
-        { text: data.response || "Erro ao obter resposta da IA.", from: "bot" },
+        {
+          text:
+            data.candidates[0].content.parts[0].text ||
+            "Erro ao obter resposta da IA.",
+          from: "bot",
+        },
       ]);
     } catch {
       setMessages([
