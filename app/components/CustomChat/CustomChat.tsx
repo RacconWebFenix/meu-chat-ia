@@ -49,20 +49,18 @@ export default function CustomChat() {
 
   return (
     <div className={styles.chatContainer}>
-      <div className={styles.iaResponseContainer}>
-        <div className={styles.welcomeBox}>
-          <strong>Bem-vindo ao ChatBoot</strong>
-          <div>Pesquisa de PDM (Descrição de Materiais)</div>
+      {(messages.some((msg) => msg.from === "bot") || loading) && (
+        <div className={styles.iaResponseContainer}>
+          {messages
+            .filter((msg) => msg.from === "bot")
+            .map((msg, idx) => (
+              <div key={idx} className={styles.botMsg}>
+                <ReactMarkdown>{msg.text}</ReactMarkdown>
+              </div>
+            ))}
+          {loading && <ChatLoading />}
         </div>
-        {messages
-          .filter((msg) => msg.from === "bot")
-          .map((msg, idx) => (
-            <div key={idx} className={styles.botMsg}>
-              <ReactMarkdown>{msg.text}</ReactMarkdown>
-            </div>
-          ))}
-        {loading && <ChatLoading />}
-      </div>
+      )}
       <div className={styles.inputBox}>
         <input
           ref={inputRef}
