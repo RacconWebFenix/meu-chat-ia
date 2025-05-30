@@ -10,7 +10,7 @@ export default function Header() {
           <Image
             src="/assets/logo-comercio-integrado.png"
             alt="Comércio Integrado"
-            width={170}
+            width={150}
             height={0}
           />
         </div>

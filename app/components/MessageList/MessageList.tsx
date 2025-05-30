@@ -16,7 +16,7 @@ export default function MessageList({
   if (messages.length === 0) {
     return (
       <p className={styles.emptyMessage}>
-        Bem vindo ao ambiente de pesquisa da Comércio Integrado?
+        Bem vindo ao ambiente de pesquisa da Comércio Integrado
       </p>
     );
   }
