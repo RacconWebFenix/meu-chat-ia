@@ -12,11 +12,12 @@ export default function CustomChat() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const sendMessage = async () => {
-    const url = process.env.NEXT_PUBLIC_API_URL + "/chatpdm";
     if (!input.trim()) return;
     setMessages([{ text: input, from: "user" }]);
     setLoading(true);
     setInput("");
+
+    const url = process.env.NEXT_PUBLIC_API_URL + "/chatpdm";
 
     try {
       const res = await fetch(url, {
