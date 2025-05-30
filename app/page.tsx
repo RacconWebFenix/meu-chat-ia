@@ -19,16 +19,6 @@ export default function HomePage() {
 
       <div className={styles.tabsContainer}>
         <button
-          onClick={() => setTab("custom")}
-          className={`${styles.tabButton} ${styles.tabButtonLeft}`}
-          style={{
-            background: tab === "custom" ? "#e3eaf2" : "#1976d2",
-            color: tab === "custom" ? "#1976d2" : "#fff",
-          }}
-        >
-          Descrição e PDM
-        </button>
-        <button
           onClick={() => setTab("boot")}
           className={`${styles.tabButton} ${styles.tabButtonRight}`}
           style={{
@@ -36,7 +26,17 @@ export default function HomePage() {
             color: tab === "boot" ? "#1976d2" : "#fff",
           }}
         >
-          Pesquisa de Materiais
+          Pesquisa de Equivalência
+        </button>
+        <button
+          onClick={() => setTab("custom")}
+          className={`${styles.tabButton} ${styles.tabButtonLeft}`}
+          style={{
+            background: tab === "custom" ? "#e3eaf2" : "#1976d2",
+            color: tab === "custom" ? "#1976d2" : "#fff",
+          }}
+        >
+          Pesquisa PDM
         </button>
       </div>
 
