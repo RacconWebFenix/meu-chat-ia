@@ -10,14 +10,14 @@ export default function Header() {
           <Image
             src="/assets/logo-comercio-integrado.png"
             alt="Comércio Integrado"
-            width={200}
+            width={170}
             height={0}
           />
         </div>
-    
+
         <div>
           <h1 className={styles.title}>
-            Comércio Integrado Materiais & Suprimentos
+            Pesquisa e Identificação de Materiais
           </h1>
         </div>
       </div>
