@@ -1,7 +1,7 @@
 import React, { useState, ReactNode, ReactElement } from "react";
 import styles from "./DataGridTable.module.scss";
 
-function isReactElementWithProps(element: unknown): element is ReactElement<{
+function isReactElementWithProps(element: any): element is ReactElement<{
   style: any;
   children?: ReactNode;
 }> {
@@ -94,7 +94,7 @@ export default function DataGridTable({
 
     // Adiciona a linha do usuário se selecionada
     if (userInputSelected && userInputHeaders && userInputRow) {
-      const obj: Record<string, unknown> = {};
+      const obj: Record<string, any> = {};
       userInputHeaders.forEach((header, idx) => {
         obj[header] = userInputRow[idx];
       });
@@ -103,7 +103,7 @@ export default function DataGridTable({
 
     // Adiciona as linhas selecionadas da tabela principal
     selectedRowsData.forEach((row) => {
-      const obj: Record<string, unknown> = {};
+      const obj: Record<string, any> = {};
       columnHeaders.forEach((header: string, idx: number) => {
         obj[header] = row[idx];
       });
