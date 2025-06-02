@@ -2,7 +2,7 @@ import React, { useState, ReactNode, ReactElement } from "react";
 import styles from "./DataGridTable.module.scss";
 
 function isReactElementWithProps(element: unknown): element is ReactElement<{
-  style: unknown;
+  style: any;
   children?: ReactNode;
 }> {
   return React.isValidElement(element) && typeof element.props === "object";
