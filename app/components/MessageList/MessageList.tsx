@@ -14,11 +14,7 @@ export default function MessageList({
   userInputRow,
 }: Props) {
   if (messages.length === 0) {
-    return (
-      <p className={styles.emptyMessage}>
-        Bem vindo ao ambiente de pesquisa da Comércio Integrado
-      </p>
-    );
+    return null;
   }
 
   return (
