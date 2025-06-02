@@ -2,7 +2,7 @@ import React, { useState, ReactNode, ReactElement } from "react";
 import styles from "./DataGridTable.module.scss";
 
 function isReactElementWithProps(element: unknown): element is ReactElement<{
-  style: any;
+  style: unknown;
   children?: ReactNode;
 }> {
   return React.isValidElement(element) && typeof element.props === "object";
@@ -28,7 +28,7 @@ export default function DataGridTable({
 
   // Extrai cabeçalho e corpo
   const header = rows.find(
-    (row): row is ReactElement<any, any> =>
+    (row): row is ReactElement<unknown, any> =>
       React.isValidElement(row) && row.type === "thead"
   );
   const body = rows.find(
@@ -71,6 +71,10 @@ export default function DataGridTable({
             (cell) => (cell as ReactElement<any, any>).props.children as string
           ) as string[])
       : [];
+
+  // Função para mapear nomes dos cabeçalhos
+  const mapHeaderName = (header: string) =>
+    header.trim().toLowerCase() === "unidade de medida" ? "Un. Medida" : header;
 
   // Manipula seleção de linhas
   const handleCheckboxChange = (idx: number) => {
@@ -155,7 +159,7 @@ export default function DataGridTable({
             <th className={styles.dataGridTableTh}></th>
             {columnHeaders.map((header, i) => (
               <th key={i} className={styles.dataGridTableTh}>
-                {header}
+                {mapHeaderName(header)}
               </th>
             ))}
           </tr>
@@ -215,7 +219,7 @@ export default function DataGridTable({
               <tr>
                 {columnHeaders.map((header, i) => (
                   <th key={i} className={styles.dataGridTableTh}>
-                    {header}
+                    {mapHeaderName(header)}
                   </th>
                 ))}
               </tr>
