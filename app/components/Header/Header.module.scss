@@ -27,6 +27,17 @@
   border-radius: 8px;
 }
 
+
+.emptyMessage {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: bolder;
+  color: #fff;
+}
+
+
 @media (max-width: 768px) {
   .headerContent {
     display: flex;

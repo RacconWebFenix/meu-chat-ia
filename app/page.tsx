@@ -7,41 +7,20 @@ import Link from "next/link";
 import { useState } from "react";
 
 import ChatBoot from "./components/ChatBoot/ChatBoot";
-import styles from "./page.module.scss";
 import CustomChat from "./components/CustomChat/CustomChat";
+import TabsSwitcher from "./components/TabsSwitcher/TabsSwitcher";
 
 export default function HomePage() {
-  const [tab, setTab] = useState<"custom" | "boot">("custom");
+  const [tab, setTab] = useState<"custom" | "boot">("boot");
 
   return (
     <main style={{ maxWidth: 1200, margin: "2rem auto", padding: "0 1rem" }}>
       <Header />
 
-      <div className={styles.tabsContainer}>
-        <button
-          onClick={() => setTab("boot")}
-          className={`${styles.tabButton} ${styles.tabButtonRight}`}
-          style={{
-            background: tab === "boot" ? "#e3eaf2" : "#1976d2",
-            color: tab === "boot" ? "#1976d2" : "#fff",
-          }}
-        >
-          Pesquisa de Equivalência
-        </button>
-        <button
-          onClick={() => setTab("custom")}
-          className={`${styles.tabButton} ${styles.tabButtonLeft}`}
-          style={{
-            background: tab === "custom" ? "#e3eaf2" : "#1976d2",
-            color: tab === "custom" ? "#1976d2" : "#fff",
-          }}
-        >
-          Pesquisa PDM
-        </button>
-      </div>
+      <TabsSwitcher tab={tab} setTab={setTab} />
 
-      {tab === "custom" && <CustomChat />}
       {tab === "boot" && <ChatBoot />}
+      {tab === "custom" && <CustomChat />}
 
       <Link href="/feedbacks">Ver Feedbacks</Link>
     </main>
