@@ -28,7 +28,7 @@ export default function DataGridTable({
 
   // Extrai cabeçalho e corpo
   const header = rows.find(
-    (row): row is ReactElement<unknown, any> =>
+    (row): row is ReactElement<any, any> =>
       React.isValidElement(row) && row.type === "thead"
   );
   const body = rows.find(
