@@ -1,6 +1,6 @@
 // components/ChatBoot.tsx
 import { useState } from "react";
-import MessageList from "../MessageList/MessageList";
+import ChatMessegeList from "../ChatMessegeList/ChatMessageList";
 import FeedbackForm from "../FeedbackForm/FeedbackForm";
 import SelectLine from "../FormSelectLine/FormSelectLine";
 import styles from "./ChatBoot.module.scss";
@@ -76,7 +76,6 @@ export default function ChatBoot() {
             citations: citations,
           },
         ]);
-        console.log(data);
         setCurrentFeedbackId(data.feedbackId);
       } else {
         setMessages([
@@ -145,7 +144,8 @@ export default function ChatBoot() {
 
   return (
     <div className={styles.chatBootContainer}>
-      <MessageList
+      
+      <ChatMessegeList
         messages={messages}
         userInputHeaders={userInputHeaders}
         userInputRow={userInputRow}
