@@ -4,8 +4,8 @@ import { useState } from "react";
 import { formatCurrency, formatPrecoEnvio } from "@/app/Utils/utils";
 import ChatLoading from "../ChatLoading/ChatLoading";
 import SearchPriceResult from "./SearchPriceResult/SearchPriceResult";
-import { searchPriceMock } from "@/app/mocks/searchPriceMock"; // importe seu mock
-import { SearchPriceResultData } from "./types";
+import { useSearchPrice } from "./hooks/useSearchPrice";
+import { SearchPricePayload } from "./types";
 
 export default function SearchPrice() {
   const [searchPrice, setSearchPrice] = useState({
@@ -15,8 +15,8 @@ export default function SearchPrice() {
     preco: "",
     ddd: "",
   });
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<SearchPriceResultData | null>(null);
+
+  const { loading, result, search } = useSearchPrice();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -37,22 +37,13 @@ export default function SearchPrice() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setResult(null);
-
     // Monta o objeto de envio com preco convertido para double
-    const payload = {
+    const payload: SearchPricePayload = {
       ...searchPrice,
-      preco: formatPrecoEnvio(searchPrice.preco),
+      preco: Number(formatPrecoEnvio(searchPrice.preco)),
     };
 
-    console.log("Enviando dados:", payload);
-
-    // Simulação de chamada à API usando o mock
-    setTimeout(() => {
-      setResult(searchPriceMock); // sempre retorna o mock
-      setLoading(false);
-    }, 1800);
+    search(payload);
   };
 
   return (

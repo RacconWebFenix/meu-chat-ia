@@ -17,3 +17,12 @@ export interface SearchPriceResultProps {
   loading: boolean;
   error: string | null;
 }
+
+// Tipagem dos dados de entrada do formulário de pesquisa de preço
+export interface SearchPricePayload {
+  descricao: string;
+  marca: string;
+  referencia: string;
+  preco: number; // já convertido para número/double
+  ddd: string;
+}

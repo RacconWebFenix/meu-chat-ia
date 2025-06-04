@@ -1,44 +1,47 @@
 .markdownTableContainer {
   width: 100%;
-  overflow-x: visible;
-  border-radius: 8px;
+  overflow-x: auto;
   background: transparent;
-
-  @media (max-width: 1333px) {
-    overflow-x: auto;
+  margin-top: 1rem;
+  padding-bottom: 5px;
+  border-radius: 8px;
+  @media (max-width: 1200px) {
     max-width: 100vw;
   }
 }
 
 .markdownTable {
   width: 100%;
-  min-width: 600px;
-  border-collapse: collapse;
-  margin: 1.5rem 0;
+  min-width: 1000px;
+  border-collapse: separate;
+  border-spacing: 0;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08);
-  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+
+  th,
+  td {
+    padding: 12px 10px;
+    text-align: left;
+    color: #1976d2;
+  }
+
+  th {
+    background: #1976d2;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  tr:nth-child(even) td {
+    background: #ddecff; // Cor suave para linhas pares
+  }
+
+  tr:nth-child(odd) td {
+    background: #fff; // Linhas ímpares continuam brancas
+  }
 }
 
-.tableTh {
-  background: #f3f6fa;
-  color: #1976d2;
-  font-weight: 600;
-  padding: 0.75rem 1rem;
-  border-bottom: 2px solid #e3e8ee;
-  text-align: center;
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
-.tableTd {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #e3e8ee;
-  color: #222;
-  background: #fff;
-}
-
-.markdownTable tr:last-child .tableTd {
+.markdownTable tr:last-child td {
   border-bottom: none;
+  border-radius: 8px;
 }
