@@ -201,7 +201,7 @@ Aplicação: ${industrial.aplicacao}`;
 
       <button type="submit" className={styles.buttonSubmit} disabled={disabled}>
         Enviar
-      </button>
+      </button> 
     </form>
   );
 }

@@ -1,6 +1,8 @@
 import { ddds } from "@/app/mocks/ddds";
 import styles from "./SearchPrice.module.scss";
 import { useState } from "react";
+import { formatCurrency, formatPrecoEnvio } from "@/app/Utils/utils";
+
 
 export default function SearchPrice() {
   const [searchPrice, setSearchPrice] = useState({
@@ -15,16 +17,24 @@ export default function SearchPrice() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setSearchPrice((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    if (name === "preco") {
+      setSearchPrice((prev) => ({
+        ...prev,
+        preco: formatCurrency(value),
+      }));
+    } else {
+      setSearchPrice((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Aqui você pode chamar a função de pesquisa ou API
-    console.log(searchPrice);
+    const precoEnvio = formatPrecoEnvio(searchPrice.preco);
+    const dataEnvio = { ...searchPrice, preco: precoEnvio };
+    console.log(dataEnvio);
   };
 
   return (
@@ -43,14 +53,14 @@ export default function SearchPrice() {
           ))}
         </select>
       </div>
-      <div>
+      <div className={styles.inputsSearchPrice}>
         <input
           type="text"
           name="descricao"
           placeholder="Descrição"
           value={searchPrice.descricao}
           onChange={handleChange}
-          className={styles.input}
+          className={styles.inputField}
         />
         <input
           type="text"
@@ -58,7 +68,7 @@ export default function SearchPrice() {
           placeholder="Marca"
           value={searchPrice.marca}
           onChange={handleChange}
-          className={styles.input}
+          className={styles.inputField}
         />
         <input
           type="text"
@@ -66,7 +76,7 @@ export default function SearchPrice() {
           placeholder="Referência"
           value={searchPrice.referencia}
           onChange={handleChange}
-          className={styles.input}
+          className={styles.inputField}
         />
         <input
           type="text"
@@ -74,7 +84,8 @@ export default function SearchPrice() {
           placeholder="Preço Unitário"
           value={searchPrice.preco}
           onChange={handleChange}
-          className={styles.input}
+          className={styles.inputField}
+          inputMode="numeric"
         />
       </div>
       <div>
