@@ -1,11 +1,12 @@
 // components/ChatBoot.tsx
 import { useState } from "react";
-import MessageList from "../MessageList/MessageList";
+import ChatMessegeList from "../ChatMessegeList/ChatMessageList";
 import FeedbackForm from "../FeedbackForm/FeedbackForm";
 import SelectLine from "../FormSelectLine/FormSelectLine";
 import styles from "./ChatBoot.module.scss";
 import { API_BASE_URL } from "@/app/config/api";
 import ChatLoading from "../ChatLoading/ChatLoading";
+import { getSiteName } from "@/app/Utils/utils";
 
 export interface Citation {
   url: string;
@@ -35,15 +36,6 @@ export default function ChatBoot() {
   const [feedbackSent, setFeedbackSent] = useState<boolean>(false);
   const [userInputHeaders, setUserInputHeaders] = useState<string[]>([]);
   const [userInputRow, setUserInputRow] = useState<(string | undefined)[]>([]);
-
-  function getSiteName(url: string) {
-    try {
-      const { hostname } = new URL(url);
-      return hostname.replace(/^www\./, "");
-    } catch {
-      return url;
-    }
-  }
 
   const sendMessage = async () => {
     if (!prompt.replace(/(Nome:|Nome da Peça ou Componente:)/, "").trim())
@@ -76,7 +68,6 @@ export default function ChatBoot() {
             citations: citations,
           },
         ]);
-        console.log(data);
         setCurrentFeedbackId(data.feedbackId);
       } else {
         setMessages([
@@ -145,7 +136,7 @@ export default function ChatBoot() {
 
   return (
     <div className={styles.chatBootContainer}>
-      <MessageList
+      <ChatMessegeList
         messages={messages}
         userInputHeaders={userInputHeaders}
         userInputRow={userInputRow}

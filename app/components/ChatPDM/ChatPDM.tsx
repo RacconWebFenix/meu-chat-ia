@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
-import styles from "./CustomChat.module.scss";
+import styles from "./ChatPDM.module.scss";
 import ChatLoading from "../ChatLoading/ChatLoading";
 import ReactMarkdown from "react-markdown";
 
-export default function CustomChat() {
+export default function ChatPDM() {
   const [messages, setMessages] = useState<
     { text: string; from: "user" | "bot" }[]
   >([]);
@@ -17,7 +17,8 @@ export default function CustomChat() {
     setLoading(true);
     setInput("");
 
-    const url = process.env.NEXT_PUBLIC_API_URL + "/chatpdm";
+    const url =
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001" + "/chatpdm";
 
     try {
       const res = await fetch(url, {
