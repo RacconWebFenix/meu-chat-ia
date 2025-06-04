@@ -10,6 +10,7 @@ export interface SearchPriceResultData {
     role: string;
     content: string;
   };
+  userValue: string | number
 }
 
 export interface SearchPriceResultProps {
@@ -25,4 +26,12 @@ export interface SearchPricePayload {
   referencia: string;
   preco: number; // já convertido para número/double
   ddd: string;
+}
+
+export interface SearchPriceJsonInterface {
+  descricao: string;
+  marca: string;
+  referencia: string;
+  fonte_de_pesquisa: string;
+  valor: string;
 }

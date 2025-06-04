@@ -1,32 +1,34 @@
 import { useState } from "react";
 import { SearchPricePayload, SearchPriceResultData } from "../types";
-import { searchPriceMock } from "@/app/mocks/searchPriceMock";
+import { API_BASE_URL } from "@/app/config/api";
 
 export function useSearchPrice() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SearchPriceResultData | null>(null);
 
-  async function search(payload: SearchPricePayload) {
+  // Monta o payload no formato desejado
+  function buildPayload(values: SearchPricePayload): { text: string } {
+    // Exemplo: "rolamento esfera skf 6205z ddd: 16"
+    const prompt = `${values.descricao} ${values.marca} ${values.referencia} ddd: ${values.ddd}`;
+    return { text: prompt };
+  }
+
+  async function search(values: SearchPricePayload) {
     setLoading(true);
     setResult(null);
 
-    // Simulação de chamada à API usando o mock
-    setTimeout(() => {
-      setResult(searchPriceMock); // sempre retorna o mock
-      setLoading(false);
-    }, 1800);
+    const payload = buildPayload(values);
 
-    // Para chamada real:
-    // const response = await fetch("/api/search-price", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(payload),
-    // });
-    // const data = await response.json();
-    // setResult(data);
-    // setLoading(false);
+    const response = await fetch(`${API_BASE_URL}/price-search`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+    setResult(data);
+    setLoading(false);
 
-    console.log(payload);
+    console.log("Payload enviado:", payload);
   }
 
   return { loading, result, search };

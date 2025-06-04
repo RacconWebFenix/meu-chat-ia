@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { formatCurrency, formatPrecoEnvio } from "@/app/Utils/utils";
 import ChatLoading from "../ChatLoading/ChatLoading";
@@ -53,7 +52,14 @@ export default function SearchPrice() {
       )}
       {result && (
         <div style={{ marginBottom: "1rem" }}>
-          <SearchPriceResult result={result} loading={false} error={null} />
+          <SearchPriceResult
+            result={{
+              ...result,
+              userValue: searchPrice.preco, 
+            }}
+            loading={false}
+            error={null}
+          />
         </div>
       )}
       <SearchPriceForm

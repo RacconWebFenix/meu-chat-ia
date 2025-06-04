@@ -1,17 +1,33 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import styles from "./SearchPriceTextAndMarkdown.module.scss";
+import { extractJsonObjectsFromContent, getComparativoValores } from "./utils";
+import { SearchPriceJsonInterface } from "../types";
 
 interface Props {
   data?: {
     text: {
       content: string;
     };
+    userValue?: string | number;
   };
 }
 
 export default function SearchPriceTextAndMarkdown({ data }: Props) {
+  const [jsonObjects, setJsonObjects] = useState<SearchPriceJsonInterface[]>(
+    []
+  );
+
+  useEffect(() => {
+    if (!data?.text?.content) {
+      setJsonObjects([]);
+      return;
+    }
+    setJsonObjects(extractJsonObjectsFromContent(data.text.content));
+  }, [data]);
+
   if (!data?.text?.content) return null;
 
   // Regex para encontrar a primeira tabela markdown ou bloco markdown
@@ -25,6 +41,10 @@ export default function SearchPriceTextAndMarkdown({ data }: Props) {
     explanation = data.text.content.slice(0, match.index);
     markdown = match[0];
   }
+
+  // Usa a função auxiliar para obter todos os dados de comparação
+  const { maiorValor, valorUsuario, diffPercent, textoComparativo } =
+    getComparativoValores(jsonObjects, data?.userValue);
 
   return (
     <div>
@@ -52,6 +72,18 @@ export default function SearchPriceTextAndMarkdown({ data }: Props) {
           >
             {markdown}
           </ReactMarkdown>
+        </div>
+      )}
+
+      {/* Renderiza a porcentagem abaixo da tabela */}
+      {maiorValor > 0 && !isNaN(valorUsuario) && (
+        <div style={{ marginTop: "1rem", fontWeight: 500, color: "#fff" }}>
+          <strong>Maior valor listado:</strong> R$ {maiorValor.toFixed(2)}
+          <br />
+          <strong>Valor informado:</strong> R$ {valorUsuario.toFixed(2)}
+          <br />
+          <strong>Diferença percentual:</strong> {diffPercent.toFixed(2)}%<br />
+          <strong>Comparativo:</strong> {textoComparativo}
         </div>
       )}
     </div>
