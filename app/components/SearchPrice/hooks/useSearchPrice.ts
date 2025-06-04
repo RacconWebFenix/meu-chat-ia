@@ -28,7 +28,7 @@ export function useSearchPrice() {
     setResult(data);
     setLoading(false);
 
-    console.log("Payload enviado:", payload);
+    // console.log("Payload enviado:", payload);
   }
 
   return { loading, result, search };
