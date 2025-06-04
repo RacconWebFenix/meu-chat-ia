@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm";
 import ImageGrid from "../ImageGrid/ImageGrid";
 import { Message } from "../ChatBoot/ChatBoot";
 import DataGridTable from "../DataGridTable/DataGridTable";
-import SearchPriceInfo from "../SearchPriceInfo/SearchPriceInfo";
+import SearchPriceInfo from "../SearchPrice/SearchPriceInfo/SearchPriceInfo";
 import styles from "./MessageItem.module.scss";
 import { searchPriceMock } from "../../mocks/searchPriceMock";
 
