@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import styles from "./ChatPDM.module.scss";
 import ChatLoading from "../ChatLoading/ChatLoading";
 import ReactMarkdown from "react-markdown";
+import { API_BASE_URL } from "@/app/config/api";
 
 export default function ChatPDM() {
   const [messages, setMessages] = useState<
@@ -17,11 +18,8 @@ export default function ChatPDM() {
     setLoading(true);
     setInput("");
 
-    const url =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001" + "/chatpdm";
-
     try {
-      const res = await fetch(url, {
+      const res = await fetch(`${API_BASE_URL}/chatpdm`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
