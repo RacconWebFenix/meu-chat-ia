@@ -2,13 +2,14 @@
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-import Header from "./components/Header/Header";
-import Link from "next/link";
 import { useState } from "react";
+import Link from "next/link";
 
+import Header from "./components/Header/Header";
 import ChatBoot from "./components/ChatBoot/ChatBoot";
 import ChatPDM from "./components/ChatPDM/ChatPDM";
 import TabsSwitcher from "./components/TabsSwitcher/TabsSwitcher";
+import FadeSwitch from "./components/FadeSwitch/FadeSwitch";
 
 export default function HomePage() {
   const [tab, setTab] = useState<"pdm" | "equivalencia">("equivalencia");
@@ -16,11 +17,16 @@ export default function HomePage() {
   return (
     <main style={{ maxWidth: 1200, margin: "2rem auto", padding: "0 1rem" }}>
       <Header />
-
       <TabsSwitcher tab={tab} setTab={setTab} />
 
-      {tab === "equivalencia" && <ChatBoot />}
-      {tab === "pdm" && <ChatPDM />}
+      <FadeSwitch activeKey={tab} duration={400}>
+        <div key="equivalencia">
+          <ChatBoot />
+        </div>
+        <div key="pdm">
+          <ChatPDM />
+        </div>
+      </FadeSwitch>
 
       <Link href="/feedbacks">Ver Feedbacks</Link>
     </main>

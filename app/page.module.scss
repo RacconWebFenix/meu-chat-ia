@@ -21,3 +21,13 @@
 .tabButtonRight {
   border-radius: 0 6px 6px 0;
 }
+
+.tabsContent {
+  opacity: 0;
+  transition: opacity 2s;
+  will-change: opacity;
+}
+
+.visible {
+  opacity: 1;
+}
