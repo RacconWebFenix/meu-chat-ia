@@ -4,9 +4,8 @@ import remarkGfm from "remark-gfm";
 import ImageGrid from "../ImageGrid/ImageGrid";
 import { Message } from "../ChatBoot/ChatBoot";
 import DataGridTable from "../DataGridTable/DataGridTable";
-import SearchPriceInfo from "../SearchPrice/SearchPriceInfo/SearchPriceInfo";
 import styles from "./MessageItem.module.scss";
-import { searchPriceMock } from "../../mocks/searchPriceMock";
+
 
 interface Image {
   image_url: string;
@@ -37,12 +36,7 @@ export default function ChatMessage({
   // Regex para encontrar a primeira tabela markdown
   const tableRegex = /\n(\|.*\|.*\n(\|[-:]+.*\n)((?:.*\|.*\n?)+))/;
   // Se for pricesearch, use o mock, senão use o texto da mensagem
-  const markdownSource =
-    type === "pricesearch"
-      ? searchPriceMock.text.content
-      : typeof message.text === "string"
-      ? message.text
-      : "";
+  const markdownSource = typeof message.text === "string" ? message.text : "";
 
   const match = markdownSource.match(tableRegex);
 
@@ -91,9 +85,6 @@ export default function ChatMessage({
       >
         {explanation}
       </ReactMarkdown>
-
-      {/* Renderiza tabela separadamente, se existir */}
-      {type === "pricesearch" && table && <SearchPriceInfo markdown={table} />}
 
       {table && type !== "pricesearch" && (
         <ReactMarkdown

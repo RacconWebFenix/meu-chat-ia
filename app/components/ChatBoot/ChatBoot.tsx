@@ -126,7 +126,7 @@ export default function ChatBoot() {
   const handleSend = (
     prompt: string,
     headers: string[],
-    row: (string | undefined)[]
+    row: (string | undefined)[],
   ) => {
     setPrompt(prompt);
     setUserInputHeaders(headers);
