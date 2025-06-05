@@ -7,6 +7,7 @@ import DataGridTable from "../../DataGridTable/DataGridTable";
 import styles from "./MessageItem.module.scss";
 import { Message } from "../Hooks/useChatBoot";
 import { extractExplanationAndTable } from "./utils";
+import { parseMarkdownTable } from "./parseMarkdownTable";
 
 interface Image {
   image_url: string;
@@ -29,7 +30,6 @@ export default function ChatMessage({
   citations,
   userInputHeaders,
   userInputRow,
-  type,
 }: Props) {
   const hasImages = message.images && message.images.length > 0;
   const hasCitations = citations && citations.length > 0;
@@ -37,6 +37,9 @@ export default function ChatMessage({
   const markdownSource = typeof message.text === "string" ? message.text : "";
 
   const { explanation, table } = extractExplanationAndTable(markdownSource);
+
+  // Parse a tabela markdown para arrays
+  const parsedTable = table ? parseMarkdownTable(table) : null;
 
   return (
     <div className={styles.messageItem}>
@@ -62,7 +65,6 @@ export default function ChatMessage({
         </div>
       )}
 
-      {/* Renderiza explicação (antes da tabela) */}
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
@@ -76,33 +78,14 @@ export default function ChatMessage({
         {explanation}
       </ReactMarkdown>
 
-      {table && type !== "pricesearch" && (
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          components={{
-            table: ({ ...props }) => (
-              <DataGridTable
-                {...props}
-                userInputHeaders={userInputHeaders}
-                userInputRow={userInputRow}
-              >
-                {props.children}
-              </DataGridTable>
-            ),
-            th: ({ ...props }) => (
-              <th className={styles.tableTh} {...props}>
-                {props.children}
-              </th>
-            ),
-            td: ({ ...props }) => (
-              <td className={styles.tableTd} {...props}>
-                {props.children}
-              </td>
-            ),
-          }}
-        >
-          {table}
-        </ReactMarkdown>
+      {/* Renderize o DataGridTable apenas se conseguir extrair a tabela */}
+      {parsedTable && (
+        <DataGridTable
+          columns={parsedTable.columns}
+          data={parsedTable.data}
+          userInputHeaders={userInputHeaders}
+          userInputRow={userInputRow}
+        />
       )}
     </div>
   );
