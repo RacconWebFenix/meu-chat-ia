@@ -1,11 +1,12 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import ImageGrid from "../ImageGrid/ImageGrid";
-import { Message } from "../ChatBoot/ChatBoot";
-import DataGridTable from "../DataGridTable/DataGridTable";
-import styles from "./MessageItem.module.scss";
+import ImageGrid from "../../ImageGrid/ImageGrid";
 
+import DataGridTable from "../../DataGridTable/DataGridTable";
+import styles from "./MessageItem.module.scss";
+import { Message } from "../Hooks/useChatBoot";
+import { extractExplanationAndTable } from "./utils";
 
 interface Image {
   image_url: string;
@@ -33,20 +34,9 @@ export default function ChatMessage({
   const hasImages = message.images && message.images.length > 0;
   const hasCitations = citations && citations.length > 0;
 
-  // Regex para encontrar a primeira tabela markdown
-  const tableRegex = /\n(\|.*\|.*\n(\|[-:]+.*\n)((?:.*\|.*\n?)+))/;
-  // Se for pricesearch, use o mock, senão use o texto da mensagem
   const markdownSource = typeof message.text === "string" ? message.text : "";
 
-  const match = markdownSource.match(tableRegex);
-
-  let explanation = markdownSource;
-  let table = "";
-
-  if (match) {
-    explanation = markdownSource.slice(0, match.index);
-    table = match[0];
-  }
+  const { explanation, table } = extractExplanationAndTable(markdownSource);
 
   return (
     <div className={styles.messageItem}>

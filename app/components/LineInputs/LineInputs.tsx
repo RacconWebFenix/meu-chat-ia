@@ -2,7 +2,7 @@ import React from "react";
 import {
   AutomotivaFields,
   IndustrialFields,
-} from "../FormSelectLine/FormSelectLine";
+} from "../ChatBoot/EquivalenceForm/EquivalenceForm";
 import styles from "./LineInputs.module.scss";
 
 interface LineInputsProps {
