@@ -1,9 +1,7 @@
 import React from "react";
-import {
-  AutomotivaFields,
-  IndustrialFields,
-} from "../ChatBoot/EquivalenceForm/EquivalenceForm";
+
 import styles from "./LineInputs.module.scss";
+import { AutomotivaFields, IndustrialFields } from "../ChatBoot/EquivalenceForm/types";
 
 interface LineInputsProps {
   linha: "automotiva" | "industrial";
