@@ -27,7 +27,8 @@ interface SelectLineProps {
   onSend?: (
     prompt: string,
     userInputHeaders: string[],
-    userInputRow: (string | undefined)[]
+    userInputRow: (string | undefined)[],
+    quantidadeEquivalentes: number // NOVO
   ) => void;
   disabled?: boolean;
 }
@@ -55,6 +56,9 @@ export default function FormSelectLine({
     aplicacao: "",
   });
 
+  // Novo state para quantidade de equivalentes
+  const [quantidadeEquivalentes, setQuantidadeEquivalentes] = useState(5);
+
   // Atualiza o prompt sempre que os campos mudam
   useEffect(() => {
     if (linha === "automotiva") {
@@ -62,7 +66,8 @@ export default function FormSelectLine({
         `Nome: ${automotiva.nome}
 Características físicas: ${automotiva.caracteristicas}
 Referência: ${automotiva.referenciaAutomotiva}
-Marca/Fabricante: ${automotiva.marcaFabricante}`
+Marca/Fabricante: ${automotiva.marcaFabricante}
+Quantidade de produtos na tabela: ${quantidadeEquivalentes}`
       );
     } else {
       setPrompt(
@@ -71,10 +76,11 @@ Características físicas: ${industrial.caracteristicasInd}
 Referência da Marca ou Fabricante: ${industrial.referenciaInd}
 Marca ou Fabricante: ${industrial.marcaInd}
 Norma Aplicável: ${industrial.norma}
-Aplicação: ${industrial.aplicacao}`
+Aplicação: ${industrial.aplicacao}
+Quantidade de produtos na tabela: ${quantidadeEquivalentes}`
       );
     }
-  }, [linha, automotiva, industrial, setPrompt]);
+  }, [linha, automotiva, industrial, setPrompt, quantidadeEquivalentes]);
 
   // Limpa os campos dos inputs sempre que a linha for trocada
   useEffect(() => {
@@ -116,7 +122,8 @@ Aplicação: ${industrial.aplicacao}`
       prompt = `Nome: ${automotiva.nome}
 Características físicas: ${automotiva.caracteristicas}
 Referência: ${automotiva.referenciaAutomotiva}
-Marca/Fabricante: ${automotiva.marcaFabricante}`;
+Marca/Fabricante: ${automotiva.marcaFabricante}
+Quantidade de produtos na tabela: ${quantidadeEquivalentes}`;
     } else {
       if (
         !industrial.nomePeca.trim() &&
@@ -136,10 +143,12 @@ Características físicas: ${industrial.caracteristicasInd}
 Referência da Marca ou Fabricante: ${industrial.referenciaInd}
 Marca ou Fabricante: ${industrial.marcaInd}
 Norma Aplicável: ${industrial.norma}
-Aplicação: ${industrial.aplicacao}`;
+Aplicação: ${industrial.aplicacao}
+Quantidade de produtos na tabela: ${quantidadeEquivalentes}`;
     }
 
-    if (onSend) onSend(prompt, userInputHeaders, userInputRow);
+    if (onSend)
+      onSend(prompt, userInputHeaders, userInputRow, quantidadeEquivalentes);
   }
 
   // Exemplo para ambos os tipos de linha:
@@ -189,6 +198,19 @@ Aplicação: ${industrial.aplicacao}`;
           <option value="industrial">Linha Industrial / Multiaplicação</option>
         </select>
 
+        {/* NOVO SELECT */}
+        <select
+          className={styles.selectLineSelect}
+          value={quantidadeEquivalentes}
+          onChange={(e) => setQuantidadeEquivalentes(Number(e.target.value))}
+          disabled={disabled}
+          style={{ marginLeft: 8 }}
+        >
+          <option value={5}>5 produtos equivalentes</option>
+          <option value={10}>10 produtos equivalentes</option>
+          <option value={20}>20 produtos equivalentes</option>
+        </select>
+
         <LineInputs
           linha={linha}
           automotiva={automotiva}
@@ -201,7 +223,7 @@ Aplicação: ${industrial.aplicacao}`;
 
       <button type="submit" className={styles.buttonSubmit} disabled={disabled}>
         Enviar
-      </button> 
+      </button>
     </form>
   );
 }
