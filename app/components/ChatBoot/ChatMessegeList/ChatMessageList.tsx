@@ -1,7 +1,6 @@
-import { Message } from "../ChatBoot/ChatBoot";
 import ChatMessage from "../ChatMessage/ChatMessage";
+import { Message } from "../Hooks/useChatBoot";
 import styles from "./ChatMessageList.module.scss";
-
 
 interface Props {
   messages: Message[];

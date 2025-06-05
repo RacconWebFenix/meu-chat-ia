@@ -8,29 +8,18 @@
 }
 
 .selectLineSelect {
-  margin-bottom: 16px;
   padding: 8px;
   font-size: 16px;
   border-radius: 6px;
   border: 1px solid #bdbdbd;
   background: #bdbdbd;
   color: #2c2b2b;
-  
 }
 
-.buttonSubmit {
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: none;
-  background: #007bff;
-  color: #fff;
-  font-weight: 500;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.2s;
+.selectorContainer {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
-.buttonSubmit:disabled {
-  background: #bdbdbd;
-  cursor: not-allowed;
-}
+
