@@ -13,7 +13,16 @@ export function getComparativoValores(
   userValue?: string | number
 ): ComparativoValoresResult {
   const valoresNumericos = Array.isArray(jsonObjects)
-    ? jsonObjects.map((obj) => parseBRLToNumber(obj.valor))
+    ? jsonObjects.map((obj) =>
+        parseBRLToNumber(
+          typeof obj.valor === "string"
+            ? obj.valor
+                .replace(/[^\d,.-]/g, "")
+                .replace(/\./g, "")
+                .replace(",", ".")
+            : String(obj.valor)
+        )
+      )
     : [];
 
   const maiorValor = Math.max(...valoresNumericos.filter((v) => !isNaN(v)));
@@ -51,7 +60,6 @@ export function getComparativoValores(
     valoresNumericos,
   };
 }
-
 
 /**
  * Extrai um array de objetos JSON de um texto que contenha um bloco ```json ... ```
@@ -147,4 +155,30 @@ export function parseBRLToNumber(valor: string): number {
     .replace(/\./g, "")
     .replace(",", ".");
   return parseFloat(cleaned);
+}
+
+/**
+ * Melhora a legibilidade do markdown:
+ * - Adiciona linhas em branco antes/depois de tabelas
+ * - Destaca títulos e observações
+ */
+export function beautifyMarkdown(content: string): string {
+  let result = content;
+
+  // Adiciona uma linha em branco antes e depois de cada tabela markdown
+  result = result.replace(
+    /(\n\|.*\|.*\n(\|[-:]+.*\n)((?:.*\|.*\n?)+))/g,
+    "\n\n$1\n\n"
+  );
+
+  // Destaca títulos (linhas que começam com texto e dois pontos)
+  result = result.replace(/^([A-Z][^\n:]{3,}:)/gm, "\n**$1**");
+
+  // Destaca "Obs." e "Observação"
+  result = result.replace(/(Obs\.?:)/gi, "\n**$1**");
+
+  // Remove espaços duplos desnecessários
+  result = result.replace(/[ ]{2,}/g, " ");
+
+  return result;
 }

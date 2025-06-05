@@ -1,34 +1,35 @@
 import styles from "./TabsSwitcher.module.scss";
 
 interface TabsSwitcherProps {
-  tab: "custom" | "boot" | "pricesearch";
-  setTab: (tab: "custom" | "boot" | "pricesearch") => void;
+  tab: "pdm" | "equivalencia" ;
+  setTab: (tab: "pdm" | "equivalencia") => void;
 }
 
 export default function TabsSwitcher({ tab, setTab }: TabsSwitcherProps) {
   return (
     <div className={styles.tabsContainer}>
       <button
-        onClick={() => setTab("boot")}
+        onClick={() => setTab("equivalencia")}
         className={styles.tabButton}
         style={{
-          background: tab === "boot" ? "#e3eaf2" : "#1976d2",
-          color: tab === "boot" ? "#1976d2" : "#fff",
+          background: tab === "equivalencia" ? "#e3eaf2" : "#1976d2",
+          color: tab === "equivalencia" ? "#1976d2" : "#fff",
         }}
       >
         Pesquisa de Equivalência
       </button>
       <button
-        onClick={() => setTab("custom")}
+        onClick={() => setTab("pdm")}
         className={styles.tabButton}
         style={{
-          background: tab === "custom" ? "#e3eaf2" : "#1976d2",
-          color: tab === "custom" ? "#1976d2" : "#fff",
+          background: tab === "pdm" ? "#e3eaf2" : "#1976d2",
+          color: tab === "pdm" ? "#1976d2" : "#fff",
         }}
       >
         Pesquisa PDM
       </button>
-      <button
+      {/* Feature adiada */}
+      {/* <button
         onClick={() => setTab("pricesearch")}
         className={styles.tabButton}
         style={{
@@ -37,7 +38,7 @@ export default function TabsSwitcher({ tab, setTab }: TabsSwitcherProps) {
         }}
       >
         Pesquisa de Preços
-      </button>
+      </button> */}
     </div>
   );
 }

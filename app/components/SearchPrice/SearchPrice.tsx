@@ -42,7 +42,7 @@ export default function SearchPrice() {
     };
     search(payload);
   };
-
+  console.log(result);
   return (
     <>
       {loading && (
@@ -55,7 +55,7 @@ export default function SearchPrice() {
           <SearchPriceResult
             result={{
               ...result,
-              userValue: searchPrice.preco, 
+              userValue: searchPrice.preco,
             }}
             loading={false}
             error={null}
