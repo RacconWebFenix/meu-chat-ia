@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 
 import styles from "./DataGridTable.module.scss";
-import { DataGridTableProps } from "../DataGrid/types";
-import DataGridHeader from "../DataGrid/DataGridHeader";
-import DataGridBody from "../DataGrid/DataGridBody";
-import DataGridSelectedRows from "../DataGrid/DataGridSelectedRows";
+import { DataGridTableProps } from "../shared/DataGrid/types";
+import DataGridHeader from "../shared/DataGrid/DataGridHeader";
+import DataGridBody from "../shared/DataGrid/DataGridBody";
+import DataGridSelectedRows from "../shared/DataGrid/DataGridSelectedRows";
 
 export default function DataGridTable({
   columns,

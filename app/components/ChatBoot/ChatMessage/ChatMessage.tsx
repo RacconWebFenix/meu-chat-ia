@@ -6,8 +6,8 @@ import ImageGrid from "../../ImageGrid/ImageGrid";
 import DataGridTable from "../../DataGridTable/DataGridTable";
 import styles from "./MessageItem.module.scss";
 import { Message } from "../Hooks/useChatBoot";
-import { extractExplanationAndTable } from "./utils";
-import { parseMarkdownTable } from "./parseMarkdownTable";
+import { extractExplanationAndTable } from "../../../Utils/extractExplanationAndTable";
+import { parseMarkdownTable } from "../../../Utils/parseMarkdownTable";
 
 interface Image {
   image_url: string;

@@ -4,7 +4,7 @@ import ChatMessegeList from "./ChatMessegeList/ChatMessageList";
 import FeedbackForm from "../FeedbackForm/FeedbackForm";
 import SelectLine from "./EquivalenceForm/EquivalenceForm";
 import styles from "./ChatBoot.module.scss";
-import ChatLoading from "../ChatLoading/ChatLoading";
+import ChatLoading from "../shared/ChatLoading/ChatLoading";
 import { useChatBoot } from "./Hooks/useChatBoot";
 
 export default function ChatBoot() {

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/app/config/api";
 import Link from "next/link";
 import styles from "./Feedbacks.module.scss";
-import ChatLoading from "@/app/components/ChatLoading/ChatLoading";
+import ChatLoading from "@/app/components/shared/ChatLoading/ChatLoading";
 
 interface Feedback {
   id: string;
