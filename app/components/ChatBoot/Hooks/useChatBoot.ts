@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { API_BASE_URL } from "@/app/config/api";
 import { getSiteName } from "@/app/Utils/utils";
 import iaResponseMock from "@/app/mocks/iaResponse.mock";
 
@@ -19,7 +18,7 @@ export interface Message {
   citations?: Citation[];
 }
 
-const USE_MOCK = true; // Altere para false para usar a API real
+const USE_MOCK = false; // Altere para false para usar a API real
 
 export function useChatBoot() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -63,10 +62,10 @@ export function useChatBoot() {
         // --- FIM MOCK ---
       } else {
         // --- CHAMADA REAL API ---
-        const response = await fetch(`${API_BASE_URL}/chat`, {
+        const response = await fetch("/api/perplexity", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: prompt }),
+          body: JSON.stringify({ prompt }),
         });
         const data = await response.json();
         if (response.ok) {
@@ -82,7 +81,6 @@ export function useChatBoot() {
               citations: citations,
             },
           ]);
-          setCurrentFeedbackId(data.feedbackId);
         } else {
           setMessages([
             {
@@ -93,7 +91,6 @@ export function useChatBoot() {
             },
           ]);
         }
-        // --- FIM CHAMADA REAL ---
       }
     } catch {
       setMessages([
@@ -113,6 +110,13 @@ export function useChatBoot() {
     userComment: string,
     isPositive: boolean | null
   ) => {
+    console.log("Enviando feedback:", {
+      userRating,
+      userComment,
+      isPositive,
+      currentFeedbackId,
+    });
+
     if (!currentFeedbackId || feedbackSent) return;
 
     try {
@@ -124,17 +128,16 @@ export function useChatBoot() {
         // --- FIM MOCK ---
       } else {
         // --- CHAMADA REAL FEEDBACK ---
-        const res = await fetch(`${API_BASE_URL}/feedbacks`, {
+        const res = await fetch(`/api/feedback`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            feedbackId: currentFeedbackId,
+            id: currentFeedbackId, // <-- use o id salvo
             rating: userRating,
             comment: userComment,
-            userFeedback: isPositive ? "positivo" : "negativo",
+            status: "finalizado",
           }),
         });
-
         if (res.ok) {
           alert("Feedback enviado com sucesso!");
           setFeedbackSent(true);

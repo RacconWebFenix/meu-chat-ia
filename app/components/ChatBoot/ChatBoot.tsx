@@ -14,12 +14,12 @@ export default function ChatBoot() {
     setLinha,
     setPrompt,
     loading,
-    currentFeedbackId,
     feedbackSent,
     userInputHeaders,
     userInputRow,
     sendFeedback,
     handleSend,
+    currentFeedbackId,
   } = useChatBoot();
 
   return (
@@ -31,7 +31,7 @@ export default function ChatBoot() {
       />
       {loading && <ChatLoading />}
 
-      {currentFeedbackId && !feedbackSent && messages.length > 0 && (
+      {currentFeedbackId && !feedbackSent && (
         <FeedbackForm onSendFeedback={sendFeedback} />
       )}
 

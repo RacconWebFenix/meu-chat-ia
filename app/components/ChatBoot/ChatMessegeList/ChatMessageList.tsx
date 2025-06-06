@@ -19,7 +19,6 @@ export default function ChatMessageList({
     return null;
   }
 
-  console.log(type);
 
   return (
     <div className={styles.messageListContainer}>

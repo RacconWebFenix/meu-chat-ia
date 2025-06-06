@@ -1,6 +1,8 @@
 // components/FeedbackForm.tsx
-import React, { useState } from "react";
+import React from "react";
 import styles from "./FeedbackForm.module.scss";
+import { useFeedbackForm } from "./useFeedbackForm";
+import ChatLoading from "../shared/ChatLoading/ChatLoading";
 
 // Define a interface para as props que o componente vai receber
 interface FeedbackFormProps {
@@ -15,44 +17,23 @@ interface FeedbackFormProps {
 }
 
 export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
-  // Estado local para a nota (estrelas)
-  const [rating, setRating] = useState<number | null>(null);
-  // Estado local para o comentário textual
-  const [comment, setComment] = useState<string>("");
-  // Estado local para o feedback geral (positivo/negativo), pode ser null inicialmente
-  const [isPositive, setIsPositive] = useState<boolean | null>(null);
-  // Estado local para controlar o carregamento do envio do feedback
-  const [loading, setLoading] = useState(false);
-  // Estado local para controlar se o feedback foi enviado
-  const [sent, setSent] = useState(false);
-
-  // Função chamada quando o botão "Enviar Feedback" é clicado
-  const handleSubmit = async () => {
-    // Validação básica: garante que pelo menos uma opção de feedback foi fornecida
-    if (isPositive === null && rating === null && !comment.trim()) {
-      alert(
-        "Por favor, forneça algum feedback (positivo/negativo, nota ou comentário)."
-      );
-      return;
-    }
-    setLoading(true);
-    try {
-      // Chama a função passada via props para enviar o feedback para o componente pai
-      await onSendFeedback(rating, comment, isPositive);
-      setSent(true); // Marca como enviado
-      // Opcional: Você pode resetar os estados aqui se quiser que o formulário fique limpo após o envio
-      setRating(null);
-      setComment("");
-      setIsPositive(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    rating,
+    setRating,
+    comment,
+    setComment,
+    isPositive,
+    setIsPositive,
+    loading,
+    sent,
+    handleSubmit,
+  } = useFeedbackForm(onSendFeedback);
 
   // Se estiver enviando, mostra uma mensagem de carregamento
   if (loading) {
     return (
       <div className={styles.container}>
+        <ChatLoading />
         <p>Enviando feedback...</p>
       </div>
     );
