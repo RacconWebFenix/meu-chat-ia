@@ -81,6 +81,7 @@ export function useChatBoot() {
               citations: citations,
             },
           ]);
+          setCurrentFeedbackId(data.feedbackId); // <-- Adicione esta linha!
         } else {
           setMessages([
             {
@@ -107,16 +108,8 @@ export function useChatBoot() {
   // Envia feedback para a API ou usa mock
   const sendFeedback = async (
     userRating: number | null,
-    userComment: string,
-    isPositive: boolean | null
+    userComment: string
   ) => {
-    console.log("Enviando feedback:", {
-      userRating,
-      userComment,
-      isPositive,
-      currentFeedbackId,
-    });
-
     if (!currentFeedbackId || feedbackSent) return;
 
     try {
@@ -139,7 +132,7 @@ export function useChatBoot() {
           }),
         });
         if (res.ok) {
-          alert("Feedback enviado com sucesso!");
+          alert("Feedback atualizado com sucesso!");
           setFeedbackSent(true);
         } else {
           alert("Falha ao enviar feedback.");
