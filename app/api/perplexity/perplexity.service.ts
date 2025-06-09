@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { prisma } from "@/prisma/lib/prisma";
 import axios from "axios";
 import { FeedbackService } from "@/app/api/feedback/feedback.service";
@@ -25,7 +24,7 @@ async function getDynamicPrompt() {
       "\nExemplos de respostas bem avaliadas:\n" +
       positivos
         .map(
-          (f: Feedback, i) =>
+          (f: Feedback, i: number) =>
             `${i + 1}. Pergunta: ${f.prompt}\nResposta: ${f.response}\n`
         )
         .join("\n");
