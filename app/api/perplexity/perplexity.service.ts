@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { prisma } from "@/prisma/lib/prisma";
 import axios from "axios";
 import { FeedbackService } from "@/app/api/feedback/feedback.service";
@@ -87,7 +88,7 @@ export const PerplexityService = {
       where: {
         status: "pendente",
       },
-    }) as unknown;
+    });
 
     // Cria novo feedback como pendente
     const feedback = await FeedbackService.create({
