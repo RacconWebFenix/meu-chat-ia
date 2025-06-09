@@ -1,0 +1,27 @@
+// prisma/schema.prisma
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql" // ou "mysql" ou "sqlite"
+    url      = env("DATABASE_URL")
+}
+
+model ChatRequest {
+    id        String   @id @default(uuid())
+    linha     String
+    prompt    String
+    createdAt DateTime @default(now())
+}
+
+model Feedback {
+    id         String   @id @default(uuid())
+    feedbackId String?
+    rating     Int?
+    comment    String?
+    prompt     String
+    response   String
+    status     String   @default("pendente") // "pendente" ou "finalizado"
+    createdAt  DateTime @default(now())
+}

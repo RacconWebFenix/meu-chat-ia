@@ -1,0 +1,8 @@
+.fadeSwitch {
+  opacity: 0;
+  transition: opacity 0.4s;
+  will-change: opacity;
+}
+.visible {
+  opacity: 1;
+}

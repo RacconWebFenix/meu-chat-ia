@@ -1,6 +1,6 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
-import ChatLoading from "../../ChatLoading/ChatLoading";
+import ChatLoading from "../../shared/ChatLoading/ChatLoading";
 import styles from "./ChatPDMView.module.scss";
 
 interface ChatPDMViewProps {

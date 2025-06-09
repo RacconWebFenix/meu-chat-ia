@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { formatCurrency, formatPrecoEnvio } from "@/app/Utils/utils";
-import ChatLoading from "../ChatLoading/ChatLoading";
+import ChatLoading from "../shared/ChatLoading/ChatLoading";
 import SearchPriceResult from "./SearchPriceResult/SearchPriceResult";
 import { useSearchPrice } from "./hooks/useSearchPrice";
 import { SearchPricePayload } from "./types";
