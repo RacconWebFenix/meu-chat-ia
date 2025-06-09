@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { prisma } from "@/prisma/lib/prisma";
 import axios from "axios";
 import { FeedbackService } from "@/app/api/feedback/feedback.service";
