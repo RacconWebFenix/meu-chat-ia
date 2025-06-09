@@ -2,6 +2,11 @@ import { prisma } from "@/prisma/lib/prisma";
 import axios from "axios";
 import { FeedbackService } from "@/app/api/feedback/feedback.service";
 
+interface Feedback {
+  prompt: string;
+  response: string;
+}
+
 async function getDynamicPrompt() {
   const positivos = await prisma.feedback.findMany({
     where: { rating: { gte: 4 } },
@@ -19,7 +24,8 @@ async function getDynamicPrompt() {
       "\nExemplos de respostas bem avaliadas:\n" +
       positivos
         .map(
-          (f, i) => `${i + 1}. Pergunta: ${f.prompt}\nResposta: ${f.response}\n`
+          (f: Feedback, i) =>
+            `${i + 1}. Pergunta: ${f.prompt}\nResposta: ${f.response}\n`
         )
         .join("\n");
   }
@@ -28,7 +34,8 @@ async function getDynamicPrompt() {
       "\nExemplos de respostas mal avaliadas (evite este tipo):\n" +
       negativos
         .map(
-          (f, i) => `${i + 1}. Pergunta: ${f.prompt}\nResposta: ${f.response}\n`
+          (f: Feedback, i) =>
+            `${i + 1}. Pergunta: ${f.prompt}\nResposta: ${f.response}\n`
         )
         .join("\n");
   }
