@@ -12,4 +12,5 @@ export interface FeedbackUpdateInput {
   comment?: string | null;
   isPositive?: boolean | null;
   feedbackId?: string | null;
+  status: string;
 }
