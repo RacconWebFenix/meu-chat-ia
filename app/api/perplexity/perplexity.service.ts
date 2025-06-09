@@ -87,7 +87,7 @@ export const PerplexityService = {
       where: {
         status: "pendente",
       },
-    });
+    }) as unknown;
 
     // Cria novo feedback como pendente
     const feedback = await FeedbackService.create({
