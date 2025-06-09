@@ -22,6 +22,6 @@ model Feedback {
     comment    String?
     prompt     String
     response   String
-    status     String   @default("pendente") // "pendente" ou "finalizado"
+    status     String
     createdAt  DateTime @default(now())
 }

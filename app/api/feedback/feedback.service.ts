@@ -10,7 +10,6 @@ export const FeedbackService = {
       where: { id },
       data: {
         ...data,
-        status: "finalizado", // <-- garante atualização do status
       },
     }),
   remove: (id: string) => prisma.feedback.delete({ where: { id } }),
