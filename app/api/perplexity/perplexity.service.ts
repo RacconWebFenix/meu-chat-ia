@@ -25,7 +25,7 @@ async function getDynamicPrompt() {
       "\nExemplos de respostas bem avaliadas:\n" +
       positivos
         .map(
-          (f: Feedback, i) =>
+          (f: Feedback, i: number) =>
             `${i + 1}. Pergunta: ${f.prompt}\nResposta: ${f.response}\n`
         )
         .join("\n");
