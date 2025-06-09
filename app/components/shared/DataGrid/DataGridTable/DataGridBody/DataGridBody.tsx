@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import DataGridRow from "./DataGridRow";
+import DataGridRow from "./DataGridRow/DataGridRow";
 
 interface DataGridBodyProps {
   data: (string | number | ReactNode)[][];

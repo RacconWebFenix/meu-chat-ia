@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from "@/app/config/api";
+
 import Link from "next/link";
 import styles from "./Feedbacks.module.scss";
 import ChatLoading from "@/app/components/shared/ChatLoading/ChatLoading";
@@ -24,7 +24,7 @@ export default function FeedbacksPage() {
     setLoading(true);
     // Mostra o loading enquanto busca
     try {
-      const res = await fetch(`${API_BASE_URL}/feedbacks`);
+      const res = await fetch(`api/feedback`);
       const data = await res.json();
       setFeedbacks(data);
     } finally {
@@ -43,7 +43,12 @@ export default function FeedbacksPage() {
         setLoading(false);
         return;
       }
-      await fetch(`${API_BASE_URL}/feedbacks/${id}`, { method: "DELETE" });
+      await fetch(`/api/feedback`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+
       setFeedbacks((prev) => prev.filter((f) => f.id !== id));
     } finally {
       setLoading(false);

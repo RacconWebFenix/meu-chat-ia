@@ -3,11 +3,12 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import ImageGrid from "../../ImageGrid/ImageGrid";
 
-import DataGridTable from "../../DataGridTable/DataGridTable";
+
 import styles from "./MessageItem.module.scss";
 import { Message } from "../Hooks/useChatBoot";
 import { extractExplanationAndTable } from "../../../Utils/extractExplanationAndTable";
 import { parseMarkdownTable } from "../../../Utils/parseMarkdownTable";
+import DataGridTable from "../../shared/DataGrid/DataGridTable";
 
 interface Image {
   image_url: string;

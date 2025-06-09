@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import styles from "./DataGridTable.module.scss";
+import styles from "./DataGridRow.module.scss";
 
 interface DataGridRowProps {
   row: (string | number | ReactNode)[];
@@ -17,13 +17,20 @@ export default function DataGridRow({
   selectable,
 }: DataGridRowProps) {
   return (
-    <tr className={selected ? styles.selectedRow : undefined}>
+    <tr
+      className={selected ? styles.selectedRow : undefined}
+      onClick={() => onSelect(idx)}
+      style={{ cursor: "pointer" }}
+    >
       {selectable && (
         <td className={styles.dataGridTableTdCheckbox}>
           <input
             type="checkbox"
             checked={selected}
-            onChange={() => onSelect(idx)}
+            onChange={(e) => {
+              e.stopPropagation(); // evita duplo disparo
+              onSelect(idx);
+            }}
           />
         </td>
       )}

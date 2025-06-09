@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./DataGridTable.module.scss";
+import styles from "./DataGridSelectedRows.module.scss";
 
 interface DataGridSelectedRowsProps {
   columns: string[];

@@ -1,0 +1,14 @@
+.selectedRow {
+  background: #e6e6e6 !important; // azul pastel mais forte para seleção
+}
+
+.dataGridTableTdCheckbox {
+  width: 40px;
+  text-align: center;
+}
+
+.dataGridTableTd {
+  padding: 12px 10px;
+  text-align: left;
+  color: var(--color-text);
+}

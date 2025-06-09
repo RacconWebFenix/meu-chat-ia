@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./DataGridTable.module.scss";
+import styles from "./DataGridHeader.module.scss";
 
 export default function DataGridHeader({
   columns,
