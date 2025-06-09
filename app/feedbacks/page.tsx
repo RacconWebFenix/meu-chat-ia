@@ -24,7 +24,7 @@ export default function FeedbacksPage() {
     setLoading(true);
     // Mostra o loading enquanto busca
     try {
-      const res = await fetch(`api/feedback`);
+      const res = await fetch(`/api/feedback`);
       const data = await res.json();
       setFeedbacks(data);
     } finally {

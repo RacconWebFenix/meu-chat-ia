@@ -17,11 +17,10 @@ model ChatRequest {
 
 model Feedback {
     id         String   @id @default(uuid())
-    feedbackId String?
     rating     Int?
     comment    String?
     prompt     String
     response   String
     status     String
-    createdAt  DateTime @default(now())
+    timestamp  DateTime @default(now())
 }
