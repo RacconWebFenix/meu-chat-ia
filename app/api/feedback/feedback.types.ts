@@ -7,10 +7,10 @@ export interface FeedbackCreateInput {
   status: string;
 }
 
-export interface FeedbackUpdateInput {
-  rating?: number | null;
-  comment?: string | null;
-  isPositive?: boolean | null;
-  feedbackId?: string | null;
-  status: string;
-}
+export type FeedbackUpdateInput = {
+  rating?: number;
+  comment?: string;
+  isPositive?: boolean;
+  feedbackId?: string;
+  status?: string; // <-- adicione esta linha
+};
