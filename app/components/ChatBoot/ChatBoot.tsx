@@ -25,6 +25,16 @@ export default function ChatBoot() {
     setPromptRaw(JSON.stringify(v));
   };
 
+  // Função adaptadora para onSend
+  const handleSendEquivalence = (
+    prompt: any,
+    userInputHeaders: string[],
+    userInputRow: (string | undefined)[],
+    quantidadeEquivalentes: number
+  ) => {
+    handleSend(JSON.stringify(prompt), userInputHeaders, userInputRow);
+  };
+
   return (
     <div className={styles.chatBootContainer}>
       <ChatMessegeList
@@ -40,7 +50,7 @@ export default function ChatBoot() {
 
       <EquivalenceForm
         setPrompt={setPrompt}
-        onSend={handleSend}
+        onSend={handleSendEquivalence}
         disabled={loading}
       />
     </div>
