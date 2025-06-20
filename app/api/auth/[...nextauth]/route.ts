@@ -3,8 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 
-// Defina e exporte o objeto de opções
-export const authOptions: NextAuthOptions = {
+// Defina o objeto de opções (sem exportar)
+const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
