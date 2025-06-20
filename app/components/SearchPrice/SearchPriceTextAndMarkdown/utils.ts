@@ -76,7 +76,7 @@ export function extractJsonObjectsFromContent(
     try {
       return JSON.parse(jsonMatch[1]);
     } catch (e) {
-      // eslint-disable-next-line no-console
+       
       console.warn("Falha ao fazer parse do JSON embutido:", e);
       return [];
     }

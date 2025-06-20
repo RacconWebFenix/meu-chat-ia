@@ -10,7 +10,7 @@ import { useChatBoot } from "./Hooks/useChatBoot";
 export default function ChatBoot() {
   const {
     messages,
-    setPrompt,
+    setPrompt: setPromptRaw,
     loading,
     feedbackSent,
     userInputHeaders,
@@ -19,6 +19,11 @@ export default function ChatBoot() {
     handleSend,
     currentFeedbackId,
   } = useChatBoot();
+
+  // Função adaptadora para o EquivalenceForm
+  const setPrompt = (v: any) => {
+    setPromptRaw(JSON.stringify(v));
+  };
 
   return (
     <div className={styles.chatBootContainer}>
