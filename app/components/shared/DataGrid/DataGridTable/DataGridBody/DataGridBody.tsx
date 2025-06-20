@@ -6,6 +6,7 @@ interface DataGridBodyProps {
   selectedRows: number[];
   onRowSelect: (idx: number) => void;
   selectable?: boolean;
+  showCheckButton?: boolean;
 }
 
 export default function DataGridBody({
@@ -13,6 +14,7 @@ export default function DataGridBody({
   selectedRows,
   onRowSelect,
   selectable,
+  showCheckButton = true,
 }: DataGridBodyProps) {
   return (
     <tbody>
@@ -24,6 +26,7 @@ export default function DataGridBody({
           selected={selectedRows.includes(idx)}
           onSelect={onRowSelect}
           selectable={selectable}
+          showCheckButton={showCheckButton}
         />
       ))}
     </tbody>

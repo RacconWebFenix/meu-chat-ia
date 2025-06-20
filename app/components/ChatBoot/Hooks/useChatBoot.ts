@@ -22,7 +22,7 @@ const USE_MOCK = false; // Altere para false para usar a API real
 
 export function useChatBoot() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [linha, setLinha] = useState<"automotiva" | "industrial">("automotiva");
+
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentFeedbackId, setCurrentFeedbackId] = useState<string | null>(
@@ -33,14 +33,11 @@ export function useChatBoot() {
   const [userInputRow, setUserInputRow] = useState<(string | undefined)[]>([]);
 
   // Envia mensagem para a API ou usa mock
-  const sendMessage = async () => {
-    if (!prompt.replace(/(Nome:|Nome da Peça ou Componente:)/, "").trim())
-      return;
+  const sendMessage = async (promptToSend?: string) => {
     setLoading(true);
     setMessages([]);
     setCurrentFeedbackId(null);
     setFeedbackSent(false);
-
     try {
       if (USE_MOCK) {
         // --- MOCK IA RESPONSE ---
@@ -62,12 +59,14 @@ export function useChatBoot() {
         // --- FIM MOCK ---
       } else {
         // --- CHAMADA REAL API ---
-        const response = await fetch("/api/perplexity", {
+        const response = await fetch("/api/openai", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt }),
+          body: JSON.stringify(promptToSend),
         });
+
         const data = await response.json();
+
         if (response.ok) {
           const citations = (data.reply.citations || []).map((url: string) => ({
             url,
@@ -121,6 +120,8 @@ export function useChatBoot() {
         // --- FIM MOCK ---
       } else {
         // --- CHAMADA REAL FEEDBACK ---
+
+        console.log(`Enviando feedback: ${userRating}, ${userComment}`);
         const res = await fetch(`/api/feedback`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -153,14 +154,12 @@ export function useChatBoot() {
     setPrompt(prompt);
     setUserInputHeaders(headers);
     setUserInputRow(row);
-    sendMessage();
+    sendMessage(prompt);
   };
 
   return {
     messages,
     setMessages,
-    linha,
-    setLinha,
     prompt,
     setPrompt,
     loading,

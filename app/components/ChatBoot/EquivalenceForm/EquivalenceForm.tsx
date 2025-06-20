@@ -1,15 +1,16 @@
-import React from "react";
-import LineInputs from "../../LineInputs/LineInputs";
+import React, { useEffect, useState } from "react";
+
 import ProductEquivalenceSelector from "./ProductEquivalenceSelector/ProductEquivalenceSelector";
 import styles from "./ProductEquivalenceSelector.module.scss";
 import { useFormSelectLine } from "../Hooks/useFormSelectLine";
+import { IndustrialFields, RamoFields } from "./types";
+import LineInputs from "../LineInputs/LineInputs";
+import { hasAnyFieldFilled } from "./helpers";
 
 interface SelectLineProps {
-  linha: "automotiva" | "industrial";
-  setLinha: (v: "automotiva" | "industrial") => void;
-  setPrompt: (v: string) => void;
+  setPrompt: (v: RamoFields | IndustrialFields) => void;
   onSend?: (
-    prompt: string,
+    prompt: RamoFields | IndustrialFields,
     userInputHeaders: string[],
     userInputRow: (string | undefined)[],
     quantidadeEquivalentes: number
@@ -18,44 +19,69 @@ interface SelectLineProps {
 }
 
 export default function EquivalenceForm({
-  linha,
-  setLinha,
   setPrompt,
   onSend,
   disabled,
 }: SelectLineProps) {
+  const [branchFields, setBranchFields] = useState<
+    RamoFields | IndustrialFields
+  >({} as RamoFields | IndustrialFields);
+
   const {
-    automotiva,
-    setAutomotiva,
-    industrial,
-    setIndustrial,
+    ramoTipo,
+    setRamoTipo,
     quantidadeEquivalentes,
     setQuantidadeEquivalentes,
     handleSubmit,
-  } = useFormSelectLine(linha, setLinha, setPrompt, onSend);
+  } = useFormSelectLine(branchFields, setPrompt, onSend);
+
+  // Initialize the branchFields based on ramoTipo
+  useEffect(() => {
+    if (ramoTipo === "2") {
+      setBranchFields({
+        nomePeca: "",
+        caracteristicasInd: "",
+        referenciaInd: "",
+        marcaInd: "",
+        norma: "",
+        aplicacao: "",
+      } as IndustrialFields);
+    } else {
+      setBranchFields({
+        nome: "",
+        caracteristicas: "",
+        referencia: "",
+        marcaFabricante: "",
+      } as RamoFields);
+    }
+  }, [ramoTipo]);
+
+  const isButtonEnabled = hasAnyFieldFilled(branchFields) && !disabled;
 
   return (
     <form className={styles.ProductEquivalenceSelector} onSubmit={handleSubmit}>
       <div>
         <ProductEquivalenceSelector
-          linha={linha}
-          setLinha={setLinha}
+          ramoTipo={ramoTipo}
+          setRamoTipo={setRamoTipo}
           quantidadeEquivalentes={quantidadeEquivalentes}
           setQuantidadeEquivalentes={setQuantidadeEquivalentes}
           disabled={disabled}
         />
 
         <LineInputs
-          linha={linha}
-          automotiva={automotiva}
-          setAutomotiva={setAutomotiva}
-          industrial={industrial}
-          setIndustrial={setIndustrial}
+          ramoTipo={ramoTipo}
+          branchFields={branchFields}
+          setBranchFields={setBranchFields}
           disabled={disabled}
         />
       </div>
 
-      <button type="submit" className={styles.buttonSubmit} disabled={disabled}>
+      <button
+        type="submit"
+        className={styles.buttonSubmit}
+        disabled={!isButtonEnabled}
+      >
         Enviar
       </button>
     </form>

@@ -1,8 +1,10 @@
-export interface AutomotivaFields {
+export interface RamoFields {
   nome: string;
   caracteristicas: string;
-  referenciaAutomotiva: string;
+  referencia: string;
   marcaFabricante: string;
+  ramo?: string;
+  quantidadeEquivalentes?: number;
 }
 
 export interface IndustrialFields {
@@ -12,4 +14,12 @@ export interface IndustrialFields {
   marcaInd: string;
   norma: string;
   aplicacao: string;
+  ramo?: string;
+  quantidadeEquivalentes?: number;
+}
+
+export function isIndustrialFields(
+  fields: RamoFields | IndustrialFields
+): fields is IndustrialFields {
+  return "nomePeca" in fields;
 }

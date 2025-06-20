@@ -1,4 +1,6 @@
 import { PerplexityController } from "./perplexity.controller";
+import { NextRequest } from "next/server";
 
-// Controller delega a lógica
-export const POST = PerplexityController.handle;
+export async function POST(req: NextRequest) {
+  return PerplexityController.handlePost(req);
+}

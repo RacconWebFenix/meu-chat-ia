@@ -2,6 +2,7 @@ import { prisma } from "@/prisma/lib/prisma";
 import { FeedbackCreateInput, FeedbackUpdateInput } from "./feedback.types";
 
 export const FeedbackService = {
+  
   list: () => prisma.feedback.findMany(),
   create: (data: FeedbackCreateInput) => prisma.feedback.create({ data }),
 

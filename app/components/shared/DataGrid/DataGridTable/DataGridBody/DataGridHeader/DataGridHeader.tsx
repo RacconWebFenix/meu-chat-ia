@@ -17,6 +17,7 @@ export default function DataGridHeader({
             {header}
           </th>
         ))}
+        <th className={styles.dataGridTableTh}>Ações</th>
       </tr>
     </thead>
   );

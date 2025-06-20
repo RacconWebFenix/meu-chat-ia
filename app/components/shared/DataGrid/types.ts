@@ -7,4 +7,6 @@ export interface DataGridTableProps {
   onSelectionChange?: (selectedRows: number[]) => void;
   userInputHeaders?: string[];
   userInputRow?: (string | undefined)[];
+  showCheckButton?: boolean;
+  showValidateButton?: boolean;
 }

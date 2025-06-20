@@ -15,35 +15,7 @@ export function useChatPDM() {
     setInput("");
     try {
       const body = {
-        contents: [
-          {
-            role: "user",
-            parts: [
-              {
-                text: "Qual é o PDM (Padrão de Descriçao de Materiais) para o material apesquisado? ",
-              },
-            ],
-          },
-          { role: "user", parts: [{ text: input }] },
-        ],
-        generationConfig: {
-          temperature: 0.2,
-          topK: 1,
-          topP: 1,
-          maxOutputTokens: 700,
-        },
-        safetySettings: [
-          { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-          { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-          {
-            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-            threshold: "BLOCK_NONE",
-          },
-          {
-            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-            threshold: "BLOCK_NONE",
-          },
-        ],
+        contents: [{ role: "user", parts: [{ text: input }] }],
       };
 
       const res = await fetch(`api/chatpdm`, {

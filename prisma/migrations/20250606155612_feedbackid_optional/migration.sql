@@ -1,4 +1,0 @@
--- AlterTable
-ALTER TABLE "Feedback" ALTER COLUMN "feedbackId" DROP NOT NULL,
-ALTER COLUMN "rating" DROP NOT NULL,
-ALTER COLUMN "comment" DROP NOT NULL;

@@ -2,7 +2,7 @@
 
 import ChatMessegeList from "./ChatMessegeList/ChatMessageList";
 import FeedbackForm from "../FeedbackForm/FeedbackForm";
-import SelectLine from "./EquivalenceForm/EquivalenceForm";
+import EquivalenceForm from "./EquivalenceForm/EquivalenceForm";
 import styles from "./ChatBoot.module.scss";
 import ChatLoading from "../shared/ChatLoading/ChatLoading";
 import { useChatBoot } from "./Hooks/useChatBoot";
@@ -10,8 +10,6 @@ import { useChatBoot } from "./Hooks/useChatBoot";
 export default function ChatBoot() {
   const {
     messages,
-    linha,
-    setLinha,
     setPrompt,
     loading,
     feedbackSent,
@@ -35,9 +33,7 @@ export default function ChatBoot() {
         <FeedbackForm onSendFeedback={sendFeedback} />
       )}
 
-      <SelectLine
-        linha={linha}
-        setLinha={setLinha}
+      <EquivalenceForm
         setPrompt={setPrompt}
         onSend={handleSend}
         disabled={loading}

@@ -2,16 +2,16 @@ import React from "react";
 import styles from "./ProductEquivalenceSelector.module.scss";
 
 interface ProductEquivalenceSelectorProps {
-  linha: "automotiva" | "industrial";
-  setLinha: (v: "automotiva" | "industrial") => void;
+  ramoTipo: string;
+  setRamoTipo: (v: string) => void;
   quantidadeEquivalentes: number;
   setQuantidadeEquivalentes: (v: number) => void;
   disabled?: boolean;
 }
 
 export default function ProductEquivalenceSelector({
-  linha,
-  setLinha,
+  ramoTipo,
+  setRamoTipo,
   quantidadeEquivalentes,
   setQuantidadeEquivalentes,
   disabled,
@@ -20,16 +20,15 @@ export default function ProductEquivalenceSelector({
     <div className={styles.selectorContainer}>
       <select
         className={styles.selectLineSelect}
-        value={linha}
-        onChange={(e) =>
-          setLinha(
-            e.target.value === "automotiva" ? "automotiva" : "industrial"
-          )
-        }
+        value={ramoTipo}
+        onChange={(e) => setRamoTipo(e.target.value)}
         disabled={disabled}
       >
-        <option value="automotiva">Linha Automotiva</option>
-        <option value="industrial">Linha Industrial / Multiaplicação</option>
+        <option value="1">Linha Automotiva</option>
+        <option value="2">Linha Industrial</option>
+        <option value="3">Agrícola</option>
+        <option value="4">Multiaplicação</option>
+        <option value="5">Administrativo</option>
       </select>
 
       <select

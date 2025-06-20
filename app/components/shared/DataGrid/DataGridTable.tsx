@@ -14,7 +14,12 @@ export default function DataGridTable({
   onSelectionChange,
   userInputHeaders,
   userInputRow,
-}: DataGridTableProps) {
+  showCheckButton = true,
+  showValidateButton = true,
+}: DataGridTableProps & {
+  showCheckButton?: boolean;
+  showValidateButton?: boolean;
+}) {
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [userInputSelected, setUserInputSelected] = useState(false);
 
@@ -44,6 +49,7 @@ export default function DataGridTable({
           selectedRows={selectedRows}
           onRowSelect={handleRowSelect}
           selectable={selectable}
+          showCheckButton={showCheckButton}
         />
       </table>
 
@@ -53,6 +59,7 @@ export default function DataGridTable({
         selectedRows={selectedRows}
         userInputRow={userInputRow}
         userInputSelected={userInputSelected}
+        showValidateButton={showValidateButton}
       />
     </div>
   );

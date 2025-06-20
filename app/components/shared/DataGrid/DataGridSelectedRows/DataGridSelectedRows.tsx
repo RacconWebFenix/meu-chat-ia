@@ -1,5 +1,8 @@
-import React from "react";
+"use client";
+import React, { useContext, useEffect, useMemo } from "react";
 import styles from "./DataGridSelectedRows.module.scss";
+import { useRouter } from "next/navigation";
+import { SelectGridContext } from "@/app/providers";
 
 interface DataGridSelectedRowsProps {
   columns: string[];
@@ -7,6 +10,7 @@ interface DataGridSelectedRowsProps {
   selectedRows: number[];
   userInputRow?: (string | number | React.ReactNode)[];
   userInputSelected?: boolean;
+  showValidateButton?: boolean;
 }
 
 export default function DataGridSelectedRows({
@@ -15,8 +19,55 @@ export default function DataGridSelectedRows({
   selectedRows,
   userInputRow,
   userInputSelected,
+  showValidateButton = true,
 }: DataGridSelectedRowsProps) {
-  // Exemplo: mostra as linhas selecionadas e a linha de input do usuário, se marcada
+  const router = useRouter();
+  const { setValor } = useContext(SelectGridContext);
+
+  // Junta as linhas selecionadas e a linha de input do usuário (se houver)
+  const linhasSelecionadas = useMemo(
+    () => [
+      ...(userInputSelected && userInputRow ? [userInputRow] : []),
+      ...selectedRows.map((rowIdx) => data[rowIdx]),
+    ],
+    [userInputSelected, userInputRow, selectedRows, data]
+  );
+
+  // Converte ReactNode para string para garantir serialização
+  function serializarLinha(
+    linha: (string | number | React.ReactNode)[]
+  ): (string | number)[] {
+    return linha.map((cell) => {
+      if (typeof cell === "string" || typeof cell === "number") return cell;
+      if (React.isValidElement(cell)) return "[Elemento]";
+      return String(cell);
+    });
+  }
+
+  const handleValidar = () => {
+    // Aqui você pode passar as linhas selecionadas e headers via query params, localStorage, etc.
+    // Exemplo: salvar no localStorage
+    localStorage.setItem(
+      "linhasSelecionadas",
+      JSON.stringify(linhasSelecionadas.map(serializarLinha))
+    );
+    localStorage.setItem("headersSelecionados", JSON.stringify(columns));
+    router.push("/validar-informacoes");
+  };
+
+  useEffect(() => {
+    if (linhasSelecionadas.length > 0) {
+      const keys = columns;
+      const allObjs = linhasSelecionadas.map((linha) => {
+        const values = serializarLinha(linha);
+        return Object.fromEntries(
+          keys.map((key, i) => [key, String(values[i])])
+        );
+      });
+      setValor(JSON.stringify(allObjs));
+    }
+  }, [linhasSelecionadas, columns, setValor]);
+
   if ((!selectedRows || selectedRows.length === 0) && !userInputSelected) {
     return null;
   }
@@ -55,6 +106,12 @@ export default function DataGridSelectedRows({
           ))}
         </tbody>
       </table>
+      {/* Botão para validar informações */}
+      {showValidateButton && linhasSelecionadas.length > 0 && (
+        <button style={{ marginTop: 16 }} onClick={handleValidar}>
+          Validar informações
+        </button>
+      )}
     </div>
   );
 }
