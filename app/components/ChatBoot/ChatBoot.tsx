@@ -44,6 +44,7 @@ export default function ChatBoot() {
         userInputHeaders={userInputHeaders}
         userInputRow={userInputRow}
       />
+    
       {loading && <ChatLoading />}
 
       {currentFeedbackId && !feedbackSent && (
@@ -55,6 +56,7 @@ export default function ChatBoot() {
         onSend={handleEquivalenceSend}
         disabled={loading}
       />
+
     </div>
   );
 }

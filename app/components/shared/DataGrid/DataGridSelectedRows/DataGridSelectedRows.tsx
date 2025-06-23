@@ -1,8 +1,9 @@
 "use client";
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import styles from "./DataGridSelectedRows.module.scss";
 import { useRouter } from "next/navigation";
 import { SelectGridContext, GridRow } from "@/app/providers";
+import ChatLoading from "@/app/components/shared/ChatLoading/ChatLoading";
 
 interface DataGridSelectedRowsProps {
   columns: string[];
@@ -24,6 +25,8 @@ export default function DataGridSelectedRows({
   const router = useRouter();
   // Obtém o contexto para manipular as linhas selecionadas
   const { setSelectedGrid } = useContext(SelectGridContext);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
 
   // Junta as linhas selecionadas e a linha de input do usuário (se houver)
   const linhasSelecionadas = useMemo(
@@ -35,6 +38,8 @@ export default function DataGridSelectedRows({
   );
 
   const handleValidar = () => {
+    setIsButtonDisabled(true);
+    setShowLoadingOverlay(true);
     router.push("/validar-informacoes");
   };
 
@@ -57,6 +62,9 @@ export default function DataGridSelectedRows({
 
   return (
     <div className={styles.selectedRowsContainer}>
+      {showLoadingOverlay && (
+        <ChatLoading className={styles.fullScreenOverlay} />
+      )}
       <strong>Linha(s) selecionada(s):</strong>
       <table className={styles.dataGridTable}>
         <thead>
@@ -91,7 +99,11 @@ export default function DataGridSelectedRows({
       </table>
       {/* Botão para validar informações */}
       {showValidateButton && linhasSelecionadas.length > 0 && (
-        <button style={{ marginTop: 16 }} onClick={handleValidar}>
+        <button
+          style={{ marginTop: 16 }}
+          onClick={handleValidar}
+          disabled={isButtonDisabled}
+        >
           Validar informações
         </button>
       )}
