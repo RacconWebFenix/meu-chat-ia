@@ -9,6 +9,8 @@ export const PerplexityService = {
       data
     );
 
+    console.log(response)
+
     return { received: response.data };
   },
 };

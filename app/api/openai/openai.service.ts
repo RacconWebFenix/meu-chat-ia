@@ -47,8 +47,8 @@ export const OpenAIService = {
     };
 
     const response = await axios.post(
-       "https://n8n.cib2b.com.br/webhook-test/90d92d66-f34f-426a-9512-492d060fc55f",
-      // "https://n8n.cib2b.com.br/webhook/90d92d66-f34f-426a-9512-492d060fc55f",
+      //  "https://n8n.cib2b.com.br/webhook-test/90d92d66-f34f-426a-9512-492d060fc55f",
+      "https://n8n.cib2b.com.br/webhook/90d92d66-f34f-426a-9512-492d060fc55f",
       openaiBody
     );
 
