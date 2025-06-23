@@ -1,18 +1,20 @@
 "use client";
 import React, { createContext, useContext, useState } from "react";
 
+export type GridRow = Record<string, string | number>;
+
 type SelectGridContextType = {
-  valor: string;
-  setValor: (v: string) => void;
+  selectedGrid: GridRow[];
+  setSelectedGrid: (v: GridRow[]) => void;
 };
 
 // Cria o contexto
 export const SelectGridContext = createContext<SelectGridContextType>({
-  valor: "",
-  setValor: () => {},
+  selectedGrid: [],
+  setSelectedGrid: () => {},
 });
 
-export function useTesteContext() {
+export function useSelectedGridContext() {
   return useContext(SelectGridContext);
 }
 
@@ -21,10 +23,10 @@ export default function SelectedGridProviders({
 }: {
   children: React.ReactNode;
 }) {
-  const [valor, setValor] = useState("teste");
+  const [selectedGrid, setSelectedGrid] = useState<GridRow[]>([]);
 
   return (
-    <SelectGridContext.Provider value={{ valor, setValor }}>
+    <SelectGridContext.Provider value={{ selectedGrid, setSelectedGrid }}>
       {children}
     </SelectGridContext.Provider>
   );

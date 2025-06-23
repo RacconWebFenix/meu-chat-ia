@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useContext, useState } from "react";
-import { SelectGridContext } from "../../../../providers";
+import { useState } from "react";
+
 import InfoTable from "../InfoTable/InfoTable";
 import { parseSelectedRows } from "../../utils/parseSelectedRows";
 import styles from "./ValidarInformacoesClient.module.scss";
@@ -9,6 +9,7 @@ import DataGridTable from "@/app/components/shared/DataGrid/DataGridTable";
 import { extractExplanationAndTable } from "@/app/Utils/extractExplanationAndTable";
 import { parseMarkdownTable } from "@/app/Utils/parseMarkdownTable";
 import ImageGrid from "@/app/components/ImageGrid/ImageGrid";
+import { useSelectedGridContext } from "@/app/providers";
 
 // Tipos para resposta da API Perplexity
 interface PerplexityImage {
@@ -56,7 +57,7 @@ interface PerplexityResult {
 
 export default function ValidarInformacoesClient({}) {
   const router = useRouter();
-  const { valor } = useContext(SelectGridContext);
+
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +67,11 @@ export default function ValidarInformacoesClient({}) {
   > | null>(null);
   const [result, setResult] = useState<PerplexityResult[] | null>(null);
 
-  const dataArr = parseSelectedRows(valor) || [];
+  const { selectedGrid } = useSelectedGridContext();
+
+  console.log(selectedGrid);
+
+  const dataArr = parseSelectedRows(selectedGrid) || [];
 
   const handleRowSelect = (rowIdx: number) => {
     setSelectedRows([rowIdx]);

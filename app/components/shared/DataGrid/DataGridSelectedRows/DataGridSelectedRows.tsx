@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useMemo } from "react";
 import styles from "./DataGridSelectedRows.module.scss";
 import { useRouter } from "next/navigation";
-import { SelectGridContext } from "@/app/providers";
+import { SelectGridContext, GridRow } from "@/app/providers";
 
 interface DataGridSelectedRowsProps {
   columns: string[];
@@ -22,7 +22,7 @@ export default function DataGridSelectedRows({
   showValidateButton = true,
 }: DataGridSelectedRowsProps) {
   const router = useRouter();
-  const { setValor } = useContext(SelectGridContext);
+  const { setSelectedGrid } = useContext(SelectGridContext);
 
   // Junta as linhas selecionadas e a linha de input do usuário (se houver)
   const linhasSelecionadas = useMemo(
@@ -45,28 +45,21 @@ export default function DataGridSelectedRows({
   }
 
   const handleValidar = () => {
-    // Aqui você pode passar as linhas selecionadas e headers via query params, localStorage, etc.
-    // Exemplo: salvar no localStorage
-    localStorage.setItem(
-      "linhasSelecionadas",
-      JSON.stringify(linhasSelecionadas.map(serializarLinha))
-    );
-    localStorage.setItem("headersSelecionados", JSON.stringify(columns));
     router.push("/validar-informacoes");
   };
 
   useEffect(() => {
     if (linhasSelecionadas.length > 0) {
       const keys = columns;
-      const allObjs = linhasSelecionadas.map((linha) => {
+      const allObjs: GridRow[] = linhasSelecionadas.map((linha) => {
         const values = serializarLinha(linha);
         return Object.fromEntries(
           keys.map((key, i) => [key, String(values[i])])
         );
       });
-      setValor(JSON.stringify(allObjs));
+      setSelectedGrid(allObjs);
     }
-  }, [linhasSelecionadas, columns, setValor]);
+  }, [linhasSelecionadas, columns, setSelectedGrid]);
 
   if ((!selectedRows || selectedRows.length === 0) && !userInputSelected) {
     return null;
