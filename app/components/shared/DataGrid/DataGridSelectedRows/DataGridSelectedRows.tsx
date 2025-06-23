@@ -22,6 +22,7 @@ export default function DataGridSelectedRows({
   showValidateButton = true,
 }: DataGridSelectedRowsProps) {
   const router = useRouter();
+  // Obtém o contexto para manipular as linhas selecionadas
   const { setSelectedGrid } = useContext(SelectGridContext);
 
   // Junta as linhas selecionadas e a linha de input do usuário (se houver)
@@ -33,31 +34,20 @@ export default function DataGridSelectedRows({
     [userInputSelected, userInputRow, selectedRows, data]
   );
 
-  // Converte ReactNode para string para garantir serialização
-  function serializarLinha(
-    linha: (string | number | React.ReactNode)[]
-  ): (string | number)[] {
-    return linha.map((cell) => {
-      if (typeof cell === "string" || typeof cell === "number") return cell;
-      if (React.isValidElement(cell)) return "[Elemento]";
-      return String(cell);
-    });
-  }
-
   const handleValidar = () => {
     router.push("/validar-informacoes");
   };
 
   useEffect(() => {
     if (linhasSelecionadas.length > 0) {
-      const keys = columns;
       const allObjs: GridRow[] = linhasSelecionadas.map((linha) => {
-        const values = serializarLinha(linha);
         return Object.fromEntries(
-          keys.map((key, i) => [key, String(values[i])])
+          columns.map((key, i) => [key, String(linha[i])])
         );
       });
       setSelectedGrid(allObjs);
+    } else {
+      setSelectedGrid([]);
     }
   }, [linhasSelecionadas, columns, setSelectedGrid]);
 

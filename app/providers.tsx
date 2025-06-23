@@ -8,7 +8,7 @@ type SelectGridContextType = {
   setSelectedGrid: (v: GridRow[]) => void;
 };
 
-// Cria o contexto
+// Cria o contexto      
 export const SelectGridContext = createContext<SelectGridContextType>({
   selectedGrid: [],
   setSelectedGrid: () => {},

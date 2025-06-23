@@ -4,16 +4,64 @@
   margin: 0 auto;
 }
 
+.mainContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.7rem;
+}
+
 .title {
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 16px;
+  text-align: center;
 }
 
 .subtitle {
   font-size: 1.2rem;
   font-weight: 500;
   margin-bottom: 20px;
+}
+
+.imagesBlock {
+  margin-bottom: 16px;
+}
+
+.citationsBlock {
+  margin-bottom: 16px;
+}
+
+.citationsList {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.citationItem {
+  display: flex;
+  align-items: center;
+  background: #f5f7fa;
+  border-radius: 8px;
+  padding: 4px 10px;
+  margin-right: 8px;
+  margin-bottom: 4px;
+}
+
+.citationLink {
+  color: #1976d2;
+  text-decoration: underline;
+  word-break: break-all;
+  font-weight: 500;
+}
+
+.citationDivider {
+  margin: 0 8px;
+  color: #888;
 }
 
 .errorMsg {
@@ -31,9 +79,17 @@
   cursor: pointer;
   font-weight: 600;
   font-size: 1rem;
-  transition: background 0.2s;
+  transition: 0.2s;
   margin-top: 16px;
 }
+
+.dpButton:disabled {
+  background: #b0bec5; // Ensure the disabled color is applied
+  color: #fff; // Maintain text color
+  cursor: not-allowed;
+}
+
+
 .dpButton:hover {
   background: #0d47a1;
 }

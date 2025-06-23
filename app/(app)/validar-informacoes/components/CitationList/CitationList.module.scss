@@ -1,0 +1,33 @@
+.citationsBlock {
+  margin-bottom: 16px;
+}
+
+.citationsList {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.citationItem {
+  display: flex;
+  align-items: center;
+  background: #f5f7fa;
+  border-radius: 8px;
+  padding: 4px 10px;
+  margin-right: 8px;
+  margin-bottom: 4px;
+}
+
+.citationLink {
+  color: #1976d2;
+  text-decoration: underline;
+  word-break: break-all;
+  font-weight: 500;
+}
+
+.citationDivider {
+  margin: 0 8px;
+  color: #888;
+}

@@ -10,11 +10,8 @@ import ChatPDM from "../components/ChatPDM/ChatPDM";
 import TabsSwitcher from "../components/TabsSwitcher/TabsSwitcher";
 import FadeSwitch from "../components/shared/FadeSwitch/FadeSwitch";
 
-
 export default function HomePage() {
   const [tab, setTab] = useState<"pdm" | "equivalencia">("equivalencia");
-
-
 
   return (
     <main style={{ maxWidth: 1200, margin: "2rem auto", padding: "0 1rem" }}>
