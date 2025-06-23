@@ -47,18 +47,13 @@ export const OpenAIService = {
     };
 
     const response = await axios.post(
-      "https://n8n.cib2b.com.br/webhook/90d92d66-f34f-426a-9512-492d060fc55f",
+       "https://n8n.cib2b.com.br/webhook-test/90d92d66-f34f-426a-9512-492d060fc55f",
+      // "https://n8n.cib2b.com.br/webhook/90d92d66-f34f-426a-9512-492d060fc55f",
       openaiBody
     );
 
-    const resposta = Array.isArray(response.data)
-      ? response.data[0]
-      : response.data;
-
     const reply = {
-      citations: resposta?.citations,
-      images: resposta?.images,
-      text: { content: resposta?.content },
+      text: { content: response?.data.output || "" },
     };
 
     // Apaga todos os pendentes antes de criar um novo

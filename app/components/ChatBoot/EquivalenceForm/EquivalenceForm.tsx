@@ -6,6 +6,7 @@ import { useFormSelectLine } from "../Hooks/useFormSelectLine";
 import { IndustrialFields, RamoFields } from "./types";
 import LineInputs from "../LineInputs/LineInputs";
 import { hasAnyFieldFilled } from "./helpers";
+import { getDefaultFields } from "../Hooks/helpers";
 
 interface SelectLineProps {
   setPrompt: (v: RamoFields | IndustrialFields) => void;
@@ -25,7 +26,7 @@ export default function EquivalenceForm({
 }: SelectLineProps) {
   const [branchFields, setBranchFields] = useState<
     RamoFields | IndustrialFields
-  >({} as RamoFields | IndustrialFields);
+  >(getDefaultFields("1"));
 
   const {
     ramoTipo,

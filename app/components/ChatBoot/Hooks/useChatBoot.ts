@@ -65,6 +65,8 @@ export function useChatBoot() {
           body: JSON.stringify(promptToSend),
         });
 
+ 
+        
         const data = await response.json();
 
         if (response.ok) {

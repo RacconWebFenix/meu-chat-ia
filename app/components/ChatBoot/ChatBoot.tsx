@@ -6,6 +6,7 @@ import EquivalenceForm from "./EquivalenceForm/EquivalenceForm";
 import styles from "./ChatBoot.module.scss";
 import ChatLoading from "../shared/ChatLoading/ChatLoading";
 import { useChatBoot } from "./Hooks/useChatBoot";
+import { IndustrialFields, RamoFields } from "./EquivalenceForm/types";
 
 export default function ChatBoot() {
   const {
@@ -21,19 +22,20 @@ export default function ChatBoot() {
   } = useChatBoot();
 
   // Função adaptadora para o EquivalenceForm
-  const setPrompt = (v: any) => {
+  const setPrompt = (v: unknown) => {
     setPromptRaw(JSON.stringify(v));
   };
 
   // Função adaptadora para onSend
-  const handleSendEquivalence = (
-    prompt: any,
+  function handleEquivalenceSend(
+    prompt: RamoFields | IndustrialFields,
     userInputHeaders: string[],
-    userInputRow: (string | undefined)[],
-    quantidadeEquivalentes: number
-  ) => {
-    handleSend(JSON.stringify(prompt), userInputHeaders, userInputRow);
-  };
+    userInputRow: (string | undefined)[]
+  ) {
+    // Converta o prompt para string (ajuste conforme sua lógica)
+    const promptString = JSON.stringify(prompt);
+    handleSend(promptString, userInputHeaders, userInputRow);
+  }
 
   return (
     <div className={styles.chatBootContainer}>
@@ -50,7 +52,7 @@ export default function ChatBoot() {
 
       <EquivalenceForm
         setPrompt={setPrompt}
-        onSend={handleSendEquivalence}
+        onSend={handleEquivalenceSend}
         disabled={loading}
       />
     </div>

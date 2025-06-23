@@ -5,8 +5,6 @@ export const FeedbackController = {
   async list() {
     try {
       const feedbacks = await FeedbackService.list();
-
-
       return NextResponse.json(feedbacks);
     } catch (error) {
       console.error("Erro ao buscar feedbacks:", error);
