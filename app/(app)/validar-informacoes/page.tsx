@@ -1,5 +1,6 @@
-import ValidarInformacoesClient from "./components/ValidarInformacoes/ValidarInformacoesClient";
+import ValidarInformacoesMain from "./components/ValidarInformacoes/ValidarInformacoesMain";
+
 
 export default function Page() {
-  return <ValidarInformacoesClient />;
+  return <ValidarInformacoesMain />;
 }

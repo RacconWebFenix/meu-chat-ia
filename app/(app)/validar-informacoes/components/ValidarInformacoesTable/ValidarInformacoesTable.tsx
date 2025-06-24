@@ -13,7 +13,7 @@ interface YourComponentProps {
   }>;
 }
 
-const YourComponent: React.FC<YourComponentProps> = ({ result }) => {
+const ValidarInformacoesTable: React.FC<YourComponentProps> = ({ result }) => {
   // Ajuste para usar diretamente o texto de `explanation`
   const markdownContent = result?.[0]?.choices?.[0]?.message?.content || "";
   const parsedTable = parseMarkdownTable(markdownContent);
@@ -53,4 +53,4 @@ const YourComponent: React.FC<YourComponentProps> = ({ result }) => {
   );
 };
 
-export default YourComponent;
+export default ValidarInformacoesTable;

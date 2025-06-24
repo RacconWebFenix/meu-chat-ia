@@ -48,7 +48,7 @@ interface PerplexityResult {
 
 const USE_MOCK = true; // Toggle between mock and real API
 
-export default function ValidarInformacoesClient({}) {
+export default function ValidarInformacoesMain({}) {
   const router = useRouter();
 
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
@@ -95,10 +95,8 @@ export default function ValidarInformacoesClient({}) {
     }
   };
 
-  // Supondo que content seja o markdown vindo do mock
   const content = result?.[0]?.choices?.[0]?.message?.content;
 
-  // Expressão regular para encontrar a tabela markdown
   const tableRegex = /(\|.+\|\n)+/g;
   const tableMatch = content?.match(tableRegex);
 
@@ -107,18 +105,14 @@ export default function ValidarInformacoesClient({}) {
   let data: string[][] = [];
 
   if (tableMatch) {
-    // Extrai a tabela markdown
     const tableMarkdown = tableMatch[0];
-    // Faz o parse da tabela
     const parsed = parseMarkdownTable(tableMarkdown);
     columns = parsed?.columns || [];
-    // Pega só a primeira linha
     if (parsed?.data && parsed.data.length > 0) {
       data = [parsed.data[0]];
     } else {
       data = [];
     }
-    // Remove a tabela do texto para explanation
     if (content) {
       explanation = content.replace(tableMarkdown, "").trim();
     } else {
@@ -128,7 +122,6 @@ export default function ValidarInformacoesClient({}) {
 
   const images = result?.[0]?.images || [];
 
-  // Renderização
   return (
     <div>
       <h1 className={styles.title}>Validação das Informações</h1>
@@ -147,24 +140,21 @@ export default function ValidarInformacoesClient({}) {
               <CitationList citations={result[0].citations} />
             )}
 
+            {explanation && (
+              <ExplicacaoCard explanation={explanation} />
+            )}
+
             <CustomGridTable
               columns={columns}
               data={data}
               onSelectionChange={(selectedRows) => console.log(selectedRows)}
             />
-
-            {explanation && (
-              <ExplicacaoCard
-                explanation={explanation}
-                title="Resultado da Pesquisa Técnica"
-              />
-            )}
           </>
         )}
         <button
           onClick={handleValidar}
           className={styles.dpButton}
-          disabled={loading || selectedRows.length === 0} // Disable if loading or no rows selected
+          disabled={loading || selectedRows.length === 0}
           style={{ marginRight: 12 }}
         >
           Validar
