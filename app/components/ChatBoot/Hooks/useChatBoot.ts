@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { getSiteName } from "@/app/Utils/utils";
 import iaResponseMock from "@/app/mocks/iaResponse.mock";
+import { FALSE } from "sass";
 
 export interface Citation {
   url: string;
@@ -18,7 +19,7 @@ export interface Message {
   citations?: Citation[];
 }
 
-const USE_MOCK = true; // Altere para false para usar a API real
+const USE_MOCK = false; // Altere para false para usar a API real
 
 export function useChatBoot() {
   const [messages, setMessages] = useState<Message[]>([]);
