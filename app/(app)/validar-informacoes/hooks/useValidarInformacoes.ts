@@ -35,7 +35,7 @@ interface PerplexityResult {
   }[];
 }
 
-const USE_MOCK = false; // Toggle between mock and real API
+const USE_MOCK = true; // Toggle between mock and real API
 
 export function useValidarInformacoes() {
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
@@ -47,7 +47,7 @@ export function useValidarInformacoes() {
   > | null>(null);
   const [result, setResult] = useState<PerplexityResult[] | null>(null);
 
-  const { selectedGrid } = useSelectedGridContext();
+  const { selectedGrid, inputRows, inputHeaders } = useSelectedGridContext();
 
   const dataArr = parseSelectedRows(selectedGrid) || [];
 
@@ -88,6 +88,7 @@ export function useValidarInformacoes() {
     error,
     result,
     dataArr,
+    inputRows, inputHeaders,
     handleRowSelect,
     handleValidar,
   };

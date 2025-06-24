@@ -7,6 +7,8 @@ import styles from "./ChatBoot.module.scss";
 import ChatLoading from "../shared/ChatLoading/ChatLoading";
 import { useChatBoot } from "./Hooks/useChatBoot";
 import { IndustrialFields, RamoFields } from "./EquivalenceForm/types";
+import UserSearchTable from "./UserSearchTable/UserSearchTable";
+
 
 export default function ChatBoot() {
   const {
@@ -21,6 +23,8 @@ export default function ChatBoot() {
     // currentFeedbackId,
   } = useChatBoot();
 
+
+
   // Função adaptadora para o EquivalenceForm
   const setPrompt = (v: unknown) => {
     setPromptRaw(JSON.stringify(v));
@@ -30,7 +34,7 @@ export default function ChatBoot() {
   function handleEquivalenceSend(
     prompt: RamoFields | IndustrialFields,
     userInputHeaders: string[],
-    userInputRow: (string | undefined)[]
+    userInputRow: string[]
   ) {
     // Converta o prompt para string (ajuste conforme sua lógica)
     const promptString = JSON.stringify(prompt);
@@ -39,24 +43,30 @@ export default function ChatBoot() {
 
   return (
     <div className={styles.chatBootContainer}>
-      <ChatMessegeList
-        messages={messages}
-        userInputHeaders={userInputHeaders}
-        userInputRow={userInputRow}
-      />
-    
-      {loading && <ChatLoading />}
+      {loading ? (
+        <ChatLoading />
+      ) : (
+        <>
+          <ChatMessegeList
+            messages={messages}
+            userInputHeaders={userInputHeaders}
+            userInputRow={userInputRow}
+          />
+          <UserSearchTable
+            inputHeaders={userInputHeaders}
+            inputRows={userInputRow}
+          />
+          <EquivalenceForm
+            setPrompt={setPrompt}
+            onSend={handleEquivalenceSend}
+            disabled={loading}
+          />
+        </>
+      )}
 
       {/* {currentFeedbackId && !feedbackSent && (
         <FeedbackForm onSendFeedback={sendFeedback} />
       )} */}
-
-      <EquivalenceForm
-        setPrompt={setPrompt}
-        onSend={handleEquivalenceSend}
-        disabled={loading}
-      />
-
     </div>
   );
 }

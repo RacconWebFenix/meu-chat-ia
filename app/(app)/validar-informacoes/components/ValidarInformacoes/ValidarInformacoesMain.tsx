@@ -11,12 +11,15 @@ import ChatLoading from "@/app/components/shared/ChatLoading/ChatLoading";
 import CustomGridTable from "@/app/components/shared/CustomGrid/CustomGridTable";
 import { useValidarInformacoes } from "../../hooks/useValidarInformacoes";
 import { processContent } from "../../utils/validarInformacoesUtils";
+import UserSearchTable from "@/app/components/ChatBoot/UserSearchTable/UserSearchTable";
 
 export default function ValidarInformacoesMain({}) {
   const router = useRouter();
 
   const {
     selectedRows,
+    inputHeaders,
+    inputRows,
     loading,
     error,
     result,
@@ -33,11 +36,16 @@ export default function ValidarInformacoesMain({}) {
   return (
     <div>
       <h1 className={styles.title}>Validação das Informações</h1>
+        <UserSearchTable
+          inputHeaders={inputHeaders}
+          inputRows={inputRows}
+        />
       <div className={styles.mainContainer}>
         {loading ? (
           <ChatLoading />
         ) : (
           <>
+
             <InfoTable
               data={dataArr}
               selectedRows={selectedRows}

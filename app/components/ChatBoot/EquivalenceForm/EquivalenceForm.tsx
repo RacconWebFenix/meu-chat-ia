@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import ProductEquivalenceSelector from "./ProductEquivalenceSelector/ProductEquivalenceSelector";
 import styles from "./ProductEquivalenceSelector.module.scss";
 import { useFormSelectLine } from "../Hooks/useFormSelectLine";
@@ -8,12 +7,13 @@ import LineInputs from "../LineInputs/LineInputs";
 import { hasAnyFieldFilled } from "./helpers";
 import { getDefaultFields } from "../Hooks/helpers";
 
+
 interface SelectLineProps {
   setPrompt: (v: RamoFields | IndustrialFields) => void;
   onSend?: (
     prompt: RamoFields | IndustrialFields,
     userInputHeaders: string[],
-    userInputRow: (string | undefined)[],
+    userInputRow: string[],
     quantidadeEquivalentes: number
   ) => void;
   disabled?: boolean;

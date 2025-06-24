@@ -4,7 +4,6 @@ import { DataGridTableProps } from "./types";
 import DataGridHeader from "./DataGridTable/DataGridBody/DataGridHeader/DataGridHeader";
 import DataGridBody from "./DataGridTable/DataGridBody/DataGridBody";
 import DataGridSelectedRows from "./DataGridSelectedRows/DataGridSelectedRows";
-import UserTableInputRow from "./UserTableInputRow/UserTableInputRow";
 import styles from "./DataGridTable.module.scss";
 
 export default function DataGridTable({
@@ -12,8 +11,7 @@ export default function DataGridTable({
   data,
   selectable = true,
   onSelectionChange,
-  userInputHeaders,
-  userInputRow,
+
   showCheckButton = true,
   showValidateButton = true,
 }: DataGridTableProps & {
@@ -21,7 +19,6 @@ export default function DataGridTable({
   showValidateButton?: boolean;
 }) {
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
-  const [userInputSelected, setUserInputSelected] = useState(false);
 
   const handleRowSelect = (idx: number) => {
     setSelectedRows((prev) =>
@@ -32,16 +29,6 @@ export default function DataGridTable({
 
   return (
     <div className={styles.dataGridTableContainer}>
-      {/* User input table (opcional) */}
-      {userInputHeaders && userInputRow && (
-        <UserTableInputRow
-          headers={userInputHeaders}
-          row={userInputRow}
-          selected={userInputSelected}
-          onSelect={() => setUserInputSelected((v) => !v)}
-        />
-      )}
-
       <table className={styles.dataGridTable}>
         <DataGridHeader columns={columns} selectable={selectable} />
         <DataGridBody
@@ -57,8 +44,6 @@ export default function DataGridTable({
         columns={columns}
         data={data}
         selectedRows={selectedRows}
-        userInputRow={userInputRow}
-        userInputSelected={userInputSelected}
         showValidateButton={showValidateButton}
       />
     </div>

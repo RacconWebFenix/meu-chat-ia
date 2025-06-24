@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { getSiteName } from "@/app/Utils/utils";
 import iaResponseMock from "@/app/mocks/iaResponse.mock";
-import { FALSE } from "sass";
 
 export interface Citation {
   url: string;
@@ -19,7 +18,7 @@ export interface Message {
   citations?: Citation[];
 }
 
-const USE_MOCK = true; // Altere para false para usar a API real
+const USE_MOCK = false; // Altere para false para usar a API real
 
 export function useChatBoot() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -31,7 +30,7 @@ export function useChatBoot() {
   );
   const [feedbackSent, setFeedbackSent] = useState<boolean>(false);
   const [userInputHeaders, setUserInputHeaders] = useState<string[]>([]);
-  const [userInputRow, setUserInputRow] = useState<(string | undefined)[]>([]);
+  const [userInputRow, setUserInputRow] = useState<string[]>([]);
 
   // Envia mensagem para a API ou usa mock
   const sendMessage = async (promptToSend?: string) => {
@@ -150,7 +149,7 @@ export function useChatBoot() {
   const handleSend = (
     prompt: string,
     headers: string[],
-    row: (string | undefined)[]
+    row:string[]
   ) => {
     setPrompt(prompt);
     setUserInputHeaders(headers);

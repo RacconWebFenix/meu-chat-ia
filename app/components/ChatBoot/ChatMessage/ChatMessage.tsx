@@ -28,8 +28,7 @@ interface Props {
 export default function ChatMessage({
   message,
   citations,
-  userInputHeaders,
-  userInputRow,
+
 }: Props) {
   const hasImages = message.images && message.images.length > 0;
   const hasCitations = citations && citations.length > 0;
@@ -40,6 +39,8 @@ export default function ChatMessage({
 
   // Parse a tabela markdown para arrays
   const parsedTable = table ? parseMarkdownTable(table) : null;
+
+
 
   return (
     <div className={styles.messageItem}>
@@ -83,8 +84,6 @@ export default function ChatMessage({
         <DataGridTable
           columns={parsedTable.columns}
           data={parsedTable.data}
-          userInputHeaders={userInputHeaders}
-          userInputRow={userInputRow}
         />
       )}
     </div>
