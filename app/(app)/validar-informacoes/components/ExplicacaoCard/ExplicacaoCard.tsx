@@ -3,7 +3,7 @@ import styles from "./ExplicacaoCard.module.scss";
 
 interface ExplicacaoCardProps {
   explanation: string;
-  title?: string; // Optional title for the card
+  title: string; // Optional title for the card
 }
 
 const ExplicacaoCard: React.FC<ExplicacaoCardProps> = ({
@@ -12,7 +12,7 @@ const ExplicacaoCard: React.FC<ExplicacaoCardProps> = ({
 }) => {
   return (
     <div className={styles.card}>
-      {title && <h2 className={styles.title}>{title}</h2>}
+      <h2 className={styles.title}>{title}</h2>
       <strong className={styles.strong}>Explicação:</strong>
       <div>{explanation}</div>
     </div>

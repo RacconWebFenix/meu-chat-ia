@@ -37,7 +37,7 @@ export default function ChatMessage({
   const markdownSource = typeof message.text === "string" ? message.text : "";
 
   const { explanation, table } = extractExplanationAndTable(markdownSource);
- 
+
   // Parse a tabela markdown para arrays
   const parsedTable = table ? parseMarkdownTable(table) : null;
 

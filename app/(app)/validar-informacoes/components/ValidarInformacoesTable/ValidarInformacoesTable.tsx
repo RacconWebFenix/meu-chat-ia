@@ -3,7 +3,7 @@ import { parseMarkdownTable } from "@/app/Utils/parseMarkdownTable";
 import styles from "./YourComponent.module.css";
 
 // Definição do tipo YourComponentProps
-interface YourComponentProps {
+interface ValidarInformacoesTableProps {
   result: Array<{
     choices: Array<{
       message: {
@@ -13,7 +13,7 @@ interface YourComponentProps {
   }>;
 }
 
-const ValidarInformacoesTable: React.FC<YourComponentProps> = ({ result }) => {
+const ValidarInformacoesTable: React.FC<ValidarInformacoesTableProps> = ({ result }) => {
   // Ajuste para usar diretamente o texto de `explanation`
   const markdownContent = result?.[0]?.choices?.[0]?.message?.content || "";
   const parsedTable = parseMarkdownTable(markdownContent);

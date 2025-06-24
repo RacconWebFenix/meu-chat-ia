@@ -1,4 +1,4 @@
-import { RamoFields, IndustrialFields } from "../EquivalenceForm/types";
+import { RamoFields, IndustrialFields } from "./types";
 
 export function hasAnyFieldFilled(
   branchFields: Partial<RamoFields> | Partial<IndustrialFields>

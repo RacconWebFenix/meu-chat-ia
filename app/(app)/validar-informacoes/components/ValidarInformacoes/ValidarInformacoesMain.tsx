@@ -1,10 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
 import InfoTable from "../InfoTable/InfoTable";
 import { parseSelectedRows } from "../../utils/parseSelectedRows";
-import styles from "./ValidarInformacoesClient.module.scss";
+import styles from "./ValidarInformacoesMain.module.scss";
 import { useSelectedGridContext } from "@/app/providers";
 import { CitationList } from "../CitationList/CitationList";
 import { ImagesBlock } from "../ImagesBlock/ImagesBlock";
@@ -46,7 +45,7 @@ interface PerplexityResult {
   }[];
 }
 
-const USE_MOCK = true; // Toggle between mock and real API
+const USE_MOCK = false; // Toggle between mock and real API
 
 export default function ValidarInformacoesMain({}) {
   const router = useRouter();
@@ -141,7 +140,10 @@ export default function ValidarInformacoesMain({}) {
             )}
 
             {explanation && (
-              <ExplicacaoCard explanation={explanation} />
+              <ExplicacaoCard
+                explanation={explanation}
+                title="Pesquisa Técnica."
+              />
             )}
 
             <CustomGridTable
