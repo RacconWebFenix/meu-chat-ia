@@ -2,8 +2,15 @@ import React from "react";
 import { parseMarkdownTable } from "@/app/Utils/parseMarkdownTable";
 import styles from "./YourComponent.module.css";
 
+// Definição do tipo YourComponentProps
 interface YourComponentProps {
-  result: any;
+  result: Array<{
+    choices: Array<{
+      message: {
+        content: string;
+      };
+    }>;
+  }>;
 }
 
 const YourComponent: React.FC<YourComponentProps> = ({ result }) => {
@@ -12,7 +19,9 @@ const YourComponent: React.FC<YourComponentProps> = ({ result }) => {
   const parsedTable = parseMarkdownTable(markdownContent);
 
   // Separar tabela e texto
-  const explanation = markdownContent.split("\n").filter((line: string) => !line.includes("|"));
+  const explanation = markdownContent
+    .split("\n")
+    .filter((line: string) => !line.includes("|"));
   const columns = parsedTable?.columns || [];
   const data = parsedTable?.data.slice(0, 1) || []; // Apenas uma linha na tabela
 
@@ -40,7 +49,6 @@ const YourComponent: React.FC<YourComponentProps> = ({ result }) => {
           </tbody>
         </table>
       )}
-      {/* ...existing code... */}
     </div>
   );
 };

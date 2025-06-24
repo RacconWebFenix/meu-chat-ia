@@ -5,26 +5,15 @@ import { useState } from "react";
 import InfoTable from "../InfoTable/InfoTable";
 import { parseSelectedRows } from "../../utils/parseSelectedRows";
 import styles from "./ValidarInformacoesClient.module.scss";
-
-import { extractExplanationAndTable } from "@/app/Utils/extractExplanationAndTable";
 import { useSelectedGridContext } from "@/app/providers";
 import { CitationList } from "../CitationList/CitationList";
 import { ImagesBlock } from "../ImagesBlock/ImagesBlock";
 import ChatLoading from "@/app/components/shared/ChatLoading/ChatLoading";
 import { perplexityMock } from "@/app/mocks/perplexity.mock";
-import CustomGrid from "@/app/components/shared/CustomGrid/CustomGrid";
 import CustomGridTable from "@/app/components/shared/CustomGrid/CustomGridTable";
 import { parseMarkdownTable } from "@/app/Utils/parseMarkdownTable";
+import ExplicacaoCard from "../ExplicacaoCard/ExplicacaoCard";
 
-// Tipos para resposta da API Perplexity
-interface PerplexityImage {
-  image_url: string;
-  origin_url: string;
-  height?: number;
-  width?: number;
-}
-
-// Atualização do tipo PerplexityResult para incluir choices corretamente
 interface PerplexityResult {
   id: string;
   model: string;
@@ -106,43 +95,40 @@ export default function ValidarInformacoesClient({}) {
     }
   };
 
-  // Utilidades para extrair texto e tabela
-  let explanation = "";
-  let images: PerplexityImage[] = [];
-  let citations: string[] = [];
-  if (
-    result &&
-    Array.isArray(result) &&
-    result[0]?.choices?.[0]?.message?.content
-  ) {
-    try {
-      const { explanation: exp } = extractExplanationAndTable(
-        result[0].choices[0].message.content
-      );
-      explanation = exp;
-      images = result[0].images || [];
-      citations = result[0].citations || [];
-    } catch {}
+  // Supondo que content seja o markdown vindo do mock
+  const content = result?.[0]?.choices?.[0]?.message?.content;
+
+  // Expressão regular para encontrar a tabela markdown
+  const tableRegex = /(\|.+\|\n)+/g;
+  const tableMatch = content?.match(tableRegex);
+
+  let explanation = content || "";
+  let columns: string[] = [];
+  let data: string[][] = [];
+
+  if (tableMatch) {
+    // Extrai a tabela markdown
+    const tableMarkdown = tableMatch[0];
+    // Faz o parse da tabela
+    const parsed = parseMarkdownTable(tableMarkdown);
+    columns = parsed?.columns || [];
+    // Pega só a primeira linha
+    if (parsed?.data && parsed.data.length > 0) {
+      data = [parsed.data[0]];
+    } else {
+      data = [];
+    }
+    // Remove a tabela do texto para explanation
+    if (content) {
+      explanation = content.replace(tableMarkdown, "").trim();
+    } else {
+      explanation = "";
+    }
   }
 
-  // Ajuste para tratar `result` como um único objeto PerplexityResult
-  const gridItems =
-    result?.[0]?.search_results.map((item) => ({
-      id: item.title,
-      content: item.title || "Sem título",
-    })) || [];
+  const images = result?.[0]?.images || [];
 
-  // Integração da variável `parsedData`
-  const markdownContent = result?.[0]?.choices?.[0]?.message?.content || "";
-  const parsedTable = parseMarkdownTable(markdownContent);
-
-  // Separar tabela e texto
-  const explanationText = markdownContent
-    .split("\n")
-    .filter((line) => !line.includes("|"));
-  const columns = parsedTable?.columns || [];
-  const data = parsedTable?.data.slice(0, 1) || []; // Apenas uma linha na tabela
-
+  // Renderização
   return (
     <div>
       <h1 className={styles.title}>Validação das Informações</h1>
@@ -157,24 +143,22 @@ export default function ValidarInformacoesClient({}) {
               onRowSelect={handleRowSelect}
             />
             {images.length > 0 && <ImagesBlock images={images} />}
-            {citations.length > 0 && <CitationList citations={citations} />}
-
-            {explanation && (
-              <div style={{ marginBottom: 16 }}>
-                <strong>Explicação:</strong>
-                <div>{explanation}</div>
-              </div>
+            {result?.[0]?.citations && (
+              <CitationList citations={result[0].citations} />
             )}
 
-            <CustomGrid
-              items={gridItems}
-              onItemClick={(id) => console.log(`Item ${id} clicked`)}
-            />
             <CustomGridTable
               columns={columns}
               data={data}
               onSelectionChange={(selectedRows) => console.log(selectedRows)}
             />
+
+            {explanation && (
+              <ExplicacaoCard
+                explanation={explanation}
+                title="Resultado da Pesquisa Técnica"
+              />
+            )}
           </>
         )}
         <button
@@ -194,36 +178,6 @@ export default function ValidarInformacoesClient({}) {
           Voltar
         </button>
         {error && <div className={styles.errorMsg}>{error}</div>}
-        {result && (
-          <div style={{ marginTop: 24 }}>
-            {explanation && (
-              <div style={{ marginBottom: 16 }}>
-                <strong>Explicação:</strong>
-                <div>{explanation}</div>
-              </div>
-            )}
-            {columns.length > 0 && data.length > 0 && (
-              <table className={styles.dataGridTable}>
-                <thead>
-                  <tr>
-                    {columns.map((column, index) => (
-                      <th key={index}>{column}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.map((row, rowIndex) => (
-                    <tr key={rowIndex}>
-                      {row.map((cell, cellIndex) => (
-                        <td key={cellIndex}>{cell}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );
