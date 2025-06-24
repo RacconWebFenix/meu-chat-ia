@@ -3,7 +3,6 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 import { useState } from "react";
-import Link from "next/link";
 
 import ChatBoot from "../components/ChatBoot/ChatBoot";
 import ChatPDM from "../components/ChatPDM/ChatPDM";
@@ -26,7 +25,7 @@ export default function HomePage() {
         </div>
       </FadeSwitch>
 
-      <Link href="/feedbacks">Ver Feedbacks</Link>
+      {/* <Link href="/feedbacks">Ver Feedbacks</Link> */}
     </main>
   );
 }

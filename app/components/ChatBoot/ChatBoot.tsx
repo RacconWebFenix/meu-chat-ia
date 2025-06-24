@@ -1,7 +1,7 @@
 // components/ChatBoot.tsx
 
 import ChatMessegeList from "./ChatMessegeList/ChatMessageList";
-import FeedbackForm from "../FeedbackForm/FeedbackForm";
+// import FeedbackForm from "../FeedbackForm/FeedbackForm";
 import EquivalenceForm from "./EquivalenceForm/EquivalenceForm";
 import styles from "./ChatBoot.module.scss";
 import ChatLoading from "../shared/ChatLoading/ChatLoading";
@@ -13,12 +13,12 @@ export default function ChatBoot() {
     messages,
     setPrompt: setPromptRaw,
     loading,
-    feedbackSent,
+    // feedbackSent,
     userInputHeaders,
     userInputRow,
-    sendFeedback,
+    // sendFeedback,
     handleSend,
-    currentFeedbackId,
+    // currentFeedbackId,
   } = useChatBoot();
 
   // Função adaptadora para o EquivalenceForm
@@ -47,9 +47,9 @@ export default function ChatBoot() {
     
       {loading && <ChatLoading />}
 
-      {currentFeedbackId && !feedbackSent && (
+      {/* {currentFeedbackId && !feedbackSent && (
         <FeedbackForm onSendFeedback={sendFeedback} />
-      )}
+      )} */}
 
       <EquivalenceForm
         setPrompt={setPrompt}
