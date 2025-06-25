@@ -18,7 +18,7 @@ export interface Message {
   citations?: Citation[];
 }
 
-const USE_MOCK = true; // Altere para false para usar a API real
+const USE_MOCK = false; // Altere para false para usar a API real
 
 export function useChatBoot() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -146,11 +146,7 @@ export function useChatBoot() {
   };
 
   // Manipula envio do formulário
-  const handleSend = (
-    prompt: string,
-    headers: string[],
-    row:string[]
-  ) => {
+  const handleSend = (prompt: string, headers: string[], row: string[]) => {
     setPrompt(prompt);
     setUserInputHeaders(headers);
     setUserInputRow(row);

@@ -13,6 +13,7 @@ import UserSearchTable from "@/app/components/shared/UserSearchTable/UserSearchT
 import Citations from "@/app/components/shared/Citations/Citations";
 import ImageGrid from "@/app/components/ImageGrid/ImageGrid";
 
+
 export default function ValidarInformacoesMain({}) {
   const router = useRouter();
   const [rowsPesquisadas, setRowsPesquisadas] = useState<number[]>([]); // NOVO ESTADO
@@ -42,7 +43,7 @@ export default function ValidarInformacoesMain({}) {
       ]);
     }
     handleValidarOrig();
-    // Limpa seleção após pesquisar (chama com null para limpar tudo)
+  
     setTimeout(() => {
       handleRowSelect(null);
     }, 0);
@@ -73,7 +74,7 @@ export default function ValidarInformacoesMain({}) {
             )}
 
             {result?.[0]?.citations && (
-              <Citations citations={result[0].citations} />
+              <Citations citations={result[0].citations || []} />
             )}
 
             {explanation && (

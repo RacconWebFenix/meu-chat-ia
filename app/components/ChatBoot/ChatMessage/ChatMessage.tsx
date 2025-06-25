@@ -42,8 +42,6 @@ export default function ChatMessage({ message, citations }: Props) {
   // Parse a tabela markdown para arrays
   const parsedTable = table ? parseMarkdownTable(table) : null;
 
-  console.log(parsedTable);
-
   return (
     <div className={styles.messageItem}>
       {hasImages && (
