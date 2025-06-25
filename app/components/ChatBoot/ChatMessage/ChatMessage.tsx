@@ -8,6 +8,7 @@ import { Message } from "../Hooks/useChatBoot";
 import { extractExplanationAndTable } from "../../../Utils/extractExplanationAndTable";
 import { parseMarkdownTable } from "../../../Utils/parseMarkdownTable";
 import DataGridTable from "../../shared/DataGrid/DataGridTable";
+import Citations from "../../shared/Citations/Citations";
 
 interface Image {
   image_url: string;
@@ -16,9 +17,14 @@ interface Image {
   width?: number;
 }
 
+interface Citation {
+  url: string;
+  siteName: string;
+}
+
 interface Props {
   message: Message;
-  citations?: { url: string; siteName: string }[];
+  citations?: Citation[];
   images?: Image[];
   userInputHeaders?: string[];
   userInputRow?: (string | undefined)[];
@@ -46,21 +52,7 @@ export default function ChatMessage({ message, citations }: Props) {
         </div>
       )}
 
-      {hasCitations && (
-        <div className={styles.citationsWrapper}>
-          {citations.map((citation) => (
-            <a
-              key={citation.url}
-              href={citation.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.citationLink}
-            >
-              {citation.siteName}
-            </a>
-          ))}
-        </div>
-      )}
+      {hasCitations && <Citations citations={citations} />}
 
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}

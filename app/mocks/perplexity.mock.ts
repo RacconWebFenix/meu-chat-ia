@@ -10,11 +10,26 @@ export const perplexityMock = [
       search_context_size: "low",
     },
     citations: [
-      "https://www.cornelio.com.br/filtro-de-oleo-wega-fiat-cronos-1-3-6v-1-3-8v-2018-ate-2023?_pid=Pzcbc",
-      "https://www.dispemec.com/filtro-de-oleo-wega-fiat-cronos-1-0-6v-firefly-1-3-8v-firefly-20-23?_pid=4ldbc",
-      "https://loja.josecar.com.br/filtro-de-oleo-blindado-fiat-cronos-drive-1-3-automatico-drive-1-3-manual?_pid=BXUcc",
-      "https://www.jocar.com.br/fiat/cronos/motor/filtro-de-oleo/wega-filtros/",
-      "https://www.karhub.com.br/p/kit-filtros-fiat-argo-cronos-mobi-pulse-strada-uno-1-0-1-3-wega-wkl122-13345405",
+      {
+        url: "https://www.cornelio.com.br/filtro-de-oleo-wega-fiat-cronos-1-3-6v-1-3-8v-2018-ate-2023?_pid=Pzcbc",
+        siteName: "Cornélio",
+      },
+      {
+        url: "https://www.dispemec.com/filtro-de-oleo-wega-fiat-cronos-1-0-6v-firefly-1-3-8v-firefly-20-23?_pid=4ldbc",
+        siteName: "Dispemec",
+      },
+      {
+        url: "https://loja.josecar.com.br/filtro-de-oleo-blindado-fiat-cronos-drive-1-3-automatico-drive-1-3-manual?_pid=BXUcc",
+        siteName: "Josecar",
+      },
+      {
+        url: "https://www.jocar.com.br/fiat/cronos/motor/filtro-de-oleo/wega-filtros/",
+        siteName: "Jocar",
+      },
+      {
+        url: "https://www.karhub.com.br/p/kit-filtros-fiat-argo-cronos-mobi-pulse-strada-uno-1-0-1-3-wega-wkl122-13345405",
+        siteName: "Karhub",
+      },
     ],
     search_results: [
       {

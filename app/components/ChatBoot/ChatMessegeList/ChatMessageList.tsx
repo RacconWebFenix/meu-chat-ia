@@ -19,7 +19,6 @@ export default function ChatMessageList({
     return null;
   }
 
-
   return (
     <div className={styles.messageListContainer}>
       {messages.map((msg, i) => (

@@ -3,6 +3,7 @@ import { parseSelectedRows } from "../utils/parseSelectedRows";
 import { perplexityMock } from "@/app/mocks/perplexity.mock";
 import { useSelectedGridContext } from "@/app/providers";
 
+
 interface PerplexityResult {
   id: string;
   model: string;
@@ -13,7 +14,7 @@ interface PerplexityResult {
     total_tokens: number;
     search_context_size: string;
   };
-  citations: string[];
+  citations: { url: string; siteName: string }[];
   search_results: {
     title: string;
     url: string;
