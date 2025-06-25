@@ -4,7 +4,10 @@ export function getSiteName(url: string): string {
     // Remove subdomínios comuns e TLDs
     const parts = hostname.replace(/^www\./, "").split(".");
     if (parts.length > 2) {
-      return parts[parts.length - 3].charAt(0).toUpperCase() + parts[parts.length - 3].slice(1);
+      return (
+        parts[parts.length - 3].charAt(0).toUpperCase() +
+        parts[parts.length - 3].slice(1)
+      );
     }
     return parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
   } catch {

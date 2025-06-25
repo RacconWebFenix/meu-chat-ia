@@ -37,8 +37,16 @@ export function useFormSelectLine(
       ramoTipo
     );
 
+    // Corrige userInputRow para garantir string[]
+    const sanitizedUserInputRow = userInputRow.map((x) => x ?? "");
+
     if (onSend)
-      onSend(promptObj, userInputHeaders, userInputRow, quantidadeEquivalentes);
+      onSend(
+        promptObj,
+        userInputHeaders,
+        sanitizedUserInputRow,
+        quantidadeEquivalentes
+      );
   }
 
   return {
