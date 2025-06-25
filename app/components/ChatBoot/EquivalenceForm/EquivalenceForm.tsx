@@ -34,7 +34,10 @@ export default function EquivalenceForm({
     quantidadeEquivalentes,
     setQuantidadeEquivalentes,
     handleSubmit,
-  } = useFormSelectLine(branchFields, setPrompt, onSend);
+  } = useFormSelectLine(branchFields, setPrompt, onSend && ((prompt, headers, row, quantidade) => {
+    // Garante que userInputRow seja string[]
+    onSend(prompt, headers, row.map(x => x ?? ""), quantidade);
+  }));
 
   // Initialize the branchFields based on ramoTipo
   useEffect(() => {
