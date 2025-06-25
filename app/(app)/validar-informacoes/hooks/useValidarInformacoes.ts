@@ -51,9 +51,14 @@ export function useValidarInformacoes() {
 
   const dataArr = parseSelectedRows(selectedGrid) || [];
 
-  const handleRowSelect = (rowIdx: number) => {
-    setSelectedRows([rowIdx]);
-    setSelectedRowData(dataArr[rowIdx] || null);
+  const handleRowSelect = (rowIdx: number | null) => {
+    if (rowIdx === null) {
+      setSelectedRows([]);
+      setSelectedRowData(null);
+    } else {
+      setSelectedRows([rowIdx]);
+      setSelectedRowData(dataArr[rowIdx] || null);
+    }
   };
 
   const handleValidar = async () => {
@@ -88,7 +93,8 @@ export function useValidarInformacoes() {
     error,
     result,
     dataArr,
-    inputRows, inputHeaders,
+    inputRows,
+    inputHeaders,
     handleRowSelect,
     handleValidar,
   };

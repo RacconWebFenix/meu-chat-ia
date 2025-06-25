@@ -38,10 +38,10 @@ const ValidarInformacoesTable: React.FC<ValidarInformacoesTableProps> = ({
   // Remove caracteres especiais e formata o texto
   explanation = explanation
     .replace(/\[\d+\]/g, "") // Remove referências como [1], [2], etc.
-    .replace(/\*\*/g, "") // Remove asteriscos duplos
-    .replace(/[#*\-]/g, "") // Remove caracteres especiais como #, *, -
-    .replace(/\s+/g, " ") // Remove espaços extras
-    .trim();
+  //   .replace(/\*\*/g, "") // Remove asteriscos duplos
+  //   .replace(/[#*\-]/g, "") // Remove caracteres especiais como #, *, -
+  //   .replace(/\s+/g, " ") // Remove espaços extras
+  //   .trim();
 
   return (
     <div>

@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import InfoTable from "../InfoTable/InfoTable";
 import ExplicacaoCard from "../ExplicacaoCard/ExplicacaoCard";
@@ -15,6 +16,7 @@ import UserSearchTable from "@/app/components/shared/UserSearchTable/UserSearchT
 
 export default function ValidarInformacoesMain({}) {
   const router = useRouter();
+  const [rowsPesquisadas, setRowsPesquisadas] = useState<number[]>([]); // NOVO ESTADO
 
   const {
     selectedRows,
@@ -25,13 +27,27 @@ export default function ValidarInformacoesMain({}) {
     result,
     dataArr,
     handleRowSelect,
-    handleValidar,
+    handleValidar: handleValidarOrig,
   } = useValidarInformacoes();
 
   const content = result?.[0]?.choices?.[0]?.message?.content || "";
   const { explanation, columns, data } = processContent(content);
-
   const images = result?.[0]?.images || [];
+
+  // Função para validar e marcar linha como pesquisada
+  const handleValidar = () => {
+    if (selectedRows.length > 0) {
+      setRowsPesquisadas((prev) => [
+        ...prev,
+        ...selectedRows.filter((idx) => !prev.includes(idx)),
+      ]);
+    }
+    handleValidarOrig();
+    // Limpa seleção após pesquisar (chama com null para limpar tudo)
+    setTimeout(() => {
+      handleRowSelect(null);
+    }, 0);
+  };
 
   return (
     <>
@@ -48,6 +64,7 @@ export default function ValidarInformacoesMain({}) {
               data={dataArr}
               selectedRows={selectedRows}
               onRowSelect={handleRowSelect}
+              disabledRows={rowsPesquisadas} // NOVA PROP
             />
             {images.length > 0 && <ImagesBlock images={images} />}
             {result?.[0]?.citations && (
@@ -68,12 +85,16 @@ export default function ValidarInformacoesMain({}) {
             />
           </>
         )}
-        <div className="buttonContainer">
+        <div className={styles.buttonContainer}>
           <div>
             <button
               onClick={handleValidar}
               className={styles.dpButton1}
-              disabled={loading || selectedRows.length === 0}
+              disabled={
+                loading ||
+                selectedRows.length === 0 ||
+                rowsPesquisadas.length === dataArr.length // desabilita se todas já foram pesquisadas
+              }
               style={{ marginRight: 12 }}
             >
               Pesquisa Avançada

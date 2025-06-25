@@ -1,17 +1,5 @@
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.mainContainer {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
-  border-radius: 0.5rem;
-}
-
 .innerContainer {
-  margin: 0 1rem 0 1rem;
+  margin: 0 1rem 2rem 1rem;
 }
 
 .title {
@@ -71,6 +59,12 @@
   margin: 16px 0;
 }
 
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+
+}
+
 .dpButton1 {
   background: #0358ad;
   color: #fff;
@@ -84,6 +78,13 @@
   margin-top: 16px;
   height: 3rem;
   width: 100%;
+}
+
+.dpButton1:disabled {
+  background: #91daff;
+  color: #fff;
+  cursor: not-allowed;
+  opacity: 1;
 }
 .dpButton2 {
   background: #b8d8f3;
