@@ -104,7 +104,7 @@ export default function DataGridSelectedRows({
           onClick={handleValidar}
           disabled={isButtonDisabled}
         >
-          Validar informações
+          Pesquisa Avançada
         </button>
       )}
     </div>

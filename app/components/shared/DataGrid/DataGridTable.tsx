@@ -28,24 +28,27 @@ export default function DataGridTable({
   };
 
   return (
-    <div className={styles.dataGridTableContainer}>
-      <table className={styles.dataGridTable}>
-        <DataGridHeader columns={columns} selectable={selectable} />
-        <DataGridBody
-          data={data}
-          selectedRows={selectedRows}
-          onRowSelect={handleRowSelect}
-          selectable={selectable}
-          showCheckButton={showCheckButton}
-        />
-      </table>
-
-      <DataGridSelectedRows
-        columns={columns}
-        data={data}
-        selectedRows={selectedRows}
-        showValidateButton={showValidateButton}
-      />
-    </div>
+    <>
+      <div className={styles.dataGridTableContainer}>
+        <table className={styles.dataGridTable}>
+          <DataGridHeader columns={columns} selectable={selectable} />
+          <DataGridBody
+            data={data}
+            selectedRows={selectedRows}
+            onRowSelect={handleRowSelect}
+            selectable={selectable}
+            showCheckButton={showCheckButton}
+          />
+        </table>
+        <div className={styles.selectedRowsContainer}>
+          <DataGridSelectedRows
+            columns={columns}
+            data={data}
+            selectedRows={selectedRows}
+            showValidateButton={showValidateButton}
+          />
+        </div>
+      </div>
+    </>
   );
 }

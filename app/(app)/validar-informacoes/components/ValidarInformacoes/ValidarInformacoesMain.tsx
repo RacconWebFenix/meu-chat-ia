@@ -34,10 +34,12 @@ export default function ValidarInformacoesMain({}) {
   const images = result?.[0]?.images || [];
 
   return (
-    <div>
-      <h1 className={styles.title}>Validação das Informações</h1>
-      <div className={styles.mainContainer}>
-        <UserSearchTable inputHeaders={inputHeaders} inputRows={inputRows} />
+    <>
+      <h1 className={styles.title}>Pesquisa Avançada</h1>
+
+      <UserSearchTable inputHeaders={inputHeaders} inputRows={inputRows} />
+
+      <div className={styles.innerContainer}>
         {loading ? (
           <ChatLoading />
         ) : (
@@ -55,7 +57,7 @@ export default function ValidarInformacoesMain({}) {
             {explanation && (
               <ExplicacaoCard
                 explanation={explanation}
-                title="Pesquisa Técnica."
+                title="Pesquisa Avançada"
               />
             )}
 
@@ -66,24 +68,30 @@ export default function ValidarInformacoesMain({}) {
             />
           </>
         )}
-        <button
-          onClick={handleValidar}
-          className={styles.dpButton}
-          disabled={loading || selectedRows.length === 0}
-          style={{ marginRight: 12 }}
-        >
-          Validar
-        </button>
-        <button
-          onClick={() => {
-            router.push("/");
-          }}
-          className={styles.dpButton}
-        >
-          Voltar
-        </button>
+        <div className="buttonContainer">
+          <div>
+            <button
+              onClick={handleValidar}
+              className={styles.dpButton1}
+              disabled={loading || selectedRows.length === 0}
+              style={{ marginRight: 12 }}
+            >
+              Pesquisa Avançada
+            </button>
+          </div>
+          <div>
+            <button
+              onClick={() => {
+                router.push("/");
+              }}
+              className={styles.dpButton2}
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
         {error && <div className={styles.errorMsg}>{error}</div>}
       </div>
-    </div>
+    </>
   );
 }

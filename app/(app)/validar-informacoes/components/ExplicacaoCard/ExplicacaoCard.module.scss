@@ -7,6 +7,10 @@
   font-size: 16px;
   line-height: 1.5;
   text-align: justify;
+  span, p, li, strong,
+  p {
+    color: #333;
+  }
   h2 {
     font-size: 2rem;
     text-align: center;

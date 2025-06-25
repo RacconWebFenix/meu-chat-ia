@@ -18,12 +18,6 @@ export function processContent(content: string) {
     });
   }
 
-  explanation = explanation
-    .replace(/\[\d+\]/g, "")
-    .replace(/\*\*/g, "")
-    .replace(/[#*\-]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
 
   return { explanation, columns, data };
 }

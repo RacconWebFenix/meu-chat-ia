@@ -16,7 +16,6 @@ export default function DataGridRow({
   selected,
   onSelect,
   selectable,
-  showCheckButton = true,
 }: DataGridRowProps) {
   return (
     <tr
@@ -41,25 +40,6 @@ export default function DataGridRow({
           {cell}
         </td>
       ))}
-      <td>
-        {showCheckButton && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              const search = row
-                .filter((v) => typeof v === "string" || typeof v === "number")
-                .join(" ");
-              window.open(
-                `https://www.google.com/search?q=${encodeURIComponent(search)}`,
-                "_blank"
-              );
-            }}
-          >
-            Checar
-          </button>
-        )}
-      </td>
     </tr>
   );
 }

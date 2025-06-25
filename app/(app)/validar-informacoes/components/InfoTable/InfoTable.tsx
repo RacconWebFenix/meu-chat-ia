@@ -17,7 +17,7 @@ export default function InfoTable({
     <table className={styles.infoTable}>
       <thead>
         <tr>
-          <th></th>
+          <th>#</th>
           {columns.map((col) => (
             <th key={col}>{col}</th>
           ))}
