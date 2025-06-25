@@ -25,11 +25,7 @@ interface Props {
   type?: string;
 }
 
-export default function ChatMessage({
-  message,
-  citations,
-
-}: Props) {
+export default function ChatMessage({ message, citations }: Props) {
   const hasImages = message.images && message.images.length > 0;
   const hasCitations = citations && citations.length > 0;
 
@@ -40,7 +36,7 @@ export default function ChatMessage({
   // Parse a tabela markdown para arrays
   const parsedTable = table ? parseMarkdownTable(table) : null;
 
-
+  console.log(parsedTable);
 
   return (
     <div className={styles.messageItem}>
@@ -81,10 +77,7 @@ export default function ChatMessage({
 
       {/* Renderize o DataGridTable apenas se conseguir extrair a tabela */}
       {parsedTable && (
-        <DataGridTable
-          columns={parsedTable.columns}
-          data={parsedTable.data}
-        />
+        <DataGridTable columns={parsedTable.columns} data={parsedTable.data} />
       )}
     </div>
   );
