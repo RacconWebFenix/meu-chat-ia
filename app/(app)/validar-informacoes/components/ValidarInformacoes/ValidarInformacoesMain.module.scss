@@ -15,9 +15,6 @@
   margin-bottom: 20px;
 }
 
-.imagesBlock {
-  margin-bottom: 16px;
-}
 
 .citationsBlock {
   margin-bottom: 16px;
@@ -114,4 +111,10 @@
 .buttonContainer {
   display: flex;
   flex-direction: column;
+}
+
+.imagesWrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 40px;
 }

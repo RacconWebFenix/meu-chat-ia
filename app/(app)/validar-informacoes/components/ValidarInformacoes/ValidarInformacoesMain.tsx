@@ -5,14 +5,13 @@ import { useState } from "react";
 import InfoTable from "../InfoTable/InfoTable";
 import ExplicacaoCard from "../ExplicacaoCard/ExplicacaoCard";
 import styles from "./ValidarInformacoesMain.module.scss";
-
-import { ImagesBlock } from "../ImagesBlock/ImagesBlock";
 import ChatLoading from "@/app/components/shared/ChatLoading/ChatLoading";
 import CustomGridTable from "@/app/components/shared/CustomGrid/CustomGridTable";
 import { useValidarInformacoes } from "../../hooks/useValidarInformacoes";
 import { processContent } from "../../utils/validarInformacoesUtils";
 import UserSearchTable from "@/app/components/shared/UserSearchTable/UserSearchTable";
 import Citations from "@/app/components/shared/Citations/Citations";
+import ImageGrid from "@/app/components/ImageGrid/ImageGrid";
 
 export default function ValidarInformacoesMain({}) {
   const router = useRouter();
@@ -66,7 +65,13 @@ export default function ValidarInformacoesMain({}) {
               onRowSelect={handleRowSelect}
               disabledRows={rowsPesquisadas} // NOVA PROP
             />
-            {images.length > 0 && <ImagesBlock images={images} />}
+
+            {images.length > 0 && (
+              <div className={styles.imagesWrapper}>
+                <ImageGrid images={images} />
+              </div>
+            )}
+
             {result?.[0]?.citations && (
               <Citations citations={result[0].citations} />
             )}
