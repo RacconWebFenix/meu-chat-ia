@@ -17,9 +17,12 @@
 
   th,
   td {
-    padding: 12px 10px;
+    padding: 24px 20px;
     text-align: left;
     color: #1976d2;
+    vertical-align: middle;
+    font-size: 1.1rem;
+    font-weight: 500;
   }
 
   th {
@@ -29,7 +32,7 @@
   }
 }
 
-.userInputTableTdCheckbox {
-  width: 40px;
-  text-align: center;
+.cellText {
+  color: #1976d2;
+  margin: 0,7rem;
 }

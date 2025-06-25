@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./UserSearchTable.module.scss";
 import { useSelectedGridContext } from "@/app/providers";
 
 interface UserSearchTableProps {
   inputHeaders: string[];
-  inputRows: string[]; // cada linha é um array de strings
+  inputRows: string[];
 }
 
 export default function UserSearchTable({
@@ -12,6 +12,7 @@ export default function UserSearchTable({
   inputRows,
 }: UserSearchTableProps) {
   const { setInputHeaders, setInputRows } = useSelectedGridContext();
+  
 
   useEffect(() => {
     setInputHeaders(inputHeaders);
@@ -32,7 +33,9 @@ export default function UserSearchTable({
           <tbody>
             <tr>
               {inputRows.map((cell, cellIdx) => (
-                <td key={cellIdx}>{cell}</td>
+                <td key={cellIdx} className={styles.userInputTableTdCheckbox}>
+                  <span className={styles.cellText}>{cell}</span>
+                </td>
               ))}
             </tr>
           </tbody>

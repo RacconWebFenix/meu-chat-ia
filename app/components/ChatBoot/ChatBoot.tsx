@@ -7,8 +7,7 @@ import styles from "./ChatBoot.module.scss";
 import ChatLoading from "../shared/ChatLoading/ChatLoading";
 import { useChatBoot } from "./Hooks/useChatBoot";
 import { IndustrialFields, RamoFields } from "./EquivalenceForm/types";
-import UserSearchTable from "./UserSearchTable/UserSearchTable";
-
+import UserSearchTable from "../shared/UserSearchTable/UserSearchTable";
 
 export default function ChatBoot() {
   const {
@@ -22,8 +21,6 @@ export default function ChatBoot() {
     handleSend,
     // currentFeedbackId,
   } = useChatBoot();
-
-
 
   // Função adaptadora para o EquivalenceForm
   const setPrompt = (v: unknown) => {
@@ -47,14 +44,16 @@ export default function ChatBoot() {
         <ChatLoading />
       ) : (
         <>
+          {userInputHeaders.length > 0 && userInputRow.length > 0 && (
+            <UserSearchTable
+              inputHeaders={userInputHeaders}
+              inputRows={userInputRow}
+            />
+          )}
           <ChatMessegeList
             messages={messages}
             userInputHeaders={userInputHeaders}
             userInputRow={userInputRow}
-          />
-          <UserSearchTable
-            inputHeaders={userInputHeaders}
-            inputRows={userInputRow}
           />
           <EquivalenceForm
             setPrompt={setPrompt}
