@@ -7,7 +7,6 @@ import LineInputs from "../LineInputs/LineInputs";
 import { hasAnyFieldFilled } from "./helpers";
 import { getDefaultFields } from "../Hooks/helpers";
 
-
 interface SelectLineProps {
   setPrompt: (v: RamoFields | IndustrialFields) => void;
   onSend?: (
@@ -34,10 +33,20 @@ export default function EquivalenceForm({
     quantidadeEquivalentes,
     setQuantidadeEquivalentes,
     handleSubmit,
-  } = useFormSelectLine(branchFields, setPrompt, onSend && ((prompt, headers, row, quantidade) => {
-    // Garante que userInputRow seja string[]
-    onSend(prompt, headers, row.map(x => x ?? ""), quantidade);
-  }));
+  } = useFormSelectLine(
+    branchFields,
+    setPrompt,
+    onSend &&
+      ((prompt, headers, row, quantidade) => {
+        // Garante que userInputRow seja string[]
+        onSend(
+          prompt,
+          headers,
+          row.map((x) => x ?? ""),
+          quantidade
+        );
+      })
+  );
 
   // Initialize the branchFields based on ramoTipo
   useEffect(() => {
