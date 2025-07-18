@@ -1,0 +1,37 @@
+.container {
+  display: flex;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 20px;
+
+}
+
+.userInputTable {
+  width: 100%;
+  // border-spacing: 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+
+  th,
+  td {
+    padding: 24px 20px;
+    text-align: left;
+    color: #1976d2;
+    vertical-align: middle;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  th {
+    background: #1976d2;
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+.cellText {
+  color: #1976d2;
+  margin: 0, 7rem;
+}

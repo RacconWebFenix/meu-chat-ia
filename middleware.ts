@@ -1,6 +1,20 @@
 import { withAuth } from "next-auth/middleware";
 
 export default withAuth({
+  callbacks: {
+    authorized: ({ token, req }) => {
+      // Permite acesso ao login e register sempre
+      if (
+        req.nextUrl.pathname.startsWith("/login") ||
+        req.nextUrl.pathname.startsWith("/register")
+      ) {
+        return true;
+      }
+
+      // Para outras rotas, verifica se tem token
+      return !!token;
+    },
+  },
   pages: {
     signIn: "/login",
   },

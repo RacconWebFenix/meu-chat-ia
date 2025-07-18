@@ -1,0 +1,1965 @@
+{
+  "ADDRESS": [
+    {
+      "column_name": "ID_ADDRESS",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "DESCRIPTION",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "MUNICIPAL_REGISTRATION",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "IS_BILLING_ADDRESS",
+      "data_type": "boolean",
+      "constraints": ""
+    },
+    {
+      "column_name": "ZIP_CODE",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "ADDRESS",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "NUMBER",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "COMPLEMENT",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "NEIGHBORHOOD",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "CITY",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "FEDERATED_UNIT",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "POSSIBLE_DTT_RECEIPT",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "ID_COMPANY",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    }
+  ],
+  "AVAILABLE_SOURCE": [
+    {
+      "column_name": "ID_AVAILABLE_SOURCE",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "CODE",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "IS_ACTIVE",
+      "data_type": "boolean",
+      "constraints": ""
+    },
+    {
+      "column_name": "DESCRIPTION",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "DETAIL",
+      "data_type": "text",
+      "constraints": ""
+    },
+    {
+      "column_name": "CREDIT_COST",
+      "data_type": "numeric",
+      "constraints": ""
+    },
+    {
+      "column_name": "SERVICE_API",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "SITE_URL",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "ALL_REQUIRED",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "ANY_REQUIRED",
+      "data_type": "character varying",
+      "constraints": ""
+    }
+  ],
+  "BILLING_PRICE_RANGE": [
+    {
+      "column_name": "AUDITED_CREATED_AT",
+      "data_type": "timestamp with time zone",
+      "constraints": ""
+    },
+    {
+      "column_name": "AUDITED_CHANGED_AT",
+      "data_type": "timestamp with time zone",
+      "constraints": ""
+    },
+    {
+      "column_name": "ID_PRICE_RANGE",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "FROM_BILLING_VALUE",
+      "data_type": "numeric",
+      "constraints": ""
+    },
+    {
+      "column_name": "TO_BILLING_VALUE",
+      "data_type": "numeric",
+      "constraints": ""
+    },
+    {
+      "column_name": "PRICE",
+      "data_type": "numeric",
+      "constraints": ""
+    }
+  ],
+  "BRAND": [
+    {
+      "column_name": "ID_BRAND",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "DESCRIPTION",
+      "data_type": "character varying",
+      "constraints": ""
+    }
+  ],
+  "CEST": [
+    {
+      "column_name": "AUDITED_CREATED_AT",
+      "data_type": "timestamp with time zone",
+      "constraints": ""
+    },
+    {
+      "column_name": "AUDITED_CHANGED_AT",
+      "data_type": "timestamp with time zone",
+      "constraints": ""
+    },
+    {
+      "column_name": "ID_CEST",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "CODE",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    }
+  ],
+  "COLLABORATOR": [
+    {
+      "column_name": "ID_COLLABORATOR",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ROLE",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "PHONE",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "ID_COMPANY",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_DEPARTMENT",
+      "data_type": "integer",
+      "constraints": "FK to DEPARTMENT"
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    },
+    {
+      "column_name": "USER",
+      "data_type": "integer",
+      "constraints": "FK to auth_user"
+    },
+    {
+      "column_name": "ERP_CODE",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "AUDITED_CHANGED_AT",
+      "data_type": "timestamp with time zone",
+      "constraints": ""
+    },
+    {
+      "column_name": "AUDITED_CREATED_AT",
+      "data_type": "timestamp with time zone",
+      "constraints": ""
+    },
+    {
+      "column_name": "ID_MASTER_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to MASTER_GROUP"
+    },
+    {
+      "column_name": "IS_PRE_ORDER_APPROVER",
+      "data_type": "boolean",
+      "constraints": ""
+    }
+  ],
+  "COMPANY": [
+    {
+      "column_name": "ID_COMPANY",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "KIND",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "PROFILE",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "STATUS",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "CNPJ",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "CPF",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "IS_INDIVIDUAL_CHARGE",
+      "data_type": "boolean",
+      "constraints": ""
+    },
+    {
+      "column_name": "NAME",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "FANTASY_NAME",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "STATE_REGISTRATION",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "FINANCIAL_EMAIL",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "FINANCIAL_EMAIL_2",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "COMERCIAL_EMAIL",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "COMERCIAL_EMAIL_2",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "FINANCIAL_PHONE",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "COMERCIAL_PHONE",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "LOGO_URL",
+      "data_type": "character varying",
+      "constraints": ""
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    },
+    {
+      "column_name": "AUDITED_CHANGED_AT",
+      "data_type": "timestamp with time zone",
+      "constraints": ""
+    },
+    {
+      "column_name": "AUDITED_CREATED_AT",
+      "data_type": "timestamp with time zone",
+      "constraints": ""
+    },
+    {
+      "column_name": "PROVIDER_CLASSIFICATION",
+      "data_type": "character varying",
+      "constraints": ""
+    }
+  ],
+  "COMPANY_representant_customers": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "from_company_id",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "to_company_id",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    }
+  ],
+  "CONFIRMED_SHIPPING": [
+    {
+      "column_name": "ID_CONFIRMED_SHIPPING",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_ORDER_ITEM",
+      "data_type": "integer",
+      "constraints": "FK to ORDER_ITEM"
+    },
+    {
+      "column_name": "CONFIRMED_QUANTITY",
+      "data_type": "numeric",
+      "constraints": ""
+    },
+    {
+      "column_name": "DELIVERY_DAYS",
+      "data_type": "integer",
+      "constraints": ""
+    },
+    {
+      "column_name": "DT_DELIVERY",
+      "data_type": "date",
+      "constraints": ""
+    },
+    {
+      "column_name": "TOTAL_VALUE",
+      "data_type": "numeric",
+      "constraints": ""
+    },
+    {
+      "column_name": "CONFIRMED_DELIVERY_DAYS",
+      "data_type": "integer",
+      "constraints": ""
+    },
+    {
+      "column_name": "CONFIRMED_DT_DELIVERY",
+      "data_type": "date",
+      "constraints": ""
+    },
+    {
+      "column_name": "CONFIRMED_TOTAL_VALUE",
+      "data_type": "numeric",
+      "constraints": ""
+    },
+    {
+      "column_name": "DUPLICATED_ID",
+      "data_type": "integer",
+      "constraints": ""
+    },
+    {
+      "column_name": "QUANTITY",
+      "data_type": "numeric",
+      "constraints": ""
+    },
+    {
+      "column_name": "UNITY_TOTAL",
+      "data_type": "numeric",
+      "constraints": ""
+    },
+    {
+      "column_name": "AUDITED_CHANGED_AT",
+      "data_type": "timestamp with time zone",
+      "constraints": ""
+    },
+    {
+      "column_name": "AUDITED_CREATED_AT",
+      "data_type": "timestamp with time zone",
+      "constraints": ""
+    },
+    {
+      "column_name": "BALANCE",
+      "data_type": "numeric",
+      "constraints": ""
+    }
+  ],
+  "CONTRACT_ITEM": [
+    {
+      "column_name": "ID_CONTRACT_ITEM",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_CONTRACT_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to CONTRACT_PROCESS"
+    },
+    {
+      "column_name": "ID_QUOTATION_ITEM_BRAND",
+      "data_type": "integer",
+      "constraints": "FK to QUOTATION_ITEM_BRAND"
+    }
+  ],
+  "CONTRACT_PROCESS": [
+    {
+      "column_name": "process_ptr_id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_FAVORED_CUSTOMER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_FAVORED_PROVIDER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_BUYER",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    },
+    {
+      "column_name": "PAYMENT_TERM",
+      "data_type": "integer",
+      "constraints": "FK to PAYMENT_TERM"
+    },
+    {
+      "column_name": "parent_task_id",
+      "data_type": "integer",
+      "constraints": "FK to viewflow_task"
+    },
+    {
+      "column_name": "ID_FAMILY",
+      "data_type": "integer",
+      "constraints": "FK to FAMILY"
+    },
+    {
+      "column_name": "ID_SHIPPING_COMPANY",
+      "data_type": "integer",
+      "constraints": "FK to SHIPPING_COMPANY"
+    },
+    {
+      "column_name": "ID_PRE_ORDER_APPROVER",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    }
+  ],
+  "CONTRACT_PROCESS_customers": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "contractprocess_id",
+      "data_type": "integer",
+      "constraints": "FK to CONTRACT_PROCESS"
+    },
+    {
+      "column_name": "company_id",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    }
+  ],
+  "COUNTRY_OF_ORIGIN": [
+    {
+      "column_name": "ID_COUNTRY_OF_ORIGIN",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    }
+  ],
+  "DEPARTMENT": [
+    {
+      "column_name": "ID_DEPARTMENT",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    }
+  ],
+  "EMAIL": [
+    {
+      "column_name": "ID_EMAIL",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_TASK",
+      "data_type": "integer",
+      "constraints": "FK to viewflow_task"
+    }
+  ],
+  "EMAIL_ATTACHMENT": [
+    {
+      "column_name": "ID_EMAIL_ATTACHMENT",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_EMAIL",
+      "data_type": "integer",
+      "constraints": "FK to EMAIL"
+    }
+  ],
+  "EMAIL_RECIPIENT": [
+    {
+      "column_name": "ID_EMAIL_RECIPIENT",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_EMAIL",
+      "data_type": "integer",
+      "constraints": "FK to EMAIL"
+    }
+  ],
+  "FAMILY": [
+    {
+      "column_name": "ID_FAMILY",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    }
+  ],
+  "FAMILY_providers": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "family_id",
+      "data_type": "integer",
+      "constraints": "FK to FAMILY"
+    },
+    {
+      "column_name": "company_id",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    }
+  ],
+  "FILTER_ROLE_RULE": [
+    {
+      "column_name": "ID_FILTER_ROLE_RULE",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    }
+  ],
+  "FILTER_ROLE_RULE_buyer_filter": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "filterrolerule_id",
+      "data_type": "integer",
+      "constraints": "FK to FILTER_ROLE_RULE"
+    },
+    {
+      "column_name": "collaborator_id",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    }
+  ],
+  "FILTER_ROLE_RULE_company_filter": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "filterrolerule_id",
+      "data_type": "integer",
+      "constraints": "FK to FILTER_ROLE_RULE"
+    },
+    {
+      "column_name": "company_id",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    }
+  ],
+  "FILTER_ROLE_RULE_department_filter": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "filterrolerule_id",
+      "data_type": "integer",
+      "constraints": "FK to FILTER_ROLE_RULE"
+    },
+    {
+      "column_name": "department_id",
+      "data_type": "integer",
+      "constraints": "FK to DEPARTMENT"
+    }
+  ],
+  "FISCAL_CLASS": [
+    {
+      "column_name": "ID_FISCAL_CLASS",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    }
+  ],
+  "FISCAL_TYPE": [
+    {
+      "column_name": "ID_FISCAL_TYPE",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    }
+  ],
+  "FOLLOW_UP_ITEM": [
+    {
+      "column_name": "ID_FOLLOW_UP_ITEM",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_CONFIRMED_SHIPPING",
+      "data_type": "integer",
+      "constraints": "FK to CONFIRMED_SHIPPING"
+    },
+    {
+      "column_name": "ID_RECEIVEMENT_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to RECEIVEMENT_PROCESS"
+    }
+  ],
+  "ICMS": [
+    {
+      "column_name": "ID_ICMS",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_MATERIAL",
+      "data_type": "integer",
+      "constraints": "FK to MATERIAL"
+    }
+  ],
+  "ICMS_ST": [
+    {
+      "column_name": "ID_ICMS_ST",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_MATERIAL",
+      "data_type": "integer",
+      "constraints": "FK to MATERIAL"
+    }
+  ],
+  "INTEGRATION": [
+    {
+      "column_name": "ID_INTEGRATION",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    },
+    {
+      "column_name": "USER",
+      "data_type": "integer",
+      "constraints": "FK to auth_user"
+    }
+  ],
+  "INTEGRATION_CONSUMPTION": [
+    {
+      "column_name": "ID_INTEGRATION_CONSUMPTION",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_INTEGRATION",
+      "data_type": "integer",
+      "constraints": "FK to INTEGRATION"
+    }
+  ],
+  "INVOICING_PROCESS": [
+    {
+      "column_name": "process_ptr_id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_BUYER",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    },
+    {
+      "column_name": "ID_FAVORED_CUSTOMER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_FAVORED_PROVIDER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_ORDER_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to ORDER_PROCESS"
+    },
+    {
+      "column_name": "ID_FAMILY",
+      "data_type": "integer",
+      "constraints": "FK to FAMILY"
+    }
+  ],
+  "MATERIAL": [
+    {
+      "column_name": "ID_MATERIAL",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_CEST",
+      "data_type": "integer",
+      "constraints": "FK to CEST"
+    },
+    {
+      "column_name": "ID_COUNTRY_OF_ORIGIN",
+      "data_type": "integer",
+      "constraints": "FK to COUNTRY_OF_ORIGIN"
+    },
+    {
+      "column_name": "ID_FISCAL_CLASS",
+      "data_type": "integer",
+      "constraints": "FK to FISCAL_CLASS"
+    },
+    {
+      "column_name": "ID_FISCAL_TYPE",
+      "data_type": "integer",
+      "constraints": "FK to FISCAL_TYPE"
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    },
+    {
+      "column_name": "ID_BUYER",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    },
+    {
+      "column_name": "ID_DEPARTMENT",
+      "data_type": "integer",
+      "constraints": "FK to DEPARTMENT"
+    },
+    {
+      "column_name": "ID_LAST_REQUEST_PROCESS_GENERATED",
+      "data_type": "integer",
+      "constraints": "FK to REQUEST_PROCESS"
+    },
+    {
+      "column_name": "ID_LAST_ORDER_PROCESS_GENERATED",
+      "data_type": "integer",
+      "constraints": "FK to ORDER_PROCESS"
+    },
+    {
+      "column_name": "ID_PARENT_MATERIAL",
+      "data_type": "integer",
+      "constraints": "FK to MATERIAL"
+    },
+    {
+      "column_name": "ID_MEASUREMENT_UNIT",
+      "data_type": "integer",
+      "constraints": "FK to MEASUREMENT_UNIT"
+    }
+  ],
+  "MATERIAL_SUBGROUP": [
+    {
+      "column_name": "ID_MATERIAL_SUBGROUP",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_MATERIAL_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to MATERIAL_GROUP"
+    }
+  ],
+  "MEASUREMENT_UNIT": [
+    {
+      "column_name": "ID_MEASUREMENT_UNIT",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    }
+  ],
+  "MODULE_PLAN": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "plan_id",
+      "data_type": "integer",
+      "constraints": "FK to PLAN"
+    },
+    {
+      "column_name": "module_id",
+      "data_type": "integer",
+      "constraints": "FK to MODULE"
+    }
+  ],
+  "OBSOLETE_MATERIAL": [
+    {
+      "column_name": "ID_MATERIAL",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_BRAND",
+      "data_type": "integer",
+      "constraints": "FK to BRAND"
+    },
+    {
+      "column_name": "ID_MANUFACTURER",
+      "data_type": "integer",
+      "constraints": "FK to MANUFACTURER"
+    },
+    {
+      "column_name": "ID_MATERIAL_SUBGROUP",
+      "data_type": "integer",
+      "constraints": "FK to MATERIAL_SUBGROUP"
+    }
+  ],
+  "OFFICE_GROUP": [
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_PAYER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_MASTER_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to MASTER_GROUP"
+    }
+  ],
+  "ORDER_DELIVERY_CHANGE": [
+    {
+      "column_name": "id_order_delivery_change",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_CONFIRMED_SHIPPING",
+      "data_type": "integer",
+      "constraints": "FK to CONFIRMED_SHIPPING"
+    },
+    {
+      "column_name": "ID_ORDER_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to ORDER_PROCESS"
+    },
+    {
+      "column_name": "USER_RESPONSIBLE",
+      "data_type": "integer",
+      "constraints": "FK to auth_user"
+    }
+  ],
+  "ORDER_ITEM": [
+    {
+      "column_name": "ID_ORDER_ITEM",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_ORDER_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to ORDER_PROCESS"
+    },
+    {
+      "column_name": "ID_DEPARTMENT",
+      "data_type": "integer",
+      "constraints": "FK to DEPARTMENT"
+    },
+    {
+      "column_name": "ID_CONTRACT_ITEM",
+      "data_type": "integer",
+      "constraints": "FK to CONTRACT_ITEM"
+    },
+    {
+      "column_name": "ID_SERVICE_MATERIAL",
+      "data_type": "integer",
+      "constraints": "FK to SERVICE_MATERIAL"
+    },
+    {
+      "column_name": "ID_QUOTATION_ITEM_BRAND",
+      "data_type": "integer",
+      "constraints": "FK to QUOTATION_ITEM_BRAND"
+    },
+    {
+      "column_name": "ID_SERVICE_ITEM",
+      "data_type": "integer",
+      "constraints": "FK to SERVICE_ITEM"
+    },
+    {
+      "column_name": "ID_MATERIAL",
+      "data_type": "integer",
+      "constraints": "FK to MATERIAL"
+    },
+    {
+      "column_name": "ID_REQUEST_ITEM",
+      "data_type": "integer",
+      "constraints": "FK to REQUEST_ITEM"
+    }
+  ],
+  "ORDER_PROCESS": [
+    {
+      "column_name": "process_ptr_id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_FAVORED_CUSTOMER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_FAVORED_PROVIDER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_PRE_ORDER",
+      "data_type": "integer",
+      "constraints": "FK to PRE_ORDER"
+    },
+    {
+      "column_name": "ID_BUYER",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    },
+    {
+      "column_name": "ID_SHIPPING_COMPANY",
+      "data_type": "integer",
+      "constraints": "FK to SHIPPING_COMPANY"
+    },
+    {
+      "column_name": "parent_task_id",
+      "data_type": "integer",
+      "constraints": "FK to viewflow_task"
+    },
+    {
+      "column_name": "ID_CONTRACT",
+      "data_type": "integer",
+      "constraints": "FK to CONTRACT_PROCESS"
+    },
+    {
+      "column_name": "ID_FAMILY",
+      "data_type": "integer",
+      "constraints": "FK to FAMILY"
+    },
+    {
+      "column_name": "ID_SERVICE_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to SERVICE_PROCESS"
+    },
+    {
+      "column_name": "ID_PARENT_ORDER",
+      "data_type": "integer",
+      "constraints": "FK to ORDER_PROCESS"
+    }
+  ],
+  "PARTICIPANT_DATA": [
+    {
+      "column_name": "ID_PARTICIPANT_DATA",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_AVAILABLE_SOURCE",
+      "data_type": "integer",
+      "constraints": "FK to AVAILABLE_SOURCE"
+    },
+    {
+      "column_name": "ID_PARTICIPANT",
+      "data_type": "integer",
+      "constraints": "FK to PARTICIPANT"
+    }
+  ],
+  "PARTICIPANT_DOCUMENT": [
+    {
+      "column_name": "ID_PARTICIPANT_DOCUMENT",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_PARTICIPANT",
+      "data_type": "integer",
+      "constraints": "FK to PARTICIPANT"
+    }
+  ],
+  "PARTICIPANT_QUEUE_PROCESSING": [
+    {
+      "column_name": "ID_PARTICIPANT_QUEUE_PROCESSING",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_PARTICIPANT_SANITATION",
+      "data_type": "integer",
+      "constraints": "FK to PARTICIPANT_SANITATION"
+    }
+  ],
+  "PARTICIPANT_SANITATION": [
+    {
+      "column_name": "ID_PARTICIPANT_SANITATION",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_REQUESTER",
+      "data_type": "integer",
+      "constraints": "FK to auth_user"
+    }
+  ],
+  "PAYMENT_TERM": [
+    {
+      "column_name": "ID_PAYMENT_TERM",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    }
+  ],
+  "PRE_ORDER": [
+    {
+      "column_name": "ID_PRE_ORDER",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_QUOTATION_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to QUOTATION_PROCESS"
+    },
+    {
+      "column_name": "ID_FAVORED_CUSTOMER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_FAVORED_PROVIDER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_SHIPPING_COMPANY",
+      "data_type": "integer",
+      "constraints": "FK to SHIPPING_COMPANY"
+    },
+    {
+      "column_name": "ID_CONTRACT_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to CONTRACT_PROCESS"
+    }
+  ],
+  "PRE_REGISTRATION_PROCESS": [
+    {
+      "column_name": "process_ptr_id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_FAVORED_CUSTOMER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_FAVORED_PROVIDER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_BUYER",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    },
+    {
+      "column_name": "ID_FAMILY",
+      "data_type": "integer",
+      "constraints": "FK to FAMILY"
+    }
+  ],
+  "PROVIDER_ANSWER_PARAM": [
+    {
+      "column_name": "ID_PROVIDER_ANSWER_PARAM",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_PROVIDER_PARAM",
+      "data_type": "integer",
+      "constraints": "FK to PROVIDER_PARAM"
+    },
+    {
+      "column_name": "ID_ORDER_ITEM",
+      "data_type": "integer",
+      "constraints": "FK to ORDER_ITEM"
+    },
+    {
+      "column_name": "ID_QUOTATION_PROVIDER_ITEM_BRAND",
+      "data_type": "integer",
+      "constraints": "FK to QUOTATION_PROVIDER_ITEM_BRAND"
+    }
+  ],
+  "PROVIDER_CATEGORIZATION": [
+    {
+      "column_name": "ID_PROVIDER_CATEGORIZATION",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    }
+  ],
+  "PROVIDER_CATEGORIZATION_providers": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "providercategorization_id",
+      "data_type": "integer",
+      "constraints": "FK to PROVIDER_CATEGORIZATION"
+    },
+    {
+      "column_name": "company_id",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    }
+  ],
+  "PROVIDER_CATEGORIZATION_subcategories": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "providercategorization_id",
+      "data_type": "integer",
+      "constraints": "FK to PROVIDER_CATEGORIZATION"
+    },
+    {
+      "column_name": "supplysubcategory_id",
+      "data_type": "integer",
+      "constraints": "FK to SUPPLY_SUBCATEGORY"
+    }
+  ],
+  "PROVIDER_CODE": [
+    {
+      "column_name": "ID_PROVIDER_CODE",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_CUSTOMER_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    },
+    {
+      "column_name": "ID_PROVIDER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    }
+  ],
+  "PROVIDER_HOMOLOGATION": [
+    {
+      "column_name": "ID_PROVIDER_HOMOLOGATION",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    },
+    {
+      "column_name": "ID_CUSTOMER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    }
+  ],
+  "PROVIDER_HOMOLOGATION_providers": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "providerhomologation_id",
+      "data_type": "integer",
+      "constraints": "FK to PROVIDER_HOMOLOGATION"
+    },
+    {
+      "column_name": "company_id",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    }
+  ],
+  "PROVIDER_PARAM": [
+    {
+      "column_name": "ID_PROVIDER_PARAM",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_SHIPPING_COMPANY",
+      "data_type": "integer",
+      "constraints": "FK to SHIPPING_COMPANY"
+    },
+    {
+      "column_name": "ID_PAYMENT_TERM",
+      "data_type": "integer",
+      "constraints": "FK to PAYMENT_TERM"
+    },
+    {
+      "column_name": "ID_PROVIDER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    },
+    {
+      "column_name": "ID_CUSTOMER_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    }
+  ],
+  "QUOTATION_ITEM": [
+    {
+      "column_name": "ID_QUOTATION_ITEM",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_QUOTATION_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to QUOTATION_PROCESS"
+    },
+    {
+      "column_name": "ID_DEPARTMENT",
+      "data_type": "integer",
+      "constraints": "FK to DEPARTMENT"
+    },
+    {
+      "column_name": "ID_CUSTOMER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_REQUEST_ITEM",
+      "data_type": "integer",
+      "constraints": "FK to REQUEST_ITEM"
+    },
+    {
+      "column_name": "ID_LAST_BUY_FIXED_SOURCE",
+      "data_type": "integer",
+      "constraints": "FK to QUOTATION_ITEM_FIXED_LAST_BUY"
+    },
+    {
+      "column_name": "ID_PARENT_QUOTATION_ITEM",
+      "data_type": "integer",
+      "constraints": "FK to QUOTATION_ITEM"
+    }
+  ],
+  "QUOTATION_ITEM_BRAND": [
+    {
+      "column_name": "ID_QUOTATION_ITEM_BRAND",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_QUOTATION_ITEM",
+      "data_type": "integer",
+      "constraints": "FK to QUOTATION_ITEM"
+    },
+    {
+      "column_name": "ID_PROVIDER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_PRE_ORDER",
+      "data_type": "integer",
+      "constraints": "FK to PRE_ORDER"
+    },
+    {
+      "column_name": "ID_REQUEST_ITEM_BRAND",
+      "data_type": "integer",
+      "constraints": "FK to REQUEST_ITEM_BRAND"
+    },
+    {
+      "column_name": "ID_PARENT_QUOTATION_ITEM_BRAND",
+      "data_type": "integer",
+      "constraints": "FK to QUOTATION_ITEM_BRAND"
+    }
+  ],
+  "QUOTATION_ITEM_FIXED_LAST_BUY": [
+    {
+      "column_name": "ID_QUOTATION_ITEM_FIXED_LAST_BUY",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_CUSTOMER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    }
+  ],
+  "QUOTATION_PROCESS": [
+    {
+      "column_name": "process_ptr_id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_FAVORED_CUSTOMER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_FAVORED_PROVIDER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_BUYER",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    },
+    {
+      "column_name": "ID_PARENT_QUOTATION",
+      "data_type": "integer",
+      "constraints": "FK to QUOTATION_PROCESS"
+    },
+    {
+      "column_name": "parent_task_id",
+      "data_type": "integer",
+      "constraints": "FK to viewflow_task"
+    },
+    {
+      "column_name": "ID_REQUEST_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to REQUEST_PROCESS"
+    },
+    {
+      "column_name": "ID_FAMILY",
+      "data_type": "integer",
+      "constraints": "FK to FAMILY"
+    }
+  ],
+  "QUOTATION_PROCESS_providers": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "quotationprocess_id",
+      "data_type": "integer",
+      "constraints": "FK to QUOTATION_PROCESS"
+    },
+    {
+      "column_name": "company_id",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    }
+  ],
+  "QUOTATION_PROVIDER_ITEM_BRAND": [
+    {
+      "column_name": "ID_QUOTATION_PROVIDER_ITEM_BRAND",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_QUOTATION_ITEM",
+      "data_type": "integer",
+      "constraints": "FK to QUOTATION_ITEM"
+    },
+    {
+      "column_name": "ID_QUOTATION_PROVIDER_SUBPROCESS",
+      "data_type": "integer",
+      "constraints": "FK to QUOTATION_PROVIDER_SUBPROCESS"
+    },
+    {
+      "column_name": "ID_QUOTATION_ITEM_BRAND",
+      "data_type": "integer",
+      "constraints": "FK to QUOTATION_ITEM_BRAND"
+    }
+  ],
+  "QUOTATION_PROVIDER_SUBPROCESS": [
+    {
+      "column_name": "process_ptr_id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_FAVORED_CUSTOMER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_FAVORED_PROVIDER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_SHIPPING_COMPANY",
+      "data_type": "integer",
+      "constraints": "FK to SHIPPING_COMPANY"
+    },
+    {
+      "column_name": "ID_QUOTATION_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to QUOTATION_PROCESS"
+    },
+    {
+      "column_name": "parent_task_id",
+      "data_type": "integer",
+      "constraints": "FK to viewflow_task"
+    },
+    {
+      "column_name": "ID_BUYER",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    },
+    {
+      "column_name": "ID_FAMILY",
+      "data_type": "integer",
+      "constraints": "FK to FAMILY"
+    },
+    {
+      "column_name": "ID_PROVIDER_PARAM",
+      "data_type": "integer",
+      "constraints": "FK to PROVIDER_PARAM"
+    }
+  ],
+  "RECEIVEMENT_PROCESS": [
+    {
+      "column_name": "process_ptr_id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_BUYER",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    },
+    {
+      "column_name": "ID_FAVORED_CUSTOMER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_FAVORED_PROVIDER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_ORDER_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to ORDER_PROCESS"
+    },
+    {
+      "column_name": "PAYMENT_TERM",
+      "data_type": "integer",
+      "constraints": "FK to PAYMENT_TERM"
+    },
+    {
+      "column_name": "ID_FAMILY",
+      "data_type": "integer",
+      "constraints": "FK to FAMILY"
+    }
+  ],
+  "REQUEST_ITEM": [
+    {
+      "column_name": "ID_REQUEST_ITEM",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_BUYER",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    },
+    {
+      "column_name": "ID_CUSTOMER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_DEPARTMENT",
+      "data_type": "integer",
+      "constraints": "FK to DEPARTMENT"
+    },
+    {
+      "column_name": "ID_REQUEST_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to REQUEST_PROCESS"
+    },
+    {
+      "column_name": "ID_LAST_BUY_FIXED_SOURCE",
+      "data_type": "integer",
+      "constraints": "FK to QUOTATION_ITEM_FIXED_LAST_BUY"
+    },
+    {
+      "column_name": "ID_MATERIAL",
+      "data_type": "integer",
+      "constraints": "FK to MATERIAL"
+    },
+    {
+      "column_name": "ID_CONTRACT_ITEM",
+      "data_type": "integer",
+      "constraints": "FK to CONTRACT_ITEM"
+    }
+  ],
+  "REQUEST_ITEM_BRAND": [
+    {
+      "column_name": "ID_REQUEST_ITEM_BRAND",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_REQUEST_ITEM",
+      "data_type": "integer",
+      "constraints": "FK to REQUEST_ITEM"
+    }
+  ],
+  "REQUEST_PROCESS": [
+    {
+      "column_name": "process_ptr_id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_BUYER",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    },
+    {
+      "column_name": "ID_FAVORED_CUSTOMER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_FAVORED_PROVIDER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_FAMILY",
+      "data_type": "integer",
+      "constraints": "FK to FAMILY"
+    }
+  ],
+  "ROLE_RULE": [
+    {
+      "column_name": "ID_ROLE_RULE",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_DEFAULT_RESPONSIBLE",
+      "data_type": "integer",
+      "constraints": "FK to DEFAULT_RESPONSIBLE"
+    },
+    {
+      "column_name": "ID_FILTER_ROLE_RULE",
+      "data_type": "integer",
+      "constraints": "FK to FILTER_ROLE_RULE"
+    },
+    {
+      "column_name": "ID_LAST_RESPONSIBLE",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    }
+  ],
+  "ROLE_RULE_id_default_role": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "rolerule_id",
+      "data_type": "integer",
+      "constraints": "FK to ROLE_RULE"
+    },
+    {
+      "column_name": "defaultrole_id",
+      "data_type": "integer",
+      "constraints": "FK to DEFAULT_ROLE"
+    }
+  ],
+  "ROLE_RULE_id_responsible_collaborator": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "rolerule_id",
+      "data_type": "integer",
+      "constraints": "FK to ROLE_RULE"
+    },
+    {
+      "column_name": "collaborator_id",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    }
+  ],
+  "SERVICE_ITEM": [
+    {
+      "column_name": "ID_SERVICE_ITEM",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_SERVICE_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to SERVICE_PROCESS"
+    },
+    {
+      "column_name": "ID_CONTRACT_ITEM",
+      "data_type": "integer",
+      "constraints": "FK to CONTRACT_ITEM"
+    },
+    {
+      "column_name": "ID_PARENT_SERVICE_ITEM",
+      "data_type": "integer",
+      "constraints": "FK to SERVICE_ITEM"
+    }
+  ],
+  "SERVICE_MATERIAL": [
+    {
+      "column_name": "ID_SERVICE_MATERIAL",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_SERVICE_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to SERVICE_PROCESS"
+    },
+    {
+      "column_name": "ID_CONTRACT_ITEM",
+      "data_type": "integer",
+      "constraints": "FK to CONTRACT_ITEM"
+    },
+    {
+      "column_name": "ID_PARENT_SERVICE_MATERIAL",
+      "data_type": "integer",
+      "constraints": "FK to SERVICE_MATERIAL"
+    }
+  ],
+  "SERVICE_PROCESS": [
+    {
+      "column_name": "process_ptr_id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_SHIPPING_COMPANY",
+      "data_type": "integer",
+      "constraints": "FK to SHIPPING_COMPANY"
+    },
+    {
+      "column_name": "ID_BUYER",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    },
+    {
+      "column_name": "ID_FAMILY",
+      "data_type": "integer",
+      "constraints": "FK to FAMILY"
+    },
+    {
+      "column_name": "ID_FAVORED_CUSTOMER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_FAVORED_PROVIDER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_PAYMENT_TERM",
+      "data_type": "integer",
+      "constraints": "FK to PAYMENT_TERM"
+    }
+  ],
+  "SHIPPING_COMPANY": [
+    {
+      "column_name": "ID_SHIPPING_COMPANY",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_OFFICE_GROUP",
+      "data_type": "integer",
+      "constraints": "FK to OFFICE_GROUP"
+    }
+  ],
+  "SOURCE_QUEUE": [
+    {
+      "column_name": "ID_SOURCE_QUEUE",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_AVAILABLE_SOURCE",
+      "data_type": "integer",
+      "constraints": "FK to AVAILABLE_SOURCE"
+    },
+    {
+      "column_name": "ID_PARTICIPANT_QUEUE_PROCESSING",
+      "data_type": "integer",
+      "constraints": "FK to PARTICIPANT_QUEUE_PROCESSING"
+    }
+  ],
+  "SUPPLY_CATEGORY": [
+    {
+      "column_name": "ID_SUPPLY_CATEGORY",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_SUPPLY_LINE_TYPE",
+      "data_type": "integer",
+      "constraints": "FK to SUPPLY_LINE_TYPE"
+    }
+  ],
+  "SUPPLY_SUBCATEGORY": [
+    {
+      "column_name": "ID_SUPPLY_SUBCATEGORY",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_SUPPLY_CATEGORY",
+      "data_type": "integer",
+      "constraints": "FK to SUPPLY_CATEGORY"
+    }
+  ],
+  "SUPPORT_CONTACT_HISTORICAL": [
+    {
+      "column_name": "ID_SUPPORT_CONTACT_HISTORICAL",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_RESPONSIBLE",
+      "data_type": "integer",
+      "constraints": "FK to auth_user"
+    },
+    {
+      "column_name": "ID_SUPPORT_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to SUPPORT_PROCESS"
+    }
+  ],
+  "SUPPORT_PROCESS": [
+    {
+      "column_name": "process_ptr_id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_BUYER",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    },
+    {
+      "column_name": "ID_FAVORED_CUSTOMER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_FAVORED_PROVIDER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_RELATED_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to viewflow_process"
+    },
+    {
+      "column_name": "ID_FAMILY",
+      "data_type": "integer",
+      "constraints": "FK to FAMILY"
+    }
+  ],
+  "TRANSPORT_PROCESS": [
+    {
+      "column_name": "process_ptr_id",
+      "data_type": "integer",
+      "constraints": "Primary Key"
+    },
+    {
+      "column_name": "ID_SHIPPING_COMPANY",
+      "data_type": "integer",
+      "constraints": "FK to SHIPPING_COMPANY"
+    },
+    {
+      "column_name": "ID_BUYER",
+      "data_type": "integer",
+      "constraints": "FK to COLLABORATOR"
+    },
+    {
+      "column_name": "ID_FAVORED_CUSTOMER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_FAVORED_PROVIDER",
+      "data_type": "integer",
+      "constraints": "FK to COMPANY"
+    },
+    {
+      "column_name": "ID_ORDER_PROCESS",
+      "data_type": "integer",
+      "constraints": "FK to ORDER_PROCESS"
+    },
+    {
+      "column_name": "ID_FAMILY",
+      "data_type": "integer",
+      "constraints": "FK to FAMILY"
+    }
+  ]
+}
