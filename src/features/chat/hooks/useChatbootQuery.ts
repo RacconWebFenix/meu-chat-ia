@@ -34,7 +34,6 @@ export function useChatbotQuery() {
 
       const data = await response.json();
 
-      // CORREÇÃO: A resposta do n8n vem em um array, então pegamos o primeiro item.
       const botReply = data;
 
       if (!botReply || typeof botReply.text !== "string") {
@@ -45,7 +44,9 @@ export function useChatbotQuery() {
         messageId: new Date().toISOString() + Math.random(),
         role: "bot",
         text: botReply.text,
-        canGenerateChart: botReply.canGenerateChart,
+        canGenerateChart:
+          botReply.canGenerateChart === true ||
+          botReply.canGenerateChart === "true",
         chartPayload: botReply.chartPayload,
       };
 
@@ -63,6 +64,10 @@ export function useChatbotQuery() {
     }
   };
 
+  const addMessage = (msg: Message) => {
+    setMessages((prev) => [...prev, msg]);
+  };
+
   return {
     messages,
     input,
@@ -70,5 +75,6 @@ export function useChatbotQuery() {
     loading,
     inputRef,
     sendMessage,
+    addMessage,
   };
 }

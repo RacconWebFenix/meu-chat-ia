@@ -19,19 +19,25 @@ import {
 } from "recharts";
 import { Typography, Paper } from "@mui/material";
 
+// Interface para os dados formatados que o gráfico irá renderizar.
+interface ChartData {
+  group: string;
+  [key: string]: string | number;
+}
+
 interface ChartDisplayProps {
-  data: unknown[];
+  data: ChartData[];
   chartType: "bar" | "line" | "pie";
   loading: boolean;
 }
 
 const COLORS = [
-  "#0088FE",
-  "#00C49F",
-  "#FFBB28",
-  "#FF8042",
   "#8884d8",
   "#82ca9d",
+  "#FFBB28",
+  "#00C49F",
+  "#FF8042",
+  "#0088FE",
 ];
 
 const ChartDisplay: React.FC<ChartDisplayProps> = ({
@@ -39,9 +45,16 @@ const ChartDisplay: React.FC<ChartDisplayProps> = ({
   chartType,
   loading,
 }) => {
-  if (loading) {
-    return <Typography>Carregando dados do gráfico...</Typography>;
+  if (loading || data.length === 0) {
+    return (
+      <Typography>
+        {loading ? "Carregando dados do gráfico..." : "Sem dados para exibir."}
+      </Typography>
+    );
   }
+
+  // Chave para a correção: Esta lógica agora é usada por AMBOS, linha e barra.
+  const dataKeys = Object.keys(data[0]).filter((key) => key !== "group");
 
   const renderChart = () => {
     switch (chartType) {
@@ -53,7 +66,16 @@ const ChartDisplay: React.FC<ChartDisplayProps> = ({
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="value" fill="#8884d8" name="Valor" />
+            {/* --- CORREÇÃO APLICADA AQUI --- */}
+            {/* Agora o gráfico de barras também pode renderizar múltiplas séries */}
+            {dataKeys.map((key, index) => (
+              <Bar
+                key={key}
+                dataKey={key}
+                fill={COLORS[index % COLORS.length]}
+                name={key}
+              />
+            ))}
           </BarChart>
         );
       case "line":
@@ -64,15 +86,21 @@ const ChartDisplay: React.FC<ChartDisplayProps> = ({
             <YAxis />
             <Tooltip />
             <Legend />
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke="#82ca9d"
-              name="Valor"
-            />
+            {/* Esta parte já estava correta e continua igual */}
+            {dataKeys.map((key, index) => (
+              <Line
+                key={key}
+                type="monotone"
+                dataKey={key}
+                stroke={COLORS[index % COLORS.length]}
+                name={key}
+                strokeWidth={2}
+              />
+            ))}
           </LineChart>
         );
       case "pie":
+        // Gráficos de Pizza geralmente usam a chave "value"
         return (
           <PieChart>
             <Pie
@@ -82,7 +110,7 @@ const ChartDisplay: React.FC<ChartDisplayProps> = ({
               labelLine={false}
               outerRadius={120}
               fill="#8884d8"
-              dataKey="value"
+              dataKey="value" // Mantido como "value" pois Pie Charts são de série única
               nameKey="group"
               label={({ name, percent }) =>
                 `${name} ${(percent! * 100).toFixed(0)}%`

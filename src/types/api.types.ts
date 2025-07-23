@@ -85,18 +85,39 @@ export interface ApiChartResponse {
 // 5. Formato que o seu componente ChartDisplay espera
 export interface DisplayChartData {
   group: string;
-  value: number;
+  [key: string]: string | number; // PERMITE CHAVES DINÂMICAS
 }
 
+/**
+ * Representa uma única linha retornada por uma consulta SQL.
+ * Como as colunas podem ter qualquer nome e valor, usamos um
+ * registro genérico, mas garantimos que os valores são primitivos.
+ */
 export type SqlQueryResultRow = Record<string, string | number | null>;
+
+/**
+ * Representa a estrutura completa da resposta final que vem do seu fluxo n8n,
+ * combinando texto e dados para o gráfico.
+ */
+export interface N8nFinalResponse {
+  text?: string | { json?: { text?: string } };
+  canGenerateChart: boolean | string; // Aceita boolean ou a string "true"/"false"
+  chartPayload?: SqlQueryResultRow[];
+}
 
 export interface Message {
   messageId?: string;
   role: "user" | "bot";
-  text: string;
+  text:
+    | string
+    | {
+        json?: {
+          text?: string;
+        };
+      };
   images?: ImageResult[];
   citations?: Citation[];
-  canGenerateChart?: boolean;
+  canGenerateChart?: boolean | string; // Aceita boolean ou a string "true"/"false"
   chartPayload?: SqlQueryResultRow[];
   chartData?: DisplayChartData[];
   chartType?: ApiChartType;

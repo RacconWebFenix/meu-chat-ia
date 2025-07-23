@@ -6,12 +6,16 @@ import ChartControls, { ChartConfig } from "./ChartControls";
 import ChartDisplay from "./ChartDisplay";
 import { Box } from "@mui/material";
 
-// CORREÇÃO: A interface de props foi ajustada para receber o estado e a função de setar o estado
+interface ChartData {
+  group: string;
+  [key: string]: string | number;
+}
+
 interface ChartAreaProps {
   config: ChartConfig;
   setConfig: (value: React.SetStateAction<ChartConfig>) => void;
   onGenerateChart: () => void;
-  chartData: undefined[];
+  chartData: ChartData[];
   loading: boolean;
   disabled: boolean;
   selectedTable: string;

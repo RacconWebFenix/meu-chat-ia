@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
-// --- INÍCIO DA MODIFICAÇÃO ---
-// 1. Importe o tipo que definimos para os dados brutos da query
-import { SqlQueryResultRow } from "@/types";
-// --- FIM DA MODIFICAÇÃO ---
 
-// --- INÍCIO DA MODIFICAÇÃO ---
-// 2. Use o tipo importado para tipar o payload
+import { SqlQueryResultRow } from "@/types";
+
 async function getChartJson(payload: SqlQueryResultRow[]) {
-  // --- FIM DA MODIFICAÇÃO ---
   const chartGeneratorWebhookUrl = process.env.N8N_CHART_GENERATOR_WEBHOOK_URL;
 
   if (!chartGeneratorWebhookUrl) {
@@ -31,10 +26,8 @@ async function getChartJson(payload: SqlQueryResultRow[]) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    // --- INÍCIO DA MODIFICAÇÃO ---
-    // 3. Opcionalmente, podemos tipar a variável aqui também para maior clareza
+
     const chartPayload: SqlQueryResultRow[] = body.payload;
-    // --- FIM DA MODIFICAÇÃO ---
 
     if (!chartPayload) {
       return NextResponse.json(
@@ -43,9 +36,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const chartJson = await getChartJson(chartPayload);
+    const n8nResponse = await getChartJson(chartPayload);
+    const chartData = JSON.parse(n8nResponse[0].output);
 
-    return NextResponse.json(chartJson);
+    return NextResponse.json(chartData);
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Erro desconhecido.";
