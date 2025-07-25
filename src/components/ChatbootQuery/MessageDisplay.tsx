@@ -65,6 +65,8 @@ function transformApiDataToChartData(
   return Object.values(dataMap);
 }
 
+// --- COMPONENTE PRINCIPAL COM A LÓGICA CORRIGIDA ---
+
 interface MessageDisplayProps {
   message: Message;
 }
@@ -145,6 +147,8 @@ export default function MessageDisplay({ message }: MessageDisplayProps) {
   ) {
     displayText = String(message.text.text ?? "");
   }
+
+  console.log(displayText);
 
   return (
     <Box

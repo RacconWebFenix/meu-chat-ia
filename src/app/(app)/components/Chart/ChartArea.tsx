@@ -6,10 +6,8 @@ import ChartControls, { ChartConfig } from "./ChartControls";
 import ChartDisplay from "./ChartDisplay";
 import { Box } from "@mui/material";
 
-interface ChartData {
-  group: string;
-  [key: string]: string | number;
-}
+// CORREÇÃO: A interface de props foi ajustada para receber o estado e a função de setar o estado
+import { ChartData } from "./ChartDisplay";
 
 interface ChartAreaProps {
   config: ChartConfig;
@@ -43,7 +41,7 @@ const ChartArea: React.FC<ChartAreaProps> = ({
         selectedTable={selectedTable}
       />
       <ChartDisplay
-        data={chartData}
+        data={chartData.filter(Boolean)}
         chartType={config.chartType}
         loading={loading}
       />

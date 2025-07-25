@@ -20,7 +20,7 @@ import {
 import { Typography, Paper } from "@mui/material";
 
 // Interface para os dados formatados que o gráfico irá renderizar.
-interface ChartData {
+export interface ChartData {
   group: string;
   [key: string]: string | number;
 }
