@@ -1,11 +1,9 @@
 // src/hooks/useAudioRecorder.ts
 import { useState, useRef, useCallback } from "react";
-import { N8nFinalResponse } from "@/types";
 
-// A tipagem do callback (a função que o pai nos envia)
-type OnTranscriptionComplete = (result: N8nFinalResponse[] | null) => void;
+// O callback agora recebe apenas a string da transcrição ou nulo
+type OnTranscriptionComplete = (transcription: string | null) => void;
 
-// O hook agora aceita um onComplete opcional
 export const useAudioRecorder = (onComplete?: OnTranscriptionComplete) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -40,30 +38,29 @@ export const useAudioRecorder = (onComplete?: OnTranscriptionComplete) => {
         formData.append("audio", audioBlob, "recording.webm");
 
         try {
-          const response = await fetch("/api/transcribe", {
+          // Chama a nova rota que SÓ transcreve
+          const response = await fetch("/api/just-transcribe", {
             method: "POST",
             body: formData,
           });
 
-          if (!response.ok)
-            throw new Error("Falha na resposta da API de áudio.");
-
-          const rawResult = await response.json();
-
-          // Garante que o resultado seja sempre um array
-          let resultArray: N8nFinalResponse[] = [];
-          if (Array.isArray(rawResult)) {
-            resultArray = rawResult;
-          } else if (rawResult && typeof rawResult === "object") {
-            resultArray = [rawResult];
+          if (!response.ok) {
+            throw new Error("Falha na resposta da API de transcrição.");
           }
-       
+
+          const result = await response.json();
+          console.log(
+            "[Hook useAudioRecorder] Resposta recebida da API:",
+            JSON.stringify(result, null, 2)
+          );
+          // Espera-se que o N8N retorne { transcription: "..." }
+          const transcriptionText = result?.transcription || null;
 
           if (typeof onComplete === "function") {
-            onComplete(resultArray);
+            onComplete(transcriptionText);
           }
         } catch (error) {
-          console.error("Erro ao enviar áudio:", error);
+          console.error("Erro ao enviar áudio para transcrição:", error);
           if (typeof onComplete === "function") {
             onComplete(null);
           }

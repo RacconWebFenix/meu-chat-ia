@@ -122,4 +122,5 @@ export interface Message {
   chartData?: DisplayChartData[];
   chartType?: ApiChartType;
   tableData?: [];
+  isTranscription?: boolean; // Adiciona a propriedade opcional
 }
