@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import styles from "./DataGridSelectedRows.module.scss";
 import { useRouter } from "next/navigation";
 import { useGrid } from "@/contexts";
-import { GridRow } from "@/types";
+import { GridRow } from "@/types/api.types";
 import ChatLoading from "../../ChatLoading";
 import CustomButton from "../../CustomButton";
 

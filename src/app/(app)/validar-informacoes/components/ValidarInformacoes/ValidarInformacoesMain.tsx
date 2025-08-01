@@ -35,9 +35,12 @@ export default function ValidarInformacoesMain({}) {
     handleValidar,
   } = useValidarInformacoes();
 
-  const content = result?.[0]?.choices?.[0]?.message?.content || "";
+  const safeResult = (result as any[]) || [];
+  const content = safeResult[0]?.choices?.[0]?.message?.content || "";
   const { explanation, columns, data } = processContent(content);
-  const images = result?.[0]?.images || [];
+  const images = Array.isArray(safeResult[0]?.images)
+    ? safeResult[0].images
+    : [];
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
@@ -63,7 +66,7 @@ export default function ValidarInformacoesMain({}) {
               </CardContent>
             </Card>
 
-            {images.length > 0 && (
+            {Array.isArray(images) && images.length > 0 && (
               <Card elevation={2}>
                 <CardContent>
                   <Box
@@ -71,16 +74,16 @@ export default function ValidarInformacoesMain({}) {
                     justifyContent="center"
                     alignItems="center"
                   >
-                    <ImageGrid images={images} />
+                    <ImageGrid images={images as any[]} />
                   </Box>
                 </CardContent>
               </Card>
             )}
 
-            {result?.[0]?.citations && (
+            {Array.isArray(safeResult[0]?.citations) && (
               <Card elevation={2}>
                 <CardContent>
-                  <Citations citations={result[0].citations || []} />
+                  <Citations citations={safeResult[0].citations as any[]} />
                 </CardContent>
               </Card>
             )}

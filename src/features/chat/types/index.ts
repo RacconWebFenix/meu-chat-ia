@@ -1,4 +1,4 @@
-import { Message, ImageResult, Citation } from "../../../types/api.types";
+import { Message } from "../../../types/api.types";
 
 // Chat specific types
 export interface ChatState {
@@ -43,4 +43,4 @@ export function isIndustrialFields(
   return "nomePeca" in fields;
 }
 
-export type { Message, ImageResult, Citation };
+export type { Message };

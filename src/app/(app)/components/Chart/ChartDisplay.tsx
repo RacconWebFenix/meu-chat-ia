@@ -1,60 +1,63 @@
-// src/app/(app)/dashboard/components/Chart/ChartDisplay.tsx
-"use client";
-
+// src/app/(app)/components/Chart/ChartDisplay.tsx
 import React from "react";
 import {
   BarChart,
   Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
 } from "recharts";
-import { Typography, Paper } from "@mui/material";
+import { Box, Alert } from "@mui/material";
 
-// Interface para os dados formatados que o gráfico irá renderizar.
-export interface ChartData {
+// CORREÇÃO: A interface de dados agora corresponde EXATAMENTE ao nosso AiChartPayload.
+export interface ChartDataPoint {
   group: string;
-  [key: string]: string | number;
+  value: number;
 }
 
-interface ChartDisplayProps {
-  data: ChartData[];
+export interface ChartDisplayProps {
+  data: ChartDataPoint[];
   chartType: "bar" | "line" | "pie";
-  loading: boolean;
+  loading?: boolean;
 }
 
-const COLORS = [
-  "#8884d8",
-  "#82ca9d",
-  "#FFBB28",
-  "#00C49F",
-  "#FF8042",
-  "#0088FE",
-];
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF"];
 
 const ChartDisplay: React.FC<ChartDisplayProps> = ({
   data,
   chartType,
   loading,
 }) => {
-  if (loading || data.length === 0) {
+  if (loading) {
     return (
-      <Typography>
-        {loading ? "Carregando dados do gráfico..." : "Sem dados para exibir."}
-      </Typography>
+      <Box
+        sx={{
+          width: "100%",
+          height: 300,
+          mt: 2,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Alert severity="info">Carregando dados do gráfico...</Alert>
+      </Box>
     );
   }
 
-  // Chave para a correção: Esta lógica agora é usada por AMBOS, linha e barra.
-  const dataKeys = Object.keys(data[0]).filter((key) => key !== "group");
+  if (!data || data.length === 0) {
+    return (
+      <Alert severity="warning">Não há dados para exibir o gráfico.</Alert>
+    );
+  }
 
   const renderChart = () => {
     switch (chartType) {
@@ -62,20 +65,11 @@ const ChartDisplay: React.FC<ChartDisplayProps> = ({
         return (
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="group" angle={-30} textAnchor="end" height={80} />
+            <XAxis dataKey="group" />
             <YAxis />
             <Tooltip />
             <Legend />
-            {/* --- CORREÇÃO APLICADA AQUI --- */}
-            {/* Agora o gráfico de barras também pode renderizar múltiplas séries */}
-            {dataKeys.map((key, index) => (
-              <Bar
-                key={key}
-                dataKey={key}
-                fill={COLORS[index % COLORS.length]}
-                name={key}
-              />
-            ))}
+            <Bar dataKey="value" fill="#8884d8" />
           </BarChart>
         );
       case "line":
@@ -86,35 +80,21 @@ const ChartDisplay: React.FC<ChartDisplayProps> = ({
             <YAxis />
             <Tooltip />
             <Legend />
-            {/* Esta parte já estava correta e continua igual */}
-            {dataKeys.map((key, index) => (
-              <Line
-                key={key}
-                type="monotone"
-                dataKey={key}
-                stroke={COLORS[index % COLORS.length]}
-                name={key}
-                strokeWidth={2}
-              />
-            ))}
+            <Line type="monotone" dataKey="value" stroke="#8884d8" />
           </LineChart>
         );
       case "pie":
-        // Gráficos de Pizza geralmente usam a chave "value"
         return (
           <PieChart>
             <Pie
               data={data}
+              dataKey="value"
+              nameKey="group"
               cx="50%"
               cy="50%"
-              labelLine={false}
-              outerRadius={120}
+              outerRadius={80}
               fill="#8884d8"
-              dataKey="value" // Mantido como "value" pois Pie Charts são de série única
-              nameKey="group"
-              label={({ name, percent }) =>
-                `${name} ${(percent! * 100).toFixed(0)}%`
-              }
+              label
             >
               {data.map((entry, index) => (
                 <Cell
@@ -128,16 +108,14 @@ const ChartDisplay: React.FC<ChartDisplayProps> = ({
           </PieChart>
         );
       default:
-        return <Typography>Tipo de gráfico inválido.</Typography>;
+        return <Alert severity="error">Tipo de gráfico desconhecido.</Alert>;
     }
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
-      <ResponsiveContainer width="100%" height={400}>
-        {renderChart()}
-      </ResponsiveContainer>
-    </Paper>
+    <Box sx={{ width: "100%", height: 300, mt: 2 }}>
+      <ResponsiveContainer>{renderChart()}</ResponsiveContainer>
+    </Box>
   );
 };
 

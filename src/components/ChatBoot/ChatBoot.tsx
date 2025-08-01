@@ -23,7 +23,7 @@ export default function ChatBoot() {
   } = useChatBoot();
 
   // Função adaptadora para o EquivalenceForm
-  const setPrompt = (v: unknown) => {
+  const setPrompt = (v: RamoFields | IndustrialFields) => {
     setPromptRaw(JSON.stringify(v));
   };
 

@@ -1,4 +1,4 @@
-// src/components/NewChatbot/ChatWindow.tsx
+// src/components/ChatbootQuery/ChatWindow.tsx
 "use client";
 import React, { useCallback, useEffect, useRef } from "react";
 import { Box, Typography } from "@mui/material";
@@ -12,6 +12,7 @@ interface ChatWindowProps {
 }
 
 export default function ChatWindow({ onClose }: ChatWindowProps) {
+  // CORREÇÃO 1: Pegamos a função 'generateChart' que estava faltando do hook.
   const {
     messages,
     input,
@@ -21,19 +22,14 @@ export default function ChatWindow({ onClose }: ChatWindowProps) {
     sendMessage,
     addMessage,
     handleTranscription,
+    generateChart,
   } = useChatbotQuery();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Este callback é chamado quando a transcrição (e SOMENTE a transcrição) está pronta
   const handleTranscriptionComplete = useCallback(
     (transcription: string | null) => {
-      console.log(
-        "[Componente ChatWindow] Transcrição recebida pelo callback:",
-        transcription
-      );
       if (transcription) {
-        // A função do hook de chat cuida de mostrar a transcrição e chamar a API principal
         handleTranscription(transcription);
       } else {
         addMessage({
@@ -42,10 +38,9 @@ export default function ChatWindow({ onClose }: ChatWindowProps) {
         });
       }
     },
-    [handleTranscription, addMessage]
+    [handleTranscription, addMessage] // useCallback dependencies
   );
 
-  // O hook de áudio agora só precisa do callback de transcrição
   const { isRecording, isSending, startRecording, stopRecording } =
     useAudioRecorder(handleTranscriptionComplete);
 
@@ -104,9 +99,14 @@ export default function ChatWindow({ onClose }: ChatWindowProps) {
         }}
       >
         {messages.map((msg, index) => (
-          <MessageDisplay key={index} message={msg} />
+          // CORREÇÃO 2: Passamos a função para o MessageDisplay através da prop 'onGenerateChart'.
+          <MessageDisplay
+            key={msg.messageId || index}
+            message={msg}
+            onGenerateChart={generateChart} // <<<<<<<<<<<<<<<<<<<< ADICIONADO AQUI
+          />
         ))}
-        {(loading || isSending) && ( // Mostra o status de "Digitando..." ou "Enviando..."
+        {(loading || isSending) && (
           <Box sx={{ alignSelf: "center" }}>
             <Typography variant="body2" color="text.secondary">
               {isSending ? "Processando áudio..." : "Digitando..."}
@@ -116,12 +116,11 @@ export default function ChatWindow({ onClose }: ChatWindowProps) {
         <div ref={messagesEndRef} />
       </Box>
 
-      {/* 5. Passe as novas props para o MessageInput */}
       <MessageInput
         input={input}
         setInput={setInput}
         onSendMessage={sendMessage}
-        loading={loading || isSending} // O loading agora considera o envio do áudio
+        loading={loading || isSending}
         inputRef={inputRef}
         isRecording={isRecording}
         onMicClick={handleMicClick}

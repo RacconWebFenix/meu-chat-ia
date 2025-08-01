@@ -1,4 +1,4 @@
-import { PerplexityResult } from "../../../types/api.types";
+import { PerplexityResult } from "@/types/api.types";
 
 // Validar Informações specific types
 export interface ValidarInformacoesState {

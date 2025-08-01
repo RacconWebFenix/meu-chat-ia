@@ -1,107 +1,143 @@
+// src/features/chat/hooks/useChatbootQuery.ts
 import { useState, useRef } from "react";
-import { Message } from "@/features/chat/types";
+import { v4 as uuidv4 } from "uuid";
+import {
+  AnalysisPayload,
+  AiChartPayload,
+  AppMessage,
+  MessageMetadata,
+} from "@/types/api.types";
 
 export function useChatbotQuery() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<AppMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [transcription, setTranscription] = useState<string | null>(null); // Estado para a transcrição
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleTranscription = (transcription: string) => {
-    console.log(
-      "[Hook useChatbotQuery] Função handleTranscription chamada com:",
-      transcription
-    );
-    if (!transcription) return;
-
-    // Etapa 1: Adiciona a mensagem de transcrição para o usuário ver
-    const transcriptionMessage: Message = {
-      text: `Você disse: "${transcription}"`,
-      role: "user",
-      isTranscription: true,
-    };
-    addMessage(transcriptionMessage);
-
-    // Etapa 2: Envia a transcrição para o backend para obter a resposta final do bot
-    console.log(
-      "[Hook useChatbotQuery] Chamando sendMessage com a transcrição..."
-    );
-    sendMessage(transcription);
+  const addMessage = (
+    message: Omit<AppMessage, "messageId" | "isTranscription">
+  ) => {
+    const messageWithId: AppMessage = { ...message, messageId: uuidv4() };
+    setMessages((prev) => [...prev, messageWithId]);
   };
 
-  const sendMessage = async (messageText?: string) => {
-    const textToSend = messageText || input;
+  // Mensagem pode ser enviada diretamente como string ou vir do estado input
+  const sendMessage = async (messageText?: string | React.MouseEvent) => {
+    // Se for um evento de clique ou undefined, usamos o estado input
+    // Se for uma string (ex: da transcrição), usamos essa string
+    const textToSend = typeof messageText === "string" ? messageText : input;
+
+    // Agora temos certeza de que textToSend é uma string, então .trim() é seguro.
     if (!textToSend.trim()) return;
 
-    // Apenas adiciona a mensagem do usuário se for um input direto (não do fluxo de transcrição)
-    // O fluxo de transcrição já adiciona a mensagem "Você disse:..."
-    if (!messageText) {
-      const userMessage: Message = { text: textToSend, role: "user" };
-      setMessages((prev) => [...prev, userMessage]);
+    // Adiciona a mensagem do usuário à tela apenas se a chamada veio do input de texto
+    // (e não de uma transcrição, que já é adicionada pela handleTranscription)
+    if (typeof messageText !== "string") {
+      addMessage({ role: "user", text: textToSend });
     }
 
     setLoading(true);
     setInput("");
-    setTranscription(null); // Limpa a transcrição anterior
 
     try {
       const response = await fetch("/api/chatbotquery", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: {
-            contents: [{ role: "user", parts: [{ text: textToSend }] }],
-          },
-        }),
+        body: JSON.stringify({ message: textToSend }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(
-          errorData.error || "Erro ao obter resposta do chatbot."
-        );
+        throw new Error(errorData.details || "Erro na resposta da API.");
       }
 
-      const data = await response.json();
+      const analysisPayload =
+        (await response.json()) as AnalysisPayload<MessageMetadata>;
 
-      // A resposta do n8n agora pode ter um campo 'transcription'
-      if (data.transcription) {
-        setTranscription(data.transcription);
-      }
-
-      const botReply = data;
-
-      if (!botReply || typeof botReply.text !== "string") {
-        throw new Error("Formato de resposta inesperado da API.");
-      }
-
-      const botMessage: Message = {
-        messageId: new Date().toISOString() + Math.random(),
+      const botMessage: AppMessage = {
+        messageId: uuidv4(),
         role: "bot",
-        text: botReply.text,
-        canGenerateChart:
-          botReply.canGenerateChart === true ||
-          botReply.canGenerateChart === "true",
-        chartPayload: botReply.chartPayload,
+        text: analysisPayload.summary,
+        analysis: analysisPayload,
       };
-
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
-      console.error("Erro ao enviar mensagem:", error);
-      const errorMsg: Message = {
-        text: "Ocorreu um erro ao comunicar com o chatbot. Tente novamente.",
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Ocorreu um erro desconhecido.";
+      addMessage({
         role: "bot",
-      };
-      setMessages((prev) => [...prev, errorMsg]);
+        text: `Desculpe, ocorreu um erro: ${errorMessage}`,
+      });
     } finally {
       setLoading(false);
       inputRef.current?.focus();
     }
   };
 
-  const addMessage = (msg: Message) => {
-    setMessages((prev) => [...prev, msg]);
+  const generateChart = async (messageId: string) => {
+    const targetMessage = messages.find((m) => m.messageId === messageId);
+    if (!targetMessage?.analysis) return;
+
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.messageId === messageId ? { ...m, isChartLoading: true } : m
+      )
+    );
+
+    try {
+      const { rawData, originalQuestion } = targetMessage.analysis;
+      const response = await fetch("/api/generate-chart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rawData, originalQuestion }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.details || "Erro ao gerar gráfico.");
+      }
+
+      const chartPayload =
+        (await response.json()) as AiChartPayload<MessageMetadata>;
+
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.messageId === messageId
+            ? ({
+                ...m,
+                chart: chartPayload,
+                isChartLoading: false,
+              } as AppMessage)
+            : m
+        )
+      );
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Ocorreu um erro desconhecido.";
+      console.error("Failed to generate chart:", error);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.messageId === messageId ? { ...m, isChartLoading: false } : m
+        )
+      );
+      addMessage({
+        role: "bot",
+        text: `Não foi possível gerar o gráfico: ${errorMessage}`,
+      });
+    }
+  };
+
+  const handleTranscription = (transcription: string) => {
+    if (!transcription) return;
+    addMessage({
+      role: "user",
+      text: `Você disse: "${transcription}"`,
+    });
+    sendMessage(transcription);
   };
 
   return {
@@ -112,7 +148,7 @@ export function useChatbotQuery() {
     inputRef,
     sendMessage,
     addMessage,
-    transcription, // Retorna o estado da transcrição
-    handleTranscription, // Retorna a nova função
+    handleTranscription,
+    generateChart,
   };
 }

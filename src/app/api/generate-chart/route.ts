@@ -1,48 +1,52 @@
-import { NextRequest, NextResponse } from "next/server";
-import axios from "axios";
+// src/app/api/generate-chart/route.ts
+import { NextResponse } from "next/server";
 
-import { SqlQueryResultRow } from "@/types";
-
-async function getChartJson(payload: SqlQueryResultRow[]) {
-  const chartGeneratorWebhookUrl = process.env.N8N_CHART_GENERATOR_WEBHOOK_URL;
-
-  if (!chartGeneratorWebhookUrl) {
-    throw new Error("URL do webhook gerador de gráfico não configurada.");
-  }
-
+export async function POST(request: Request) {
   try {
-    const response = await axios.post(chartGeneratorWebhookUrl, {
-      payload: payload,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao chamar o webhook gerador de gráfico:", error);
-    throw new Error(
-      "Falha na comunicação com o serviço de geração de gráfico."
-    );
-  }
-}
+    const { rawData, originalQuestion } = await request.json();
 
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
+    // Nota: O seu arquivo original tinha um erro de digitação na variável de ambiente. Corrigido para consistência.
+    const n8nWebhookUrl = process.env.N8N_CHART_GENERATOR_WEBHOOK_URL;
 
-    const chartPayload: SqlQueryResultRow[] = body.payload;
-
-    if (!chartPayload) {
-      return NextResponse.json(
-        { error: "Payload de dados não fornecido." },
-        { status: 400 }
-      );
+    if (!n8nWebhookUrl) {
+      throw new Error("N8N_CHART_WEBHOOK_URL não está definida no .env");
     }
 
-    const n8nResponse = await getChartJson(chartPayload);
-    const chartData = JSON.parse(n8nResponse[0].output);
+    const response = await fetch(n8nWebhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ rawData, originalQuestion }),
+    });
 
-    return NextResponse.json(chartData);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Falha no workflow do n8n (Gráfico):", errorText);
+      throw new Error(`O workflow de gráfico falhou: ${response.statusText}`);
+    }
+
+    const n8nResponse = await response.json();
+
+    if (
+      Array.isArray(n8nResponse) &&
+      n8nResponse.length > 0 &&
+      n8nResponse[0].output
+    ) {
+      const chartPayload = JSON.parse(n8nResponse[0].output);
+      return NextResponse.json(chartPayload);
+    } else {
+      console.error(
+        "Estrutura de resposta inesperada do n8n (Gráfico):",
+        n8nResponse
+      );
+      throw new Error("Formato de resposta inesperado do serviço de IA.");
+    }
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Erro desconhecido.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const errorMessage =
+      error instanceof Error ? error.message : "Erro desconhecido";
+    console.error("Erro na Rota da API (Gráfico):", errorMessage);
+    return NextResponse.json(
+      { error: "Falha ao gerar o gráfico", details: errorMessage },
+      { status: 500 }
+    );
   }
 }

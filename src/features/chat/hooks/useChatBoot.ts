@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { getSiteName } from "@/Utils/utils";
 import iaResponseMock from "@/mocks/iaResponse.mock";
 import { Message } from "@/types/api.types";
@@ -34,6 +35,7 @@ export function useChatBoot() {
         }));
         setMessages([
           {
+            messageId: uuidv4(),
             role: "bot",
             text: data.reply?.text.content,
             images: data.reply?.images || [],
@@ -108,6 +110,7 @@ export function useChatBoot() {
 
           setMessages([
             {
+              messageId: uuidv4(),
               role: "bot",
               text: messageContent || "Resposta vazia",
               images: images || [],
@@ -118,6 +121,7 @@ export function useChatBoot() {
         } else {
           setMessages([
             {
+              messageId: uuidv4(),
               role: "bot",
               text: `Erro ao se comunicar com a IA: ${
                 data.error || "Erro desconhecido"
@@ -129,6 +133,7 @@ export function useChatBoot() {
     } catch {
       setMessages([
         {
+          messageId: uuidv4(),
           role: "bot",
           text: "Erro ao se comunicar com a IA. Tente novamente.",
         },

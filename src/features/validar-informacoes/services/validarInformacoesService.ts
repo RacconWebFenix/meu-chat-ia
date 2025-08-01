@@ -1,5 +1,5 @@
 import { mockService } from "@/services";
-import { PerplexityResult } from "../../../types/api.types";
+import { PerplexityResult } from "@/types/api.types";
 
 export class ValidarInformacoesService {
   private static instance: ValidarInformacoesService;

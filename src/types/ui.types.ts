@@ -37,3 +37,4 @@ export interface ErrorState {
   message: string;
   code?: string | number;
 }
+

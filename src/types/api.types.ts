@@ -1,126 +1,65 @@
-// API Response Types
-export interface ApiResponse<T = unknown> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
+// src/types/api.types.ts
+
+// Define possíveis tipos para os valores em SqlResultRow
+export type SqlValueType = string | number | boolean | null | Date;
+
+// Tipo base para resultados SQL
+export type SqlResultRow<T = Record<string, SqlValueType>> = T;
+
+export interface AnalysisPayload<T> {
+  summary: string;
+  isChartable: boolean;
+  rawData: SqlResultRow<T>[];
+  originalQuestion: string;
 }
 
-// Perplexity/Sonar API Types
-export interface PerplexityResult {
-  id: string;
-  model: string;
-  created: number;
-  usage: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-    search_context_size: string;
-  };
-  citations: Citation[];
-  search_results: SearchResult[];
-  images: ImageResult[];
-  choices: Choice[];
+export interface AiChartPayload<T> {
+  chartType: "bar" | "line" | "pie" | "table";
+  chartData: { group: string; value: number }[] | null;
+  summary: string;
+  rawData: SqlResultRow<T>[];
 }
 
+// Definição mais específica para metadados que podem ser incluídos em mensagens
+export type MessageMetadata = Record<string, string | number | boolean | null>;
+
+// Para DataGrid e tabelas
+export type GridRow = Record<string, string | number | boolean | null>;
+
+// Para ChartDisplay
+export type ChartData = { group: string; value: number }[];
+
+// Para Perplexity
+export type PerplexityResult = Record<string, unknown>;
+
+// Interface para imagens em mensagens
+export interface Image {
+  image_url: string;
+  origin_url?: string;
+  height?: number;
+  width?: number;
+}
+
+// Interface para citações em mensagens
 export interface Citation {
   url: string;
   siteName: string;
 }
 
-export interface SearchResult {
-  title: string;
-  url: string;
-  date: string | null;
-  last_updated?: string | null;
-}
-
-export interface ImageResult {
-  image_url: string;
-  origin_url: string;
-  height?: number;
-  width?: number;
-}
-
-export interface Choice {
-  index: number;
-  finish_reason: string;
-  message: {
-    role: string;
-    content: string;
-  };
-}
-
-// Grid Types
-export type GridRow = Record<string, string | number>;
-
-export interface GridTableData {
-  headers: string[];
-  rows: string[][];
-}
-
-// 1. Defina os tipos de gráfico permitidos
-export type ApiChartType = "bar" | "line" | "pie";
-
-// 2. Interface para os datasets do gráfico da API
-export interface ApiChartDataset {
-  label: string;
-  data: number[];
-  backgroundColor?: string;
-  borderColor?: string;
-}
-
-// 3. Interface para o objeto 'data' da resposta da API
-export interface ApiChartData {
-  labels: string[];
-  datasets: ApiChartDataset[];
-}
-
-// 4. Interface para a resposta completa de gráfico da API
-export interface ApiChartResponse {
-  type: ApiChartType;
-  data: ApiChartData;
-}
-
-// 5. Formato que o seu componente ChartDisplay espera
-export interface DisplayChartData {
-  group: string;
-  [key: string]: string | number; // PERMITE CHAVES DINÂMICAS
-}
-
-/**
- * Representa uma única linha retornada por uma consulta SQL.
- * Como as colunas podem ter qualquer nome e valor, usamos um
- * registro genérico, mas garantimos que os valores são primitivos.
- */
-export type SqlQueryResultRow = Record<string, string | number | null>;
-
-/**
- * Representa a estrutura completa da resposta final que vem do seu fluxo n8n,
- * combinando texto e dados para o gráfico.
- */
-export interface N8nFinalResponse {
-  text?: string | { json?: { text?: string } };
-  canGenerateChart: boolean | string; // Aceita boolean ou a string "true"/"false"
-  chartPayload?: SqlQueryResultRow[];
-}
-
-export interface Message {
-  messageId?: string;
+export interface Message<T = MessageMetadata> {
+  messageId: string;
   role: "user" | "bot";
-  text:
-    | string
-    | {
-        json?: {
-          text?: string;
-        };
-      };
-  images?: ImageResult[];
+  text: string;
+  isTranscription?: boolean;
+  analysis?: AnalysisPayload<T>;
+  chart?: AiChartPayload<T>;
+  isChartLoading?: boolean;
+  images?: Image[];
   citations?: Citation[];
-  canGenerateChart?: boolean | string; // Aceita boolean ou a string "true"/"false"
-  chartPayload?: SqlQueryResultRow[];
-  chartData?: DisplayChartData[];
-  chartType?: ApiChartType;
-  tableData?: [];
-  isTranscription?: boolean; // Adiciona a propriedade opcional
 }
+
+/**
+ * Alias de tipo para uso nos componentes e hooks.
+ * Usa uma definição de metadados mais específica em vez de Record<string, unknown>
+ */
+export type AppMessage = Message<MessageMetadata>;

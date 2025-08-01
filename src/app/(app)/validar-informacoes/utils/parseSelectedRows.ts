@@ -5,8 +5,8 @@
  * Garante que sempre retorna um array ou null se inválido.
  */
 export function parseSelectedRows(
-  valor: unknown
-): Record<string, string>[] | null {
+  valor: string | Record<string, any> | Record<string, any>[]
+): Record<string, any>[] | null {
   try {
     const parsed = typeof valor === "string" ? JSON.parse(valor) : valor;
     if (Array.isArray(parsed)) {

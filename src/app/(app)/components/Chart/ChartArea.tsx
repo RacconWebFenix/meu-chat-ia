@@ -1,4 +1,4 @@
-// src/app/(app)/dashboard/components/Chart/ChartArea.tsx
+// src/app/(app)/components/Chart/ChartArea.tsx
 "use client";
 
 import React from "react";
@@ -6,8 +6,12 @@ import ChartControls, { ChartConfig } from "./ChartControls";
 import ChartDisplay from "./ChartDisplay";
 import { Box } from "@mui/material";
 
-// CORREÇÃO: A interface de props foi ajustada para receber o estado e a função de setar o estado
-import { ChartData } from "./ChartDisplay";
+// Define ChartData interface to match ChartDisplay's data format
+export interface ChartData {
+  group: string;
+  value: number;
+  // Add other properties that your chart data might have
+}
 
 interface ChartAreaProps {
   config: ChartConfig;
@@ -41,7 +45,7 @@ const ChartArea: React.FC<ChartAreaProps> = ({
         selectedTable={selectedTable}
       />
       <ChartDisplay
-        data={chartData.filter(Boolean)}
+        data={chartData.filter((item): item is ChartData => Boolean(item))}
         chartType={config.chartType}
         loading={loading}
       />

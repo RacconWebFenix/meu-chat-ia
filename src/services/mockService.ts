@@ -1,8 +1,7 @@
 import iaResponseMock from "@/mocks/iaResponse.mock";
 import { perplexityMock } from "@/mocks/perplexity.mock";
 import { validarInformacoesMock } from "@/mocks/validarInformacoes.mock";
-import { PerplexityResult } from "@/types";
-
+import { PerplexityResult } from "@/types/api.types";
 
 // Mock Service for development/testing
 export class MockService {
