@@ -14,7 +14,8 @@ import { useValidarInformacoes } from "../../../../../features/validar-informaco
 import { processContent } from "../../utils/validarInformacoesUtils";
 import UserSearchTable from "@/components/shared/UserSearchTable/UserSearchTable";
 import { ChatLoading, Citations } from "@/components/shared";
-import ImageGrid from "@/components/ImageGrid/ImageGrid";
+import ImageGrid, { Img } from "@/components/ImageGrid/ImageGrid";
+// Citations espera: citations: { url: string; siteName: string }[]
 import CustomGridTable from "@/components/shared/CustomGrid/CustomGridTable";
 import { CustomButton } from "@/components";
 import { useNavigationWithLoading } from "@/hooks/useNavigationWithLoading";
@@ -35,7 +36,12 @@ export default function ValidarInformacoesMain({}) {
     handleValidar,
   } = useValidarInformacoes();
 
-  const safeResult = (result as any[]) || [];
+  interface ResultType {
+    choices?: { message?: { content?: string } }[];
+    images?: Img[];
+    citations?: { url: string; siteName: string }[];
+  }
+  const safeResult: ResultType[] = Array.isArray(result) ? result : [];
   const content = safeResult[0]?.choices?.[0]?.message?.content || "";
   const { explanation, columns, data } = processContent(content);
   const images = Array.isArray(safeResult[0]?.images)
@@ -74,7 +80,7 @@ export default function ValidarInformacoesMain({}) {
                     justifyContent="center"
                     alignItems="center"
                   >
-                    <ImageGrid images={images as any[]} />
+                    <ImageGrid images={images} />
                   </Box>
                 </CardContent>
               </Card>
@@ -83,7 +89,14 @@ export default function ValidarInformacoesMain({}) {
             {Array.isArray(safeResult[0]?.citations) && (
               <Card elevation={2}>
                 <CardContent>
-                  <Citations citations={safeResult[0].citations as any[]} />
+                  <Citations
+                    citations={
+                      safeResult[0].citations as {
+                        url: string;
+                        siteName: string;
+                      }[]
+                    }
+                  />
                 </CardContent>
               </Card>
             )}

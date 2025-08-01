@@ -1,6 +1,6 @@
 import { ImageList, ImageListItem } from "@mui/material";
 
-interface Img {
+export interface Img {
   image_url: string;
   width?: number;
   height?: number;

@@ -5,12 +5,12 @@
  * Garante que sempre retorna um array ou null se inválido.
  */
 export function parseSelectedRows(
-  valor: string | Record<string, any> | Record<string, any>[]
-): Record<string, any>[] | null {
+  valor: string | Record<string, string> | Record<string, string>[]
+): Record<string, string>[] | null {
   try {
     const parsed = typeof valor === "string" ? JSON.parse(valor) : valor;
     if (Array.isArray(parsed)) {
-      return parsed;
+      return parsed as Record<string, string>[];
     } else if (parsed && typeof parsed === "object") {
       return [parsed as Record<string, string>];
     }
