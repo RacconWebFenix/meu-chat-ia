@@ -1,18 +1,14 @@
-// components/FeedbackForm.tsx
+// components/FeedbackForm/FeedbackForm.tsx
 import React from "react";
 import styles from "./FeedbackForm.module.scss";
 import { useFeedbackForm } from "./useFeedbackForm";
 import { ChatLoading, CustomButton } from "../shared";
 
-// Define a interface para as props que o componente vai receber
 interface FeedbackFormProps {
-  // onSendFeedback é uma função que o componente pai (ChatBoot ou Home) vai passar
-  // Ela será chamada quando o usuário enviar o feedback
   onSendFeedback: (
     userRating: number | null,
     userComment: string,
-    // Este booleano indica se o feedback geral foi positivo (true) ou negativo (false)
-    isPositive: boolean | null // Alterado para null também, para permitir que o usuário não selecione
+    isPositive: boolean | null
   ) => Promise<void> | void;
 }
 
@@ -29,7 +25,6 @@ export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
     handleSubmit,
   } = useFeedbackForm(onSendFeedback);
 
-  // Se estiver enviando, mostra uma mensagem de carregamento
   if (loading) {
     return (
       <div className={styles.container}>
@@ -39,7 +34,6 @@ export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
     );
   }
 
-  // Se o feedback foi enviado, mostra uma mensagem de agradecimento
   if (sent) {
     return (
       <div className={styles.container}>
@@ -48,11 +42,17 @@ export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
     );
   }
 
+  const handleStarKeyDown = (e: React.KeyboardEvent, starValue: number) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setRating(starValue);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <h4>Sua opinião é importante! Avalie a resposta:</h4>
       <div className={styles.buttonGroup}>
-        {/* Botão Positivo */}
         <CustomButton
           type="button"
           colorType="secondary"
@@ -63,7 +63,6 @@ export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
         >
           👍 Positivo
         </CustomButton>
-        {/* Botão Negativo */}
         <CustomButton
           type="button"
           colorType="delete"
@@ -77,23 +76,25 @@ export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
 
       <div className={styles.stars}>
         Nota:
-        {/* Renderiza 5 estrelas para seleção de nota */}
         {[1, 2, 3, 4, 5].map((star) => (
           <span
             key={star}
+            role="button"
+            tabIndex={0}
             className={
               star <= (rating || 0)
                 ? `${styles.star} ${styles.starFilled}`
                 : styles.star
             }
             onClick={() => !loading && setRating(star)}
+            onKeyDown={(e) => !loading && handleStarKeyDown(e, star)}
+            aria-label={`Avaliação ${star} de 5 estrelas`}
           >
             ★
           </span>
         ))}
       </div>
 
-      {/* Área de texto para o comentário */}
       <textarea
         className={styles.textarea}
         value={comment}
@@ -102,7 +103,6 @@ export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
         rows={3}
         disabled={loading}
       />
-      {/* Botão para enviar o feedback */}
       <CustomButton
         type="button"
         colorType="primary"
@@ -111,13 +111,6 @@ export default function FeedbackForm({ onSendFeedback }: FeedbackFormProps) {
         sx={{
           mt: 2,
           py: 1.5,
-          fontSize: 16,
-          fontWeight: 700,
-          background: (theme) => theme.palette.primary.main,
-          color: (theme) => theme.palette.primary.contrastText,
-          "&:hover": {
-            background: (theme) => theme.palette.primary.dark,
-          },
         }}
         onClick={handleSubmit}
         disabled={

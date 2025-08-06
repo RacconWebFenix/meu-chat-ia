@@ -1,5 +1,6 @@
 // src/features/chat/hooks/useReportData.ts
 
+import { ChartDataPoint } from "@/app/(app)/components/Chart/ChartDisplay";
 import {
   AiChartPayload,
   ChartData,
@@ -14,10 +15,11 @@ export const useReportData = (
   const [chartType, setChartType] = useState<"bar" | "line" | "pie" | "table">(
     "table"
   );
-  const [chartData, setChartData] = useState<ChartData | null>(null);
+  const [chartData, setChartData] = useState<ChartDataPoint[] | null>(null);
   const [tableData, setTableData] = useState<SqlResultRow<MessageMetadata>[]>(
     []
   );
+
   const [summary, setSummary] = useState<string>("");
   const [isChart, setIsChart] = useState<boolean>(false);
 
@@ -45,7 +47,7 @@ export const useReportData = (
     isChart,
     chartType,
     chartData,
-    tableData, // Agora esta variável é usada pelo componente de tabela
+    tableData,
     summary,
   };
 };

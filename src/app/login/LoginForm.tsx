@@ -16,6 +16,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const [error, setError] = useState<string>("");
   const { navigateTo } = useNavigationWithLoading();
 
+  const handleNavigateToRegister = () => navigateTo("/register");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -54,7 +56,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             label="Usuário"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            autoFocus
+            // autoFocus removido
             autoComplete="off"
             name="login_user"
             autoCorrect="off"
@@ -89,11 +91,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
               py: 1.5,
               fontSize: 16,
               fontWeight: 700,
-              background: (theme) => theme.palette.primary.main,
-              color: (theme) => theme.palette.primary.contrastText,
-              "&:hover": {
-                background: (theme) => theme.palette.primary.dark,
-              },
             }}
             disabled={loading}
           >
@@ -102,12 +99,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
           <Typography textAlign="center" sx={{ mt: 2 }}>
             Não é cadastrado?{" "}
             <span
+              role="link"
+              tabIndex={0}
               style={{
                 color: "blue",
                 cursor: "pointer",
                 textDecoration: "underline",
               }}
-              onClick={() => navigateTo("/register")}
+              onClick={handleNavigateToRegister}
+              onKeyDown={(e) =>
+                (e.key === "Enter" || e.key === " ") &&
+                handleNavigateToRegister()
+              }
             >
               Faça seu cadastro
             </span>

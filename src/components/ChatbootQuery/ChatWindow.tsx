@@ -12,7 +12,8 @@ interface ChatWindowProps {
 }
 
 export default function ChatWindow({ onClose }: ChatWindowProps) {
-  // CORREÇÃO 1: Pegamos a função 'generateChart' que estava faltando do hook.
+  // --- CORREÇÃO APLICADA AQUI ---
+  // A função 'generateChart' foi removida, pois não é mais necessária.
   const {
     messages,
     input,
@@ -22,7 +23,6 @@ export default function ChatWindow({ onClose }: ChatWindowProps) {
     sendMessage,
     addMessage,
     handleTranscription,
-    generateChart,
   } = useChatbotQuery();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -38,7 +38,7 @@ export default function ChatWindow({ onClose }: ChatWindowProps) {
         });
       }
     },
-    [handleTranscription, addMessage] // useCallback dependencies
+    [handleTranscription, addMessage]
   );
 
   const { isRecording, isSending, startRecording, stopRecording } =
@@ -99,12 +99,9 @@ export default function ChatWindow({ onClose }: ChatWindowProps) {
         }}
       >
         {messages.map((msg, index) => (
-          // CORREÇÃO 2: Passamos a função para o MessageDisplay através da prop 'onGenerateChart'.
-          <MessageDisplay
-            key={msg.messageId || index}
-            message={msg}
-            onGenerateChart={generateChart} // <<<<<<<<<<<<<<<<<<<< ADICIONADO AQUI
-          />
+          // --- CORREÇÃO APLICADA AQUI ---
+          // A prop 'onGenerateChart' foi removida do MessageDisplay
+          <MessageDisplay key={msg.messageId || index} message={msg} />
         ))}
         {(loading || isSending) && (
           <Box sx={{ alignSelf: "center" }}>

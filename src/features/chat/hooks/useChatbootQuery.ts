@@ -1,142 +1,165 @@
 // src/features/chat/hooks/useChatbootQuery.ts
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
-import {
-  AnalysisPayload,
-  AiChartPayload,
-  AppMessage,
-  MessageMetadata,
-} from "@/types/api.types";
+import { AppMessage, PollingResponse } from "@/types/api.types";
+import { useGroup } from "@/contexts/GroupContext";
+
+const POLLING_INTERVAL = 3000;
+const POLLING_TIMEOUT = 300000; // 5 minutos
+const PROGRESS_STEP_INTERVAL = 10000; // 10 segundos por etapa
 
 export function useChatbotQuery() {
+  const { selectedGroupId } = useGroup();
   const [messages, setMessages] = useState<AppMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const addMessage = (
-    message: Omit<AppMessage, "messageId" | "isTranscription">
-  ) => {
+  const addMessage = (message: Omit<AppMessage, "messageId">): AppMessage => {
     const messageWithId: AppMessage = { ...message, messageId: uuidv4() };
     setMessages((prev) => [...prev, messageWithId]);
+    return messageWithId;
   };
 
-  // Mensagem pode ser enviada diretamente como string ou vir do estado input
-  const sendMessage = async (messageText?: string | React.MouseEvent) => {
-    // Se for um evento de clique ou undefined, usamos o estado input
-    // Se for uma string (ex: da transcrição), usamos essa string
-    const textToSend = typeof messageText === "string" ? messageText : input;
+  const updateMessage = (messageId: string, updates: Partial<AppMessage>) => {
+    setMessages((prev) =>
+      prev.map((m) => (m.messageId === messageId ? { ...m, ...updates } : m))
+    );
+  };
 
-    // Agora temos certeza de que textToSend é uma string, então .trim() é seguro.
+  const stopAllIntervals = () => {
+    if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
+    if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+  };
+
+  const pollForResult = useCallback(
+    async (jobId: string, botMessageId: string) => {
+      try {
+        const response = await fetch(`/api/get-result?jobId=${jobId}`);
+        if (!response.ok) throw new Error("Falha ao buscar resultado.");
+
+        const result: PollingResponse = await response.json();
+
+        if (result.status === "completed" && result.data) {
+          stopAllIntervals();
+          const finalPayload = JSON.parse(result.data.output);
+          updateMessage(botMessageId, {
+            text: finalPayload.summary,
+            chart: finalPayload,
+            isChartLoading: false,
+            progressStep: undefined,
+          });
+          setLoading(false);
+          inputRef.current?.focus();
+        } else if (result.status === "failed") {
+          stopAllIntervals();
+          const errorData = JSON.parse(result.data?.output || "{}");
+          updateMessage(botMessageId, {
+            text: `Desculpe, ocorreu um erro: ${
+              errorData.error || "Erro desconhecido."
+            }`,
+            isChartLoading: false,
+            progressStep: undefined,
+          });
+          setLoading(false);
+        }
+      } catch (error) {
+        stopAllIntervals();
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Ocorreu um erro no polling.";
+        updateMessage(botMessageId, {
+          text: `Desculpe, ocorreu um erro: ${errorMessage}`,
+          isChartLoading: false,
+          progressStep: undefined,
+        });
+        setLoading(false);
+      }
+    },
+    []
+  );
+
+  const sendMessage = async (messageText?: string) => {
+    const textToSend = typeof messageText === "string" ? messageText : input;
     if (!textToSend.trim()) return;
 
-    // Adiciona a mensagem do usuário à tela apenas se a chamada veio do input de texto
-    // (e não de uma transcrição, que já é adicionada pela handleTranscription)
     if (typeof messageText !== "string") {
       addMessage({ role: "user", text: textToSend });
     }
 
+    const botMessage = addMessage({
+      role: "bot",
+      text: "",
+      isChartLoading: true,
+      progressStep: 1,
+    });
     setLoading(true);
     setInput("");
 
-    try {
-      const response = await fetch("/api/chatbotquery", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: textToSend }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.details || "Erro na resposta da API.");
+    let currentStep = 1;
+    progressIntervalRef.current = setInterval(() => {
+      currentStep++;
+      if (currentStep <= 4) {
+        updateMessage(botMessage.messageId, { progressStep: currentStep });
       }
-
-      const analysisPayload =
-        (await response.json()) as AnalysisPayload<MessageMetadata>;
-
-      const botMessage: AppMessage = {
-        messageId: uuidv4(),
-        role: "bot",
-        text: analysisPayload.summary,
-        analysis: analysisPayload,
-      };
-      setMessages((prev) => [...prev, botMessage]);
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Ocorreu um erro desconhecido.";
-      addMessage({
-        role: "bot",
-        text: `Desculpe, ocorreu um erro: ${errorMessage}`,
-      });
-    } finally {
-      setLoading(false);
-      inputRef.current?.focus();
-    }
-  };
-
-  const generateChart = async (messageId: string) => {
-    const targetMessage = messages.find((m) => m.messageId === messageId);
-    if (!targetMessage?.analysis) return;
-
-    setMessages((prev) =>
-      prev.map((m) =>
-        m.messageId === messageId ? { ...m, isChartLoading: true } : m
-      )
-    );
+    }, PROGRESS_STEP_INTERVAL);
 
     try {
-      const { rawData, originalQuestion } = targetMessage.analysis;
-      const response = await fetch("/api/generate-chart", {
+      const initialResponse = await fetch("/api/chatbotquery", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rawData, originalQuestion }),
+        body: JSON.stringify({
+          body: {
+            message: textToSend,
+            groupId: selectedGroupId,
+          },
+        }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.details || "Erro ao gerar gráfico.");
-      }
+      if (!initialResponse.ok) throw new Error("Erro ao iniciar a consulta.");
 
-      const chartPayload =
-        (await response.json()) as AiChartPayload<MessageMetadata>;
+      const { jobId } = await initialResponse.json();
+      pollingIntervalRef.current = setInterval(
+        () => pollForResult(jobId, botMessage.messageId),
+        POLLING_INTERVAL
+      );
 
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.messageId === messageId
-            ? ({
-                ...m,
-                chart: chartPayload,
+      setTimeout(() => {
+        if (pollingIntervalRef.current) {
+          stopAllIntervals();
+          setMessages((prev) => {
+            const msg = prev.find((m) => m.messageId === botMessage.messageId);
+            if (msg?.isChartLoading) {
+              updateMessage(botMessage.messageId, {
+                text: "A solicitação demorou muito. Tente novamente.",
                 isChartLoading: false,
-              } as AppMessage)
-            : m
-        )
-      );
+                progressStep: undefined,
+              });
+              setLoading(false);
+            }
+            return prev;
+          });
+        }
+      }, POLLING_TIMEOUT);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Ocorreu um erro desconhecido.";
-      console.error("Failed to generate chart:", error);
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.messageId === messageId ? { ...m, isChartLoading: false } : m
-        )
-      );
-      addMessage({
-        role: "bot",
-        text: `Não foi possível gerar o gráfico: ${errorMessage}`,
+      stopAllIntervals();
+      const errMsg =
+        error instanceof Error ? error.message : "Erro desconhecido.";
+      updateMessage(botMessage.messageId, {
+        text: `Desculpe, ocorreu um erro: ${errMsg}`,
+        isChartLoading: false,
+        progressStep: undefined,
       });
+      setLoading(false);
     }
   };
 
   const handleTranscription = (transcription: string) => {
     if (!transcription) return;
-    addMessage({
-      role: "user",
-      text: `Você disse: "${transcription}"`,
-    });
+    addMessage({ role: "user", text: `Você disse: "${transcription}"` });
     sendMessage(transcription);
   };
 
@@ -149,6 +172,5 @@ export function useChatbotQuery() {
     sendMessage,
     addMessage,
     handleTranscription,
-    generateChart,
   };
 }

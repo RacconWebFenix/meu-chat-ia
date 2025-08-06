@@ -1,27 +1,12 @@
 // src/app/(app)/components/Chart/ChartDisplay.tsx
 import React from "react";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
+  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from "recharts";
 import { Box, Alert } from "@mui/material";
 
-// CORREÇÃO: A interface de dados agora corresponde EXATAMENTE ao nosso AiChartPayload.
-export interface ChartDataPoint {
-  group: string;
-  value: number;
-}
+export type ChartDataPoint = Record<string, string | number>;
 
 export interface ChartDisplayProps {
   data: ChartDataPoint[];
@@ -29,34 +14,28 @@ export interface ChartDisplayProps {
   loading?: boolean;
 }
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF"];
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF", "#FF6347"];
 
-const ChartDisplay: React.FC<ChartDisplayProps> = ({
-  data,
-  chartType,
-  loading,
-}) => {
+const ChartDisplay: React.FC<ChartDisplayProps> = ({ data, chartType, loading }) => {
   if (loading) {
-    return (
-      <Box
-        sx={{
-          width: "100%",
-          height: 300,
-          mt: 2,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Alert severity="info">Carregando dados do gráfico...</Alert>
-      </Box>
-    );
+    return <Alert severity="info">Carregando dados do gráfico...</Alert>;
+  }
+  if (!data || data.length === 0) {
+    return <Alert severity="warning">Não há dados para exibir o gráfico.</Alert>;
   }
 
-  if (!data || data.length === 0) {
-    return (
-      <Alert severity="warning">Não há dados para exibir o gráfico.</Alert>
-    );
+  // --- LÓGICA DINÂMICA PARA IDENTIFICAR CHAVES ---
+  // Pega as chaves (cabeçalhos) do primeiro objeto de dados.
+  const keys = Object.keys(data[0]);
+  
+  // Assume que a primeira chave que NÃO é um número é o nosso eixo X (ex: 'comprador', 'mês').
+  const xAxisKey = keys.find(key => typeof data[0][key] === 'string');
+
+  // Pega todas as outras chaves que são numéricas para serem as séries de dados (as linhas ou barras).
+  const dataKeys = keys.filter(key => typeof data[0][key] === 'number');
+
+  if (!xAxisKey || dataKeys.length === 0) {
+    return <Alert severity="error">Formato de dados inválido para renderizar o gráfico.</Alert>;
   }
 
   const renderChart = () => {
@@ -65,46 +44,39 @@ const ChartDisplay: React.FC<ChartDisplayProps> = ({
         return (
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="group" />
+            <XAxis dataKey={xAxisKey} />
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="value" fill="#8884d8" />
+            {/* Gera uma Barra para cada série de dados encontrada */}
+            {dataKeys.map((key, index) => (
+              <Bar key={key} dataKey={key} fill={COLORS[index % COLORS.length]} />
+            ))}
           </BarChart>
         );
       case "line":
         return (
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="group" />
+            <XAxis dataKey={xAxisKey} />
             <YAxis />
             <Tooltip />
             <Legend />
-            <Line type="monotone" dataKey="value" stroke="#8884d8" />
+            {/* Gera uma Linha para cada série de dados encontrada */}
+            {dataKeys.map((key, index) => (
+              <Line key={key} type="monotone" dataKey={key} stroke={COLORS[index % COLORS.length]} />
+            ))}
           </LineChart>
         );
       case "pie":
+        // Gráfico de pizza só funciona com uma única série de dados.
+        const pieDataKey = dataKeys[0]; 
         return (
           <PieChart>
-            <Pie
-              data={data}
-              dataKey="value"
-              nameKey="group"
-              cx="50%"
-              cy="50%"
-              outerRadius={80}
-              fill="#8884d8"
-              label
-            >
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
+            <Pie data={data} dataKey={pieDataKey} nameKey={xAxisKey} cx="50%" cy="50%" outerRadius={80} fill="#8884d8" label>
+              {data.map((entry, index) => ( <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} /> ))}
             </Pie>
-            <Tooltip />
-            <Legend />
+            <Tooltip /> <Legend />
           </PieChart>
         );
       default:

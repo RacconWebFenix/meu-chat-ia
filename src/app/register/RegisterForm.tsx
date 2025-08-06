@@ -4,7 +4,6 @@ import { Typography } from "@mui/material";
 import { CustomButton, CustomInput, ChatLoading } from "@/components/shared";
 import { useNavigationWithLoading } from "@/hooks/useNavigationWithLoading";
 
-
 interface RegisterFormProps {
   onSuccess?: () => void;
 }
@@ -64,7 +63,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
             label="Usuário"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            autoFocus
+            // autoFocus removido
             autoComplete="off"
             name="register_user"
             autoCorrect="off"
@@ -119,13 +118,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
             sx={{
               mt: 2,
               py: 1.5,
-              fontSize: 16,
-              fontWeight: 700,
-              background: (theme) => theme.palette.primary.main,
-              color: (theme) => theme.palette.primary.contrastText,
-              "&:hover": {
-                background: (theme) => theme.palette.primary.dark,
-              },
             }}
             disabled={loading}
           >
@@ -139,8 +131,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
             sx={{
               mt: 1,
               py: 1.5,
-              fontSize: 16,
-              fontWeight: 700,
             }}
             onClick={() => navigateTo("/login")}
           >

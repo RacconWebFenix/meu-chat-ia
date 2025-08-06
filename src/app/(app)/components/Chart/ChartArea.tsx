@@ -3,21 +3,16 @@
 
 import React from "react";
 import ChartControls, { ChartConfig } from "./ChartControls";
-import ChartDisplay from "./ChartDisplay";
+import ChartDisplay, { ChartDataPoint } from "./ChartDisplay"; // Importa ChartDataPoint
 import { Box } from "@mui/material";
 
-// Define ChartData interface to match ChartDisplay's data format
-export interface ChartData {
-  group: string;
-  value: number;
-  // Add other properties that your chart data might have
-}
+// A interface foi removida daqui para usar a do ChartDisplay diretamente
 
 interface ChartAreaProps {
   config: ChartConfig;
   setConfig: (value: React.SetStateAction<ChartConfig>) => void;
   onGenerateChart: () => void;
-  chartData: ChartData[];
+  chartData: ChartDataPoint[];
   loading: boolean;
   disabled: boolean;
   selectedTable: string;
@@ -32,9 +27,6 @@ const ChartArea: React.FC<ChartAreaProps> = ({
   disabled,
   selectedTable,
 }) => {
-  // A lógica de estado foi movida para page.tsx.
-  // A função para mudar a configuração é agora a própria 'setConfig' passada via props.
-
   return (
     <Box>
       <ChartControls
@@ -45,7 +37,7 @@ const ChartArea: React.FC<ChartAreaProps> = ({
         selectedTable={selectedTable}
       />
       <ChartDisplay
-        data={chartData.filter((item): item is ChartData => Boolean(item))}
+        data={chartData}
         chartType={config.chartType}
         loading={loading}
       />

@@ -1,22 +1,21 @@
 // src/components/ChatbootQuery/MessageDisplay.tsx
-import { AppMessage, SqlResultRow } from "@/types/api.types"; // Importe SqlResultRow
-import { BotResponseRenderer } from "./BotResponseRenderer";
+import { useState } from "react";
+import { AppMessage, SqlResultRow } from "@/types/api.types";
 import { TableComponent } from "./TableComponent";
-import { Button, CircularProgress, Box, Typography } from "@mui/material";
+import ChartDisplay from "@/app/(app)/components/Chart/ChartDisplay";
+import { Button, Box, Typography } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { ProgressIndicator } from "./ProgressIndicator"; // Importe o novo componente
 
 interface MessageDisplayProps {
   message: AppMessage;
-  onGenerateChart: (messageId: string) => void;
 }
 
-export default function MessageDisplay({
-  message,
-  onGenerateChart,
-}: MessageDisplayProps) {
+export default function MessageDisplay({ message }: MessageDisplayProps) {
+  const [isChartVisible, setIsChartVisible] = useState(false);
+
   if (message.role === "user") {
-    // ... (código do usuário permanece o mesmo)
     return (
       <Box sx={{ display: "flex", justifyContent: "flex-end", my: 1 }}>
         <Typography
@@ -33,7 +32,14 @@ export default function MessageDisplay({
     );
   }
 
-  const { analysis, chart, isChartLoading, messageId, text } = message;
+  const { chart, isChartLoading, text, progressStep } = message;
+
+  const isChartPossible =
+    chart?.chartType !== "table" &&
+    chart?.chartData &&
+    chart.chartData.length > 0;
+  const isTable =
+    chart?.rawData && chart.rawData.length > 0 && !isChartPossible;
 
   return (
     <Box sx={{ display: "flex", justifyContent: "flex-start", my: 1 }}>
@@ -45,29 +51,34 @@ export default function MessageDisplay({
           width: "100%",
         }}
       >
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
-
-        {/* A CORREÇÃO ESTÁ AQUI */}
-        {analysis?.rawData && analysis.rawData.length > 0 && (
-          <TableComponent
-            // Fazemos a asserção de tipo aqui para garantir a compatibilidade
-            data={analysis.rawData as SqlResultRow[]}
-          />
+        {/* --- LÓGICA DE RENDERIZAÇÃO ATUALIZADA --- */}
+        {isChartLoading && typeof progressStep === "number" ? (
+          <ProgressIndicator currentStep={progressStep} />
+        ) : (
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
         )}
 
-        {analysis?.isChartable && !chart && !isChartLoading && (
+        {isTable && chart && (
+          <TableComponent data={chart.rawData as SqlResultRow[]} />
+        )}
+
+        {isChartPossible && !isChartVisible && (
           <Button
             variant="contained"
             sx={{ mt: 2 }}
-            onClick={() => onGenerateChart(messageId)}
+            onClick={() => setIsChartVisible(true)}
           >
             Gerar Gráfico
           </Button>
         )}
 
-        {isChartLoading && <CircularProgress size={24} sx={{ mt: 2 }} />}
-
-        {chart && <BotResponseRenderer payload={chart} />}
+        {isChartPossible &&
+          isChartVisible &&
+          chart &&
+          chart.chartType !== "table" &&
+          chart.chartData && (
+            <ChartDisplay data={chart.chartData} chartType={chart.chartType} />
+          )}
       </Box>
     </Box>
   );

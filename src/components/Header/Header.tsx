@@ -1,5 +1,5 @@
+// components/Header/Header.tsx
 "use client";
-
 import { useState } from "react";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
@@ -14,9 +14,14 @@ import {
   useMediaQuery,
   useTheme,
   CircularProgress,
+  Select,
+  MenuItem,
+  FormControl,
+  SelectChangeEvent,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { usePageTitle } from "@/contexts";
+import { useGroup } from "@/contexts/GroupContext"; // <<<<<< IMPORTADO AQUI
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -28,16 +33,17 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { pageTitle } = usePageTitle();
+  const { groups, selectedGroupId, setSelectedGroupId, isLoading } = useGroup(); // <<<<<< USADO AQUI
 
   const handleSignOut = async () => {
     setIsLoggingOut(true);
-    try {
-      await signOut({ redirect: false });
-      router.push("/login");
-    } catch (error) {
-      console.error("Erro ao fazer logout:", error);
-      setIsLoggingOut(false);
-    }
+    await signOut({ redirect: false });
+    router.push("/login");
+  };
+
+  const handleGroupChange = (event: SelectChangeEvent<number>) => {
+    const value = event.target.value as number;
+    setSelectedGroupId(value === 0 ? null : value);
   };
 
   return (
@@ -62,7 +68,6 @@ export default function Header({ onMenuClick }: HeaderProps) {
             <MenuIcon />
           </IconButton>
         )}
-
         <Box sx={{ display: "flex", alignItems: "center", mr: 2 }}>
           <Image
             src="/assets/logo-comercio-integrado.png"
@@ -71,38 +76,43 @@ export default function Header({ onMenuClick }: HeaderProps) {
             height={50}
           />
         </Box>
-
         <Typography
           variant="h6"
           component="div"
-          sx={{
-            flexGrow: 1,
-            fontWeight: "bold",
-            color: "primary.main",
-          }}
+          sx={{ flexGrow: 1, fontWeight: "bold", color: "primary.main" }}
         >
           {pageTitle}
         </Typography>
+
+        {/* --- NOVO: SELECT DE GRUPOS --- */}
+        <FormControl size="small" sx={{ minWidth: 280, mr: 2 }}>
+          <Select
+            value={isLoading ? "" : selectedGroupId ?? 0}
+            onChange={handleGroupChange}
+            disabled={isLoading}
+            displayEmpty
+          >
+            {isLoading && (
+              <MenuItem value="">
+                <em>Carregando grupos...</em>
+              </MenuItem>
+            )}
+            {groups.map((group) => (
+              <MenuItem key={group.id} value={group.id}>
+                {group.nome_do_grupo}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        {/* --- FIM DO SELECT --- */}
 
         <Button
           color="inherit"
           onClick={handleSignOut}
           disabled={isLoggingOut}
           startIcon={
-            isLoggingOut ? (
-              <CircularProgress size={18} thickness={4} color="inherit" />
-            ) : (
-              <LogoutIcon sx={{ color: "text.primary" }} />
-            )
+            isLoggingOut ? <CircularProgress size={18} /> : <LogoutIcon />
           }
-          sx={{
-            color: "text.primary",
-            fontWeight: 500,
-            minWidth: "100px",
-            "&:hover": {
-              backgroundColor: "grey.100",
-            },
-          }}
         >
           {isLoggingOut ? "Saindo..." : "Sair"}
         </Button>

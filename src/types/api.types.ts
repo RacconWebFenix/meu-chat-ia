@@ -15,7 +15,7 @@ export interface AnalysisPayload<T> {
 
 export interface AiChartPayload<T> {
   chartType: "bar" | "line" | "pie" | "table";
-  chartData: { group: string; value: number }[] | null;
+  chartData: Record<string, string | number>[] | null;
   summary: string;
   rawData: SqlResultRow<T>[];
 }
@@ -56,6 +56,7 @@ export interface Message<T = MessageMetadata> {
   isChartLoading?: boolean;
   images?: Image[];
   citations?: Citation[];
+  progressStep?: number;
 }
 
 /**
@@ -63,3 +64,13 @@ export interface Message<T = MessageMetadata> {
  * Usa uma definição de metadados mais específica em vez de Record<string, unknown>
  */
 export type AppMessage = Message<MessageMetadata>;
+
+// ... final do seu arquivo api.types.ts
+
+// Tipo para a resposta da API de polling
+export interface PollingResponse {
+  status: "completed" | "processing" | "failed";
+  data?: {
+    output: string; // O JSON textual vindo do "Analista"
+  };
+}
