@@ -4,6 +4,9 @@ const nextConfig = {
   outputFileTracingIncludes: {
     "*": ["./prisma/**/*"],
   },
+  images: {
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;

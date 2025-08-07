@@ -15,20 +15,21 @@ interface Props {
 export default function ImageGrid({ images }: Props) {
   return (
     <ImageList
+      rowHeight={100}
+      cols={5}
       sx={{
         width: 500,
         boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
       }}
-      cols={5}
     >
       {images.map((item, i) => (
         <ImageListItem key={i + item.image_url}>
           <Image
             src={item.image_url}
-            alt={"Imagem do produto"}
-            width={item.width || 100} // Fornece um fallback
-            height={item.height || 100} // Fornece um fallback
-            style={{ objectFit: "cover" }}
+            alt="Imagem do produto"
+            width={item.width || 100} // Fallback
+            height={item.height || 100} // Fallback
+            style={{ objectFit: "cover", width: "100%", height: "100%" }}
             loading="lazy"
           />
         </ImageListItem>
