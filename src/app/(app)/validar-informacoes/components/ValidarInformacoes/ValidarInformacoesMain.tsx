@@ -19,6 +19,9 @@ import ImageGrid, { Img } from "@/components/ImageGrid/ImageGrid";
 import CustomGridTable from "@/components/shared/CustomGrid/CustomGridTable";
 import { CustomButton } from "@/components";
 import { useNavigationWithLoading } from "@/hooks/useNavigationWithLoading";
+import { getSiteName } from "../../utils/getSiteName";
+import { useChatBoot } from "@/features/chat";
+import { useEffect, useMemo, useState } from "react";
 
 export default function ValidarInformacoesMain({}) {
   const { navigateTo } = useNavigationWithLoading();
@@ -41,12 +44,30 @@ export default function ValidarInformacoesMain({}) {
     images?: Img[];
     citations?: { url: string; siteName: string }[];
   }
-  const safeResult: ResultType[] = Array.isArray(result) ? result : [];
+  const safeResult: ResultType[] = useMemo(
+    () => (Array.isArray(result) ? result : []),
+    [result]
+  );
   const content = safeResult[0]?.choices?.[0]?.message?.content || "";
   const { explanation, columns, data } = processContent(content);
   const images = Array.isArray(safeResult[0]?.images)
     ? safeResult[0].images
     : [];
+
+  const [citations, setCitations] = useState<
+    { url: string; siteName: string }[]
+  >([]);
+
+  useEffect(() => {
+    const processedCitations = Array.isArray(safeResult[0]?.citations)
+      ? safeResult[0].citations.map((c) => (typeof c === "string" ? c : c.url))
+      : [];
+    const formattedCitations = processedCitations.map((citation: string) => ({
+      url: citation,
+      siteName: getSiteName(citation),
+    }));
+    setCitations(formattedCitations);
+  }, [result, safeResult]);
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
@@ -86,17 +107,10 @@ export default function ValidarInformacoesMain({}) {
               </Card>
             )}
 
-            {Array.isArray(safeResult[0]?.citations) && (
+            {citations.length > 0 && (
               <Card elevation={2}>
                 <CardContent>
-                  <Citations
-                    citations={
-                      safeResult[0].citations as {
-                        url: string;
-                        siteName: string;
-                      }[]
-                    }
-                  />
+                  <Citations citations={citations} />
                 </CardContent>
               </Card>
             )}

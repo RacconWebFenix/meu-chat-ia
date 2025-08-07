@@ -12,7 +12,7 @@ export default function Citations({
   title = "Fontes",
 }: CitationProps) {
   if (!citations || citations.length === 0) return null;
-  console.log(citations);
+
   return (
     <Box sx={{ my: 2 }}>
       {title && (
