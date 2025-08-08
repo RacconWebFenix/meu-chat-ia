@@ -71,6 +71,7 @@ export type AppMessage = Message<MessageMetadata>;
 export interface PollingResponse {
   status: "completed" | "processing" | "failed";
   data?: {
+    summary?: string;
     output: string; // O JSON textual vindo do "Analista"
   };
 }

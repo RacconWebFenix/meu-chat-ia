@@ -44,7 +44,28 @@ export function useChatbotQuery() {
 
         if (result.status === "completed" && result.data) {
           stopAllIntervals();
-          const finalPayload = JSON.parse(result.data.output);
+          let finalPayload;
+
+          // Caso 1: O campo 'data' já é o objeto final (nosso caminho da conversa).
+          if (typeof result.data.summary === "string") {
+            finalPayload = result.data;
+          }
+          // Caso 2: O campo 'data' é um objeto que contém a resposta como um texto em 'output' (caminho do SQL).
+          else if (
+            result.data.output &&
+            typeof result.data.output === "string"
+          ) {
+            finalPayload = JSON.parse(result.data.output);
+          }
+          // Caso 3 (segurança): O próprio campo 'data' é um texto JSON.
+          else if (typeof result.data === "string") {
+            finalPayload = JSON.parse(result.data);
+          }
+          // Se nenhum formato for reconhecido, lança um erro.
+          else {
+            throw new Error("Formato de dados da resposta final inesperado.");
+          }
+
           updateMessage(botMessageId, {
             text: finalPayload.summary,
             chart: finalPayload,
