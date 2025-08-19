@@ -1,4 +1,4 @@
-// components/Header/Header.tsx
+// src/components/Header/Header.tsx
 "use client";
 import { useState } from "react";
 import Image from "next/image";
@@ -11,17 +11,15 @@ import {
   IconButton,
   Box,
   Button,
-  useMediaQuery,
-  useTheme,
-  CircularProgress,
   Select,
   MenuItem,
   FormControl,
   SelectChangeEvent,
+  CircularProgress,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { usePageTitle } from "@/contexts";
-import { useGroup } from "@/contexts/GroupContext"; // <<<<<< IMPORTADO AQUI
+import { useGroup } from "@/contexts/GroupContext";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -29,11 +27,9 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick }: HeaderProps) {
   const router = useRouter();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { pageTitle } = usePageTitle();
-  const { groups, selectedGroupId, setSelectedGroupId, isLoading } = useGroup(); // <<<<<< USADO AQUI
+  const { groups, selectedGroupId, setSelectedGroupId, isLoading } = useGroup();
 
   const handleSignOut = async () => {
     setIsLoggingOut(true);
@@ -41,9 +37,9 @@ export default function Header({ onMenuClick }: HeaderProps) {
     router.push("/login");
   };
 
-  const handleGroupChange = (event: SelectChangeEvent<number>) => {
-    const value = event.target.value as number;
-    setSelectedGroupId(value === 0 ? null : value);
+  const handleGroupChange = (event: SelectChangeEvent<number | "">) => {
+    const value = event.target.value as number | "";
+    setSelectedGroupId(value === 0 || value === "" ? null : value);
   };
 
   return (
@@ -57,17 +53,16 @@ export default function Header({ onMenuClick }: HeaderProps) {
       }}
     >
       <Toolbar>
-        {isMobile && (
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={onMenuClick}
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-        )}
+        <IconButton
+          color="inherit"
+          aria-label="toggle drawer"
+          edge="start"
+          onClick={onMenuClick} // Esta função agora afixa/desafixa o menu
+          sx={{ mr: 2 }}
+        >
+          <MenuIcon />
+        </IconButton>
+
         <Box sx={{ display: "flex", alignItems: "center", mr: 2 }}>
           <Image
             src="/assets/logo-comercio-integrado.png"
@@ -84,7 +79,6 @@ export default function Header({ onMenuClick }: HeaderProps) {
           {pageTitle}
         </Typography>
 
-        {/* --- NOVO: SELECT DE GRUPOS --- */}
         <FormControl size="small" sx={{ minWidth: 280, mr: 2 }}>
           <Select
             value={isLoading ? "" : selectedGroupId ?? 0}
@@ -94,7 +88,8 @@ export default function Header({ onMenuClick }: HeaderProps) {
           >
             {isLoading && (
               <MenuItem value="">
-                <em>Carregando grupos...</em>
+                {" "}
+                <em>Carregando grupos...</em>{" "}
               </MenuItem>
             )}
             {groups.map((group) => (
@@ -104,7 +99,6 @@ export default function Header({ onMenuClick }: HeaderProps) {
             ))}
           </Select>
         </FormControl>
-        {/* --- FIM DO SELECT --- */}
 
         <Button
           color="inherit"

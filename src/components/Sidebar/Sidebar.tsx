@@ -1,3 +1,4 @@
+// src/components/Sidebar/Sidebar.tsx
 "use client";
 
 import React from "react";
@@ -12,11 +13,36 @@ import {
   Divider,
   Typography,
   Box,
+  Theme,
+  CSSObject,
 } from "@mui/material";
-import { Home as HomeIcon, Search as SearchIcon } from "@mui/icons-material";
+import {
+  Home as HomeIcon,
+  Search as SearchIcon,
+  Assessment as AssessmentIcon,
+} from "@mui/icons-material";
 import { useRouter, usePathname } from "next/navigation";
 
 const drawerWidth = 280;
+const collapsedDrawerWidth = 72;
+
+const openedMixin = (theme: Theme): CSSObject => ({
+  width: drawerWidth,
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: "hidden",
+});
+
+const closedMixin = (theme: Theme): CSSObject => ({
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: "hidden",
+  width: `${collapsedDrawerWidth}px`,
+});
 
 interface MenuItem {
   text: string;
@@ -38,6 +64,12 @@ const menuItems: MenuItem[] = [
     path: "/search",
     description: "Chat para pesquisa de materiais",
   },
+  {
+    text: "Relatórios",
+    icon: <AssessmentIcon />,
+    path: "/relatorios",
+    description: "Painel de relatórios e análises",
+  },
 ];
 
 interface SidebarProps {
@@ -46,6 +78,7 @@ interface SidebarProps {
   variant?: "permanent" | "persistent" | "temporary";
   onNavigationStart?: () => void;
   onNavigationEnd?: () => void;
+  pinned: boolean;
 }
 
 export default function Sidebar({
@@ -54,91 +87,79 @@ export default function Sidebar({
   variant = "permanent",
   onNavigationStart,
   onNavigationEnd,
+  pinned,
 }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
 
   const handleNavigation = (path: string) => {
-    // Se o caminho atual for diferente do caminho de destino, mostra o loading
     if (pathname !== path) {
       onNavigationStart?.();
-
-      // Navegação real
       router.push(path);
-
-      // Simula um tempo mínimo de loading para melhor UX
-      setTimeout(() => {
-        onNavigationEnd?.();
-      }, 800);
+      setTimeout(() => onNavigationEnd?.(), 500);
     }
-
     if (variant === "temporary") {
       onClose();
     }
   };
 
+  const isExpanded = pinned;
+
   const drawerContent = (
-    <Box
-      sx={{
-        overflow: "auto",
-        height: "100%",
-        backgroundColor: "background.default",
-      }}
-    >
+    <Box>
       <Toolbar>
         <Typography
           variant="h6"
           noWrap
           component="div"
-          sx={{ fontWeight: "bold" }}
+          sx={{
+            fontWeight: "bold",
+            color: "text.primary",
+            opacity: isExpanded ? 1 : 0,
+            transition: "opacity 0.2s",
+          }}
         >
           Menu Principal
         </Typography>
       </Toolbar>
       <Divider />
-      <List>
+      <List sx={{ p: 1 }}>
         {menuItems.map((item) => {
-          const isActive = pathname === item.path;
+          const isActive =
+            item.path === "/"
+              ? pathname === item.path
+              : pathname.startsWith(item.path);
           return (
-            <ListItem key={item.text} disablePadding>
+            <ListItem
+              key={item.text}
+              disablePadding
+              sx={{ display: "block", mb: 0.5 }}
+            >
               <ListItemButton
                 selected={isActive}
                 onClick={() => handleNavigation(item.path)}
                 sx={{
                   minHeight: 60,
-                  "&:hover": {
-                    "& .MuiListItemText-primary": {
-                      color: "primary.main",
-                    },
-                    "& .MuiListItemText-secondary": {
-                      color: "primary.main",
-                    },
-                    "& .MuiListItemIcon-root": {
-                      color: "primary.main",
-                    },
-                  },
+                  justifyContent: "initial",
+                  px: 2.5,
+                  borderRadius: 2,
                   "&.Mui-selected": {
                     backgroundColor: "primary.main",
-                    color: "white",
+                    color: "primary.contrastText",
                     "&:hover": {
                       backgroundColor: "primary.dark",
                     },
                     "& .MuiListItemIcon-root": {
-                      color: "white",
-                    },
-                    "& .MuiListItemText-primary": {
-                      color: "white",
-                    },
-                    "& .MuiListItemText-secondary": {
-                      color: "rgba(255,255,255,0.7)",
+                      color: "primary.contrastText",
                     },
                   },
                 }}
               >
                 <ListItemIcon
                   sx={{
-                    minWidth: 40,
-                    color: isActive ? "white" : "text.primary",
+                    minWidth: 0,
+                    mr: isExpanded ? 0 : "auto",
+                    justifyContent: "center",
                   }}
                 >
                   {item.icon}
@@ -146,16 +167,27 @@ export default function Sidebar({
                 <ListItemText
                   primary={item.text}
                   secondary={item.description}
-                  sx={{
-                    "& .MuiListItemText-primary": {
-                      color: isActive ? "white" : "text.primary",
-                      fontWeight: 500,
+                  sx={{ opacity: isExpanded ? 1 : 0 }}
+                  // CORREÇÃO: Utilizando a API 'slotProps' recomendada
+                  slotProps={{
+                    primary: {
+                      style: {
+                        fontWeight: isActive ? 600 : 500,
+                        color: isActive
+                          ? "rgb(246, 246, 246)"
+                          : "rgba(0, 5, 59, 0.87)",
+                        display: "flex",
+                        marginLeft: "1rem",
+                      },
                     },
-                    "& .MuiListItemText-secondary": {
-                      color: isActive
-                        ? "rgba(255,255,255,0.7)"
-                        : "text.primary",
-                      fontSize: "0.75rem",
+                    secondary: {
+                      style: {
+                        fontSize: "0.8rem",
+                        color: isActive
+                          ? "rgb(246, 246, 246)"
+                          : "rgba(0, 5, 59, 0.87)",
+                        marginLeft: "1rem",
+                      },
                     },
                   }}
                 />
@@ -170,19 +202,32 @@ export default function Sidebar({
   return (
     <Drawer
       variant={variant}
-      open={open}
+      open={variant === "temporary" ? open : true}
       onClose={onClose}
-      sx={{
+      sx={(theme) => ({
         width: drawerWidth,
         flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          width: drawerWidth,
-          // boxSizing: "border-box",
-          boxShadow: "1px 1px 2px rgba(0,0,0,0.15)",
-          // borderRight: "1px solid",
-          borderColor: "divider",
-        },
-      }}
+        whiteSpace: "nowrap",
+        boxSizing: "border-box",
+        ...(variant === "permanent" && {
+          ...(pinned ? openedMixin(theme) : closedMixin(theme)),
+          "& .MuiDrawer-paper": pinned
+            ? openedMixin(theme)
+            : closedMixin(theme),
+          ...(!pinned && {
+            "& .MuiDrawer-paper:hover": {
+              ...openedMixin(theme),
+              boxShadow: theme.shadows[4],
+              "& .MuiListItemText-root": {
+                opacity: 1,
+                transition: theme.transitions.create("opacity", {
+                  delay: theme.transitions.duration.enteringScreen / 2,
+                }),
+              },
+            },
+          }),
+        }),
+      })}
     >
       {drawerContent}
     </Drawer>

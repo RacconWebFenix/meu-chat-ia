@@ -1,3 +1,4 @@
+// src/components/MainLayout/MainLayout.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -9,119 +10,98 @@ import GlobalLoading from "../shared/GlobalLoading/GlobalLoading";
 import FloatingButton from "../ChatbootQuery/FloatingButton";
 import ChatWindow from "../ChatbootQuery/ChatWindow";
 
+const drawerWidth = 0;
+const collapsedDrawerWidth = 0; // Largura do menu quando está apenas com os ícones
+
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  // O estado agora controla se o menu está afixado (expandido)
+  const [isSidebarPinned, setSidebarPinned] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isChatWindowOpen, setIsChatWindowOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const pathname = usePathname();
 
-  // Safety mechanism to ensure loading doesn't get stuck
   useEffect(() => {
     if (isLoading) {
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 3000); // 3 seconds max loading time
-
+      const timer = setTimeout(() => setIsLoading(false), 3000);
       return () => clearTimeout(timer);
     }
   }, [isLoading, pathname]);
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+  const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
+  const handleSidebarPinToggle = () => setSidebarPinned(!isSidebarPinned); // Função para afixar/desafixar
+  const handleNavigationStart = () => setIsLoading(true);
+  const handleNavigationEnd = () => setIsLoading(false);
+  const handleChatWindowToggle = () => setIsChatWindowOpen(!isChatWindowOpen);
 
-  const handleNavigationStart = () => {
-    setIsLoading(true);
-  };
-
-  const handleNavigationEnd = () => {
-    setIsLoading(false);
-  };
-
-  const handleChatWindowToggle = () => {
-    setIsChatWindowOpen(!isChatWindowOpen);
-  };
+  // A largura do espaço reservado pelo menu muda se ele estiver afixado
+  const currentDrawerWidth = isSidebarPinned
+    ? drawerWidth
+    : collapsedDrawerWidth;
 
   return (
     <Box sx={{ display: "flex" }}>
       <GlobalLoading open={isLoading} />
 
-      <Header onMenuClick={handleDrawerToggle} />
+      <Header
+        onMenuClick={isMobile ? handleDrawerToggle : handleSidebarPinToggle}
+      />
 
-      {/* Desktop Sidebar */}
-      {!isMobile && (
-        <Sidebar
-          open={true}
-          onClose={() => {}}
-          variant="permanent"
-          onNavigationStart={handleNavigationStart}
-          onNavigationEnd={handleNavigationEnd}
-        />
-      )}
+      <Sidebar
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        variant={isMobile ? "temporary" : "permanent"}
+        onNavigationStart={handleNavigationStart}
+        onNavigationEnd={handleNavigationEnd}
+        pinned={isSidebarPinned}
+      />
 
-      {/* Mobile Sidebar */}
-      {isMobile && (
-        <Sidebar
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          variant="temporary"
-          onNavigationStart={handleNavigationStart}
-          onNavigationEnd={handleNavigationEnd}
-        />
-      )}
-
-      {/* Main content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
-          width: { md: `calc(100% - 80px)` },
-          minHeight: "100vh",
+          p: 2,
+          transition: theme.transitions.create(["margin", "width"], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+          }),
+          // A margem e a largura se ajustam dinamicamente
+          marginLeft: {
+            md: `${isMobile ? 0 : currentDrawerWidth}px`,
+          },
+          // CORREÇÃO: A largura agora usa 'currentDrawerWidth' para o cálculo
+          width: {
+            md: `calc(100% - ${isMobile ? 0 : currentDrawerWidth}px)`,
+          },
+          // CORREÇÃO: Define a cor de fundo correta para a área de conteúdo
           backgroundColor: "background.default",
-          border: "none",
-          borderLeft: "none",
+          minHeight: "100vh", // Garante que o conteúdo ocupe toda a altura da tela 
         }}
       >
-        <Toolbar /> {/* This creates space for the fixed header */}
-        {/* Welcome message */}
-        <Box
-          sx={{
-            mb: 3,
-            p: 2,
-            backgroundColor: "white",
-            borderRadius: 1,
-            boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
-          }}
-        >
-          <Box sx={{ color: "text.secondary", fontSize: "0.9rem" }}>
-            Bem-vindo ao Ambiente de Pesquisa, Relatórios e Métricas da Comércio
-            Integrado
-          </Box>
-        </Box>
+        <Toolbar />
         {children}
       </Box>
-      <FloatingButton onClick={handleChatWindowToggle}  isOpen={isChatWindowOpen} />
 
-      {/* Janela do Chatbot (Drawer) */}
+      <FloatingButton
+        onClick={handleChatWindowToggle}
+        isOpen={isChatWindowOpen}
+      />
+
       <Drawer
-        anchor="right" // Abre da direita
-        open={isChatWindowOpen} // Controlado pelo estado
-        onClose={handleChatWindowToggle} // Permite fechar o chat
+        anchor="right"
+        open={isChatWindowOpen}
+        onClose={handleChatWindowToggle}
         PaperProps={{
           sx: {
-            width: { xs: "100%", sm: 400, lg: "70%" }, // Largura responsiva da janela do chat
-            boxSizing: "border-box",
-            boxShadow: "-4px 0 8px rgba(0,0,0,0.1)",
-            top: "64px", // Posiciona abaixo do Header
-            height: "calc(100% - 64px)", // Ocupa o restante da altura
-            borderRadius: "8px 0 0 8px", // Opcional: borda arredondada na lateral visível
+            width: { xs: "100%", sm: 400, lg: "70%" },
+            top: "64px",
+            height: "calc(100% - 64px)",
           },
         }}
       >

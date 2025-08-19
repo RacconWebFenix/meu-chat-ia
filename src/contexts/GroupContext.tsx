@@ -47,8 +47,11 @@ export function GroupProvider({ children }: { children: ReactNode }) {
         };
         setGroups([allGroupsOption, ...data]);
 
-        // Define o primeiro grupo real como o padrão, se existir
-        if (data.length > 0) {
+        // Define a Viterra (ID 114) como padrão, se existir na lista
+        const viterraGroup = data.find((group) => group.id === 114);
+        if (viterraGroup) {
+          setSelectedGroupId(114);
+        } else if (data.length > 0) {
           setSelectedGroupId(data[0].id);
         } else {
           setSelectedGroupId(0); // Fallback para "Todos" se não houver grupos
