@@ -11,13 +11,13 @@ import AdvancedDataGrid from "@/components/shared/AdvancedDataGrid/AdvancedDataG
 // ✅ FUNÇÃO AUXILIAR: Obter label amigável da métrica
 const getMetricLabel = (valueField: string): string => {
   const metricLabels: Record<string, string> = {
-    'QUANTIDADE': 'Quantidade',
-    'VALOR_UNIT_ULT_COMPRA': 'Valor Unit. Última Compra',
-    'PRECO_NEGOCIADO': 'Preço Negociado',
-    'VALOR_TOTAL_NEGOCIADO': 'Valor Total Negociado',
-    'SAVING_ULT_COMPRA': 'Saving (Última Compra)',
-    'SAVING_MELHOR_PRECO': 'Saving (Melhor Preço)',
-    'ESTIMATIVA_VALOR': 'Estimativa Valor',
+    QUANTIDADE: "Quantidade",
+    VALOR_UNIT_ULT_COMPRA: "Valor Unit. Última Compra",
+    PRECO_NEGOCIADO: "Preço Negociado",
+    VALOR_TOTAL_NEGOCIADO: "Valor Total Negociado",
+    SAVING_ULT_COMPRA: "Saving (Última Compra)",
+    SAVING_MELHOR_PRECO: "Saving (Melhor Preço)",
+    ESTIMATIVA_VALOR: "Estimativa Valor",
   };
   return metricLabels[valueField] || valueField;
 };
@@ -68,7 +68,8 @@ export default function PivotTab() {
             {processedPivotData.valueHeaders.length > 0 && (
               <>
                 {" "}
-                | <strong>Métricas:</strong> {processedPivotData.valueHeaders.length}
+                | <strong>Métricas:</strong>{" "}
+                {processedPivotData.valueHeaders.length}
                 {processedPivotData.valueHeaders.map((valueField, index) => {
                   const total = processedPivotData.grandTotal[valueField] || 0;
                   if (total > 0) {
@@ -106,26 +107,26 @@ export default function PivotTab() {
           onFilterModelChange={() => {}} // Filtros são aplicados nos controles
           sx={{
             // ✅ Estilos Material-UI para sub-linhas
-            '& .MuiDataGrid-row': {
+            "& .MuiDataGrid-row": {
               // Estilo para linhas principais (compradores)
               '&[data-id$="_main"]': {
                 fontWeight: 600,
-                backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                backgroundColor: "rgba(25, 118, 210, 0.04)",
               },
               // Estilo para sub-linhas (métricas)
               '&[data-id*="_sub_"]': {
-                backgroundColor: 'rgba(0, 0, 0, 0.02)',
-                borderLeft: '3px solid #1976d2',
+                backgroundColor: "rgba(0, 0, 0, 0.02)",
+                borderLeft: "3px solid #1976d2",
                 '& .MuiDataGrid-cell[data-field="rowHeader"]': {
-                  paddingLeft: '24px',
-                  fontStyle: 'italic',
-                  color: 'text.secondary',
-                  fontSize: '0.875rem',
+                  paddingLeft: "24px",
+                  fontStyle: "italic",
+                  color: "text.secondary",
+                  fontSize: "0.875rem",
                 },
               },
             },
             '& .MuiDataGrid-cell[data-field="rowHeader"]': {
-              fontWeight: 'inherit',
+              fontWeight: "inherit",
             },
           }}
         />

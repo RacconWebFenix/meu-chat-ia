@@ -9,19 +9,19 @@
       border-left: 3px solid #e0e0e0 !important;
     }
   }
-  
+
   .mainMetricRow {
     .MuiDataGrid-cell[data-field="rowHeader"] {
       font-weight: 600 !important;
       background-color: #fafafa !important;
     }
   }
-  
+
   .multiValueMode {
     .MuiDataGrid-row:nth-of-type(even) {
       background-color: #f8f9fa;
     }
-    
+
     .MuiDataGrid-row:nth-of-type(odd) {
       background-color: #ffffff;
     }

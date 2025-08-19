@@ -72,13 +72,16 @@ export function usePivotTable() {
   // Função para processar dados brutos em tabela dinâmica
   const processPivotData = useCallback(
     (data: ReportRow[], config: PivotConfiguration): ProcessedPivotData => {
-      const pivotTable: Record<string, Record<string, Record<string, number>>> = {};
+      const pivotTable: Record<
+        string,
+        Record<string, Record<string, number>>
+      > = {};
       const rowTotals: Record<string, Record<string, number>> = {};
       const columnTotals: Record<string, Record<string, number>> = {};
       const grandTotal: Record<string, number> = {};
 
       // Inicializar grandTotal para cada métrica
-      config.values.forEach(valueField => {
+      config.values.forEach((valueField) => {
         grandTotal[valueField] = 0;
       });
 
@@ -178,7 +181,10 @@ export function usePivotTable() {
 
       // Para agregação por média, dividir pela contagem
       if (config.aggregation === "avg") {
-        const countTable: Record<string, Record<string, Record<string, number>>> = {};
+        const countTable: Record<
+          string,
+          Record<string, Record<string, number>>
+        > = {};
 
         data.forEach((row) => {
           const rowKey = config.rows
@@ -190,7 +196,7 @@ export function usePivotTable() {
 
           if (!countTable[rowKey]) countTable[rowKey] = {};
           if (!countTable[rowKey][colKey]) countTable[rowKey][colKey] = {};
-          
+
           config.values.forEach((valueField) => {
             if (!countTable[rowKey][colKey][valueField]) {
               countTable[rowKey][colKey][valueField] = 0;
@@ -204,7 +210,8 @@ export function usePivotTable() {
             config.values.forEach((valueField) => {
               if (countTable[rowKey]?.[colKey]?.[valueField]) {
                 pivotTable[rowKey][colKey][valueField] =
-                  pivotTable[rowKey][colKey][valueField] / countTable[rowKey][colKey][valueField];
+                  pivotTable[rowKey][colKey][valueField] /
+                  countTable[rowKey][colKey][valueField];
               }
             });
           });
@@ -284,12 +291,14 @@ export function usePivotTable() {
             rowHeader,
             total: processedData.rowTotals[rowHeader]?.[valueField] || 0,
           };
-          
+
           processedData.columnHeaders.forEach((colHeader) => {
             const fieldName = colHeader.replace(/[^a-zA-Z0-9]/g, "_");
-            row[fieldName] = processedData.pivotTable[rowHeader]?.[colHeader]?.[valueField] || 0;
+            row[fieldName] =
+              processedData.pivotTable[rowHeader]?.[colHeader]?.[valueField] ||
+              0;
           });
-          
+
           rows.push(row);
         } else {
           // ✅ Modo expandido: sub-linhas para cada métrica
@@ -297,22 +306,25 @@ export function usePivotTable() {
             // Buscar label amigável da métrica
             const metricLabel = getMetricLabel(valueField);
             const isFirstMetric = valueIndex === 0;
-            
+
             const row: PivotTableRow = {
-              id: isFirstMetric 
+              id: isFirstMetric
                 ? `row_${rowIndex++}_main` // Linha principal
                 : `row_${rowIndex++}_sub_${valueField}`, // Sub-linha com identificador da métrica
-              rowHeader: isFirstMetric 
-                ? rowHeader  // Primeira sub-linha mostra o nome do comprador
+              rowHeader: isFirstMetric
+                ? rowHeader // Primeira sub-linha mostra o nome do comprador
                 : `  └─ ${metricLabel}`, // Sub-linhas com indentação e nome da métrica
               total: processedData.rowTotals[rowHeader]?.[valueField] || 0,
             };
-            
+
             processedData.columnHeaders.forEach((colHeader) => {
               const fieldName = colHeader.replace(/[^a-zA-Z0-9]/g, "_");
-              row[fieldName] = processedData.pivotTable[rowHeader]?.[colHeader]?.[valueField] || 0;
+              row[fieldName] =
+                processedData.pivotTable[rowHeader]?.[colHeader]?.[
+                  valueField
+                ] || 0;
             });
-            
+
             rows.push(row);
           });
         }
@@ -326,13 +338,13 @@ export function usePivotTable() {
   // ✅ FUNÇÃO AUXILIAR: Obter label amigável da métrica
   const getMetricLabel = (valueField: string): string => {
     const metricLabels: Record<string, string> = {
-      'QUANTIDADE': 'Quantidade',
-      'VALOR_UNIT_ULT_COMPRA': 'Valor Unit. Última Compra',
-      'PRECO_NEGOCIADO': 'Preço Negociado',
-      'VALOR_TOTAL_NEGOCIADO': 'Valor Total Negociado',
-      'SAVING_ULT_COMPRA': 'Saving (Última Compra)',
-      'SAVING_MELHOR_PRECO': 'Saving (Melhor Preço)',
-      'ESTIMATIVA_VALOR': 'Estimativa Valor',
+      QUANTIDADE: "Quantidade",
+      VALOR_UNIT_ULT_COMPRA: "Valor Unit. Última Compra",
+      PRECO_NEGOCIADO: "Preço Negociado",
+      VALOR_TOTAL_NEGOCIADO: "Valor Total Negociado",
+      SAVING_ULT_COMPRA: "Saving (Última Compra)",
+      SAVING_MELHOR_PRECO: "Saving (Melhor Preço)",
+      ESTIMATIVA_VALOR: "Estimativa Valor",
     };
     return metricLabels[valueField] || valueField;
   };
