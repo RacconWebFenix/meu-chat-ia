@@ -21,6 +21,45 @@ const INITIAL_PIVOT_CONFIG: PivotConfiguration = {
   aggregation: "sum",
 };
 
+// ✅ FUNÇÕES AUXILIARES PARA TRATAMENTO DE DATAS
+const DATE_FIELDS = ["FINALIZADA", "DATA_REQUISICAO", "DATA_NECESSIDADE"];
+
+// Função para normalizar valores de coluna (especialmente datas)
+const normalizeColumnValue = (field: string, value: unknown): string => {
+  if (!value) return "N/A";
+
+  // Verificar se é campo de data
+  if (DATE_FIELDS.includes(field)) {
+    try {
+      const date = new Date(String(value));
+      // Retornar apenas a parte da data YYYY-MM-DD para agrupamento
+      return date.toISOString().split("T")[0];
+    } catch {
+      return "N/A";
+    }
+  }
+
+  return String(value);
+};
+
+// Função para formatar data para brasileiro
+const formatDateToBR = (dateString: string): string => {
+  try {
+    // Se já está formatado, retornar como está
+    if (dateString.includes("/")) return dateString;
+
+    // Se é formato YYYY-MM-DD, formatar para DD/MM/YYYY
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      const date = new Date(dateString + "T00:00:00.000Z");
+      return date.toLocaleDateString("pt-BR");
+    }
+
+    return dateString;
+  } catch {
+    return dateString;
+  }
+};
+
 interface ExtendedQuotationFilters extends QuotationFilters {
   pivotConfig?: PivotConfiguration;
 }
@@ -89,26 +128,26 @@ export function usePivotTable() {
       const rowHeaders = new Set<string>();
       const columnHeaders = new Set<string>();
 
-      // Primeira passagem: identificar cabeçalhos únicos
+      // Primeira passagem: identificar cabeçalhos únicos com normalização de datas
       data.forEach((row) => {
         const rowKey = config.rows
-          .map((field) => row[field] || "N/A")
+          .map((field) => normalizeColumnValue(field, row[field]))
           .join(" | ");
         const colKey = config.columns
-          .map((field) => row[field] || "N/A")
+          .map((field) => normalizeColumnValue(field, row[field]))
           .join(" | ");
 
         rowHeaders.add(rowKey);
         columnHeaders.add(colKey);
       });
 
-      // Segunda passagem: calcular valores agregados
+      // Segunda passagem: calcular valores agregados com normalização de datas
       data.forEach((row) => {
         const rowKey = config.rows
-          .map((field) => row[field] || "N/A")
+          .map((field) => normalizeColumnValue(field, row[field]))
           .join(" | ");
         const colKey = config.columns
-          .map((field) => row[field] || "N/A")
+          .map((field) => normalizeColumnValue(field, row[field]))
           .join(" | ");
 
         if (!pivotTable[rowKey]) {
@@ -188,10 +227,10 @@ export function usePivotTable() {
 
         data.forEach((row) => {
           const rowKey = config.rows
-            .map((field) => row[field] || "N/A")
+            .map((field) => normalizeColumnValue(field, row[field]))
             .join(" | ");
           const colKey = config.columns
-            .map((field) => row[field] || "N/A")
+            .map((field) => normalizeColumnValue(field, row[field]))
             .join(" | ");
 
           if (!countTable[rowKey]) countTable[rowKey] = {};
@@ -244,7 +283,7 @@ export function usePivotTable() {
         },
         ...processedData.columnHeaders.map((header) => ({
           field: header.replace(/[^a-zA-Z0-9]/g, "_"),
-          headerName: header,
+          headerName: formatDateToBR(header), // ✅ APLICAR FORMATAÇÃO PT-BR
           minWidth: 120,
           type: "number" as const,
           align: "right" as const,
