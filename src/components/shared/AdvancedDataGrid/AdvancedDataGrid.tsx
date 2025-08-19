@@ -9,7 +9,7 @@ import {
   GridFilterModel, // <<<<<< IMPORTAÇÃO ADICIONADA
 } from "@mui/x-data-grid";
 import { ptBR } from "@mui/x-data-grid/locales";
-import { Box } from "@mui/material";
+import { Box, SxProps, Theme } from "@mui/material";
 
 interface BaseRow {
   id: string | number;
@@ -25,6 +25,7 @@ interface AdvancedDataGridProps<T extends BaseRow> {
   onPaginationModelChange: (model: GridPaginationModel) => void;
   filterModel?: GridFilterModel; // <<<<<< PROPRIEDADE ADICIONADA
   onFilterModelChange?: (model: GridFilterModel) => void; // <<<<<< PROPRIEDADE ADICIONADA
+  sx?: SxProps<Theme>; // <<<<<< PROPRIEDADE ADICIONADA PARA ESTILOS
 }
 
 export default function AdvancedDataGrid<T extends BaseRow>({
@@ -36,6 +37,7 @@ export default function AdvancedDataGrid<T extends BaseRow>({
   onPaginationModelChange,
   filterModel, // <<<<<< NOVA PROP RECEBIDA
   onFilterModelChange, // <<<<<< NOVA PROP RECEBIDA
+  sx, // <<<<<< NOVA PROP RECEBIDA
 }: AdvancedDataGridProps<T>) {
   return (
     <Box sx={{ height: 650, width: "100%" }}>
@@ -54,6 +56,7 @@ export default function AdvancedDataGrid<T extends BaseRow>({
         filterModel={filterModel}
         onFilterModelChange={onFilterModelChange}
         localeText={ptBR.components.MuiDataGrid.defaultProps.localeText}
+        sx={sx} // <<<<<< PROPRIEDADE ADICIONADA PARA ESTILOS
       />
     </Box>
   );

@@ -1,0 +1,49 @@
+/* src/app/(app)/relatorios/components/PivotTab.module.scss */
+
+.pivotContainer {
+  .subMetricRow {
+    .MuiDataGrid-cell[data-field="rowHeader"] {
+      padding-left: 24px !important;
+      color: #666 !important;
+      font-style: italic;
+      border-left: 3px solid #e0e0e0 !important;
+    }
+  }
+  
+  .mainMetricRow {
+    .MuiDataGrid-cell[data-field="rowHeader"] {
+      font-weight: 600 !important;
+      background-color: #fafafa !important;
+    }
+  }
+  
+  .multiValueMode {
+    .MuiDataGrid-row:nth-of-type(even) {
+      background-color: #f8f9fa;
+    }
+    
+    .MuiDataGrid-row:nth-of-type(odd) {
+      background-color: #ffffff;
+    }
+  }
+}
+
+/* Melhorar a visualização da indentação */
+.subMetricIndicator {
+  display: inline-block;
+  margin-right: 8px;
+  color: #999;
+  font-weight: normal;
+}
+
+.mainRowHeader {
+  font-weight: 600;
+  color: #333;
+}
+
+.subRowHeader {
+  font-weight: normal;
+  color: #666;
+  padding-left: 16px;
+  font-style: italic;
+}

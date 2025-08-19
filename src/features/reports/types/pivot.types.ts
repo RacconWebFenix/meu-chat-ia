@@ -15,12 +15,13 @@ export interface PivotConfiguration {
 
 // Dados processados da tabela dinâmica
 export interface ProcessedPivotData {
-  readonly pivotTable: Record<string, Record<string, number>>;
-  readonly rowTotals: Record<string, number>;
-  readonly columnTotals: Record<string, number>;
-  readonly grandTotal: number;
+  readonly pivotTable: Record<string, Record<string, Record<string, number>>>; // rowKey -> colKey -> valueKey -> value
+  readonly rowTotals: Record<string, Record<string, number>>; // rowKey -> valueKey -> total
+  readonly columnTotals: Record<string, Record<string, number>>; // colKey -> valueKey -> total
+  readonly grandTotal: Record<string, number>; // valueKey -> grandTotal
   readonly rowHeaders: ReadonlyArray<string>;
   readonly columnHeaders: ReadonlyArray<string>;
+  readonly valueHeaders: ReadonlyArray<string>; // Nomes das métricas selecionadas
 }
 
 // Configuração estendida para incluir pivot

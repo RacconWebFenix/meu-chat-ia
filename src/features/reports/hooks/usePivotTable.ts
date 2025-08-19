@@ -72,10 +72,15 @@ export function usePivotTable() {
   // Função para processar dados brutos em tabela dinâmica
   const processPivotData = useCallback(
     (data: ReportRow[], config: PivotConfiguration): ProcessedPivotData => {
-      const pivotTable: Record<string, Record<string, number>> = {};
-      const rowTotals: Record<string, number> = {};
-      const columnTotals: Record<string, number> = {};
-      let grandTotal = 0;
+      const pivotTable: Record<string, Record<string, Record<string, number>>> = {};
+      const rowTotals: Record<string, Record<string, number>> = {};
+      const columnTotals: Record<string, Record<string, number>> = {};
+      const grandTotal: Record<string, number> = {};
+
+      // Inicializar grandTotal para cada métrica
+      config.values.forEach(valueField => {
+        grandTotal[valueField] = 0;
+      });
 
       // Coletar todos os valores únicos para linhas e colunas
       const rowHeaders = new Set<string>();
@@ -105,21 +110,32 @@ export function usePivotTable() {
 
         if (!pivotTable[rowKey]) {
           pivotTable[rowKey] = {};
-          rowTotals[rowKey] = 0;
+          rowTotals[rowKey] = {};
         }
 
         if (!pivotTable[rowKey][colKey]) {
-          pivotTable[rowKey][colKey] = 0;
+          pivotTable[rowKey][colKey] = {};
         }
 
         if (!columnTotals[colKey]) {
-          columnTotals[colKey] = 0;
+          columnTotals[colKey] = {};
         }
 
-        // Calcular valor agregado baseado no tipo de agregação
+        // Calcular valor agregado baseado no tipo de agregação - PARA CADA MÉTRICA
         config.values.forEach((valueField) => {
           const value = Number(row[valueField]) || 0;
           let aggregatedValue = value;
+
+          // Inicializar estruturas se necessário
+          if (!pivotTable[rowKey][colKey][valueField]) {
+            pivotTable[rowKey][colKey][valueField] = 0;
+          }
+          if (!rowTotals[rowKey][valueField]) {
+            rowTotals[rowKey][valueField] = 0;
+          }
+          if (!columnTotals[colKey][valueField]) {
+            columnTotals[colKey][valueField] = 0;
+          }
 
           switch (config.aggregation) {
             case "sum":
@@ -134,35 +150,35 @@ export function usePivotTable() {
               break;
             case "max":
               aggregatedValue = Math.max(
-                pivotTable[rowKey][colKey] || 0,
+                pivotTable[rowKey][colKey][valueField] || 0,
                 value
               );
               break;
             case "min":
               aggregatedValue =
-                pivotTable[rowKey][colKey] === 0
+                pivotTable[rowKey][colKey][valueField] === 0
                   ? value
-                  : Math.min(pivotTable[rowKey][colKey], value);
+                  : Math.min(pivotTable[rowKey][colKey][valueField], value);
               break;
           }
 
           if (config.aggregation === "max" || config.aggregation === "min") {
-            pivotTable[rowKey][colKey] = aggregatedValue;
+            pivotTable[rowKey][colKey][valueField] = aggregatedValue;
           } else {
-            pivotTable[rowKey][colKey] += aggregatedValue;
+            pivotTable[rowKey][colKey][valueField] += aggregatedValue;
           }
 
           if (config.aggregation !== "max" && config.aggregation !== "min") {
-            rowTotals[rowKey] += aggregatedValue;
-            columnTotals[colKey] += aggregatedValue;
-            grandTotal += aggregatedValue;
+            rowTotals[rowKey][valueField] += aggregatedValue;
+            columnTotals[colKey][valueField] += aggregatedValue;
+            grandTotal[valueField] += aggregatedValue;
           }
         });
       });
 
       // Para agregação por média, dividir pela contagem
       if (config.aggregation === "avg") {
-        const countTable: Record<string, Record<string, number>> = {};
+        const countTable: Record<string, Record<string, Record<string, number>>> = {};
 
         data.forEach((row) => {
           const rowKey = config.rows
@@ -173,16 +189,24 @@ export function usePivotTable() {
             .join(" | ");
 
           if (!countTable[rowKey]) countTable[rowKey] = {};
-          if (!countTable[rowKey][colKey]) countTable[rowKey][colKey] = 0;
-          countTable[rowKey][colKey]++;
+          if (!countTable[rowKey][colKey]) countTable[rowKey][colKey] = {};
+          
+          config.values.forEach((valueField) => {
+            if (!countTable[rowKey][colKey][valueField]) {
+              countTable[rowKey][colKey][valueField] = 0;
+            }
+            countTable[rowKey][colKey][valueField]++;
+          });
         });
 
         Object.keys(pivotTable).forEach((rowKey) => {
           Object.keys(pivotTable[rowKey]).forEach((colKey) => {
-            if (countTable[rowKey] && countTable[rowKey][colKey]) {
-              pivotTable[rowKey][colKey] =
-                pivotTable[rowKey][colKey] / countTable[rowKey][colKey];
-            }
+            config.values.forEach((valueField) => {
+              if (countTable[rowKey]?.[colKey]?.[valueField]) {
+                pivotTable[rowKey][colKey][valueField] =
+                  pivotTable[rowKey][colKey][valueField] / countTable[rowKey][colKey][valueField];
+              }
+            });
           });
         });
       }
@@ -194,6 +218,7 @@ export function usePivotTable() {
         grandTotal,
         rowHeaders: Array.from(rowHeaders).sort(),
         columnHeaders: Array.from(columnHeaders).sort(),
+        valueHeaders: config.values, // ✅ NOVO: Lista das métricas
       };
     },
     []
@@ -202,11 +227,12 @@ export function usePivotTable() {
   // Função para converter dados processados em formato de grid
   const convertToGridFormat = useCallback(
     (processedData: ProcessedPivotData) => {
+      // Criar colunas dinamicamente
       const columns: GridColDef<PivotTableRow>[] = [
         {
           field: "rowHeader",
           headerName: pivotConfig.rows.join(" | "),
-          minWidth: 200,
+          minWidth: 250, // Aumentado para comportar indentação
           flex: 1,
         },
         ...processedData.columnHeaders.map((header) => ({
@@ -245,25 +271,71 @@ export function usePivotTable() {
         },
       ];
 
-      const rows = processedData.rowHeaders.map((rowHeader, index) => {
-        const row: PivotTableRow = {
-          id: `row_${index}`,
-          rowHeader,
-          total: processedData.rowTotals[rowHeader] || 0,
-        };
-        processedData.columnHeaders.forEach((colHeader) => {
-          const fieldName = colHeader.replace(/[^a-zA-Z0-9]/g, "_");
-          row[fieldName] =
-            processedData.pivotTable[rowHeader]?.[colHeader] || 0;
-        });
+      // ✅ NOVA LÓGICA: Criar sub-linhas quando há múltiplos valores
+      const rows: PivotTableRow[] = [];
+      let rowIndex = 0;
 
-        return row;
+      processedData.rowHeaders.forEach((rowHeader) => {
+        if (processedData.valueHeaders.length === 1) {
+          // Modo simples: uma linha por rowHeader
+          const valueField = processedData.valueHeaders[0];
+          const row: PivotTableRow = {
+            id: `row_${rowIndex++}`,
+            rowHeader,
+            total: processedData.rowTotals[rowHeader]?.[valueField] || 0,
+          };
+          
+          processedData.columnHeaders.forEach((colHeader) => {
+            const fieldName = colHeader.replace(/[^a-zA-Z0-9]/g, "_");
+            row[fieldName] = processedData.pivotTable[rowHeader]?.[colHeader]?.[valueField] || 0;
+          });
+          
+          rows.push(row);
+        } else {
+          // ✅ Modo expandido: sub-linhas para cada métrica
+          processedData.valueHeaders.forEach((valueField, valueIndex) => {
+            // Buscar label amigável da métrica
+            const metricLabel = getMetricLabel(valueField);
+            const isFirstMetric = valueIndex === 0;
+            
+            const row: PivotTableRow = {
+              id: isFirstMetric 
+                ? `row_${rowIndex++}_main` // Linha principal
+                : `row_${rowIndex++}_sub_${valueField}`, // Sub-linha com identificador da métrica
+              rowHeader: isFirstMetric 
+                ? rowHeader  // Primeira sub-linha mostra o nome do comprador
+                : `  └─ ${metricLabel}`, // Sub-linhas com indentação e nome da métrica
+              total: processedData.rowTotals[rowHeader]?.[valueField] || 0,
+            };
+            
+            processedData.columnHeaders.forEach((colHeader) => {
+              const fieldName = colHeader.replace(/[^a-zA-Z0-9]/g, "_");
+              row[fieldName] = processedData.pivotTable[rowHeader]?.[colHeader]?.[valueField] || 0;
+            });
+            
+            rows.push(row);
+          });
+        }
       });
 
       return { columns, rows };
     },
     [pivotConfig]
   );
+
+  // ✅ FUNÇÃO AUXILIAR: Obter label amigável da métrica
+  const getMetricLabel = (valueField: string): string => {
+    const metricLabels: Record<string, string> = {
+      'QUANTIDADE': 'Quantidade',
+      'VALOR_UNIT_ULT_COMPRA': 'Valor Unit. Última Compra',
+      'PRECO_NEGOCIADO': 'Preço Negociado',
+      'VALOR_TOTAL_NEGOCIADO': 'Valor Total Negociado',
+      'SAVING_ULT_COMPRA': 'Saving (Última Compra)',
+      'SAVING_MELHOR_PRECO': 'Saving (Melhor Preço)',
+      'ESTIMATIVA_VALOR': 'Estimativa Valor',
+    };
+    return metricLabels[valueField] || valueField;
+  };
 
   const fetchData = useCallback(async () => {
     if (isGroupContextLoading) return;
