@@ -10,7 +10,7 @@
 
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Grid, Paper, Typography, Box } from "@mui/material";
 import {
   DndContext,
@@ -70,6 +70,12 @@ export const DragDropPivotBuilder: React.FC<DragDropPivotBuilderProps> = ({
   } = useDragDropPivot(currentConfig, onConfigChange);
 
   const { usedFields } = useUsedFields(currentConfig);
+
+  // ====================================
+  // STATE MANAGEMENT
+  // ====================================
+
+  const [searchTerm, setSearchTerm] = useState("");
 
   // ====================================
   // CAMPOS COMBINADOS
@@ -135,8 +141,8 @@ export const DragDropPivotBuilder: React.FC<DragDropPivotBuilderProps> = ({
             <FieldsList
               fields={allFields}
               usedFields={usedFields}
-              searchTerm=""
-              onSearchChange={() => {}}
+              searchTerm={searchTerm}
+              onSearchChange={(value) => setSearchTerm(value)}
             />
           </Box>
 

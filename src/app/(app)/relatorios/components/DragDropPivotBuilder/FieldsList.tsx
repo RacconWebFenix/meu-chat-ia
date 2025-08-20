@@ -46,7 +46,9 @@ export const FieldsList: React.FC<FieldsListProps> = ({
   } = useFieldSearch(fields);
 
   const currentSearchTerm = externalSearchTerm || searchTerm;
-  const currentFields = externalSearchTerm ? fields : filteredFields;
+  const currentFields = fields.filter((field) =>
+    field.label.toLowerCase().includes(currentSearchTerm.toLowerCase())
+  );
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
