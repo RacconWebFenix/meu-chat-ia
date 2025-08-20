@@ -10,13 +10,7 @@
 "use client";
 
 import React from "react";
-import {
-  Box,
-  Typography,
-  Checkbox,
-  FormControlLabel,
-  Paper,
-} from "@mui/material";
+import { Box, Typography, Paper } from "@mui/material";
 import { useDraggable } from "@dnd-kit/core";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 
@@ -26,10 +20,7 @@ import { DraggableFieldProps } from "./types";
  * Campo individual que pode ser arrastado da lista para as zonas
  * Usado tanto na lista quanto no overlay de drag
  */
-export const DraggableField: React.FC<DraggableFieldProps> = ({
-  item,
-  showCheckbox = true,
-}) => {
+export const DraggableField: React.FC<DraggableFieldProps> = ({ item }) => {
   // ====================================
   // DRAGGABLE SETUP
   // ====================================
@@ -74,108 +65,43 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
       {...attributes}
       {...listeners}
     >
-      {showCheckbox ? (
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={!item.isDisabled}
-              disabled={item.isDisabled}
-              size="small"
-              sx={{ mr: 1 }}
-            />
-          }
-          label={
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                width: "100%",
-                justifyContent: "space-between",
-              }}
-            >
-              <Box>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontWeight: item.isDisabled ? 400 : 500,
-                    color: item.isDisabled ? "text.disabled" : "text.primary",
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {item.field.label}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: item.isDisabled ? "text.disabled" : "text.secondary",
-                    textTransform: "uppercase",
-                    fontSize: "0.7rem",
-                    display: "block",
-                  }}
-                >
-                  {item.field.dataType === "number"
-                    ? "🔢 Numérico"
-                    : item.field.dataType === "date"
-                    ? "📅 Data"
-                    : "📝 Texto"}
-                </Typography>
-              </Box>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
+        <Box sx={{ flex: 1 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: item.isDisabled ? 400 : 500,
+              color: item.isDisabled ? "text.disabled" : "text.primary",
+              lineHeight: 1.3,
+            }}
+          >
+            {item.field.label}
+          </Typography>
+          <Typography
+            variant="caption"
+            sx={{
+              color: item.isDisabled ? "text.disabled" : "text.secondary",
+              textTransform: "uppercase",
+              fontSize: "0.7rem",
+              display: "block",
+            }}
+          >
+            {item.field.dataType === "number"
+              ? "🔢 Numérico"
+              : item.field.dataType === "date"
+              ? "📅 Data"
+              : "📝 Texto"}
+          </Typography>
+        </Box>
 
-              {!item.isDisabled && (
-                <DragIndicatorIcon
-                  sx={{
-                    color: "grey.400",
-                    fontSize: "1.2rem",
-                    ml: 1,
-                  }}
-                />
-              )}
-            </Box>
-          }
-          sx={{
-            m: 0,
-            width: "100%",
-            "& .MuiFormControlLabel-label": {
-              width: "100%",
-            },
-          }}
-        />
-      ) : (
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <Box>
-            <Typography
-              variant="body2"
-              sx={{
-                fontWeight: 500,
-                color: "text.primary",
-                lineHeight: 1.3,
-              }}
-            >
-              {item.field.label}
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{
-                color: "text.secondary",
-                textTransform: "uppercase",
-                fontSize: "0.7rem",
-                display: "block",
-              }}
-            >
-              {item.field.dataType === "number"
-                ? "🔢 Numérico"
-                : item.field.dataType === "date"
-                ? "📅 Data"
-                : "📝 Texto"}
-            </Typography>
-          </Box>
-
+        {!item.isDisabled && (
           <DragIndicatorIcon
             sx={{
               color: "grey.400",
@@ -183,8 +109,8 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
               ml: 1,
             }}
           />
-        </Box>
-      )}
+        )}
+      </Box>
     </Paper>
   );
 };

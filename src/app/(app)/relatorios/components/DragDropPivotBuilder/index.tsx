@@ -193,7 +193,6 @@ export const DragDropPivotBuilder: React.FC<DragDropPivotBuilderProps> = ({
                 currentZone: "available",
                 isDisabled: false,
               }}
-              showCheckbox={false}
             />
           ) : null}
         </DragOverlay>

@@ -129,7 +129,6 @@ export const FieldsList: React.FC<FieldsListProps> = ({
                   currentZone: "available",
                   isDisabled: isUsed,
                 }}
-                showCheckbox={true}
               />
             );
           })}

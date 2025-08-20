@@ -102,7 +102,6 @@ export interface DropZoneProps {
 
 export interface DraggableFieldProps {
   readonly item: DraggableFieldItem;
-  readonly showCheckbox?: boolean;
 }
 
 export interface SortableFieldItemProps {
