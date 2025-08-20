@@ -109,6 +109,53 @@ export const DragDropPivotBuilder: React.FC<DragDropPivotBuilderProps> = ({
         pointerEvents: isLoading ? "none" : "auto",
       }}
     >
+      {/* ====================================
+          TÍTULO E INSTRUÇÕES DE USO
+          ==================================== */}
+      <Box
+        sx={{
+          mb: 3,
+          p: 2,
+          backgroundColor: "info.50",
+          borderRadius: 2,
+          border: 1,
+          borderColor: "info.200",
+        }}
+      >
+        <Typography
+          variant="h6"
+          gutterBottom
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            mb: 2,
+            fontWeight: 600,
+            color: "info.900",
+          }}
+        >
+          📊 Construtor de Tabela Dinâmica
+        </Typography>
+
+        <Typography
+          variant="body2"
+          sx={{
+            color: "info.800",
+            lineHeight: 1.6,
+            "& strong": {
+              fontWeight: 600,
+              color: "info.900",
+            },
+          }}
+        >
+          💡 <strong>Como usar o Drag & Drop:</strong>{" "}
+          <strong>① Arraste campos</strong> da lista à esquerda para as áreas de
+          configuração. <strong>② Linhas/Colunas</strong> aceitam campos
+          de texto e data. <strong>③ Valores</strong> aceita apenas campos
+          numéricos para agregação. <strong>④ Reordene</strong> arrastando
+          dentro das áreas. <strong>⑤ Remova</strong> clicando no ✕ ou
+          arrastando de volta para a lista. 
+        </Typography>
+      </Box>
       {/* Indicador de Drag Ativo */}
       {isDragging && (
         <Typography
@@ -203,54 +250,6 @@ export const DragDropPivotBuilder: React.FC<DragDropPivotBuilderProps> = ({
           ) : null}
         </DragOverlay>
       </DndContext>
-
-      {/* ====================================
-          TÍTULO E INSTRUÇÕES DE USO
-          ==================================== */}
-      <Box
-        sx={{
-          mt: 3,
-          p: 2,
-          backgroundColor: "info.50",
-          borderRadius: 2,
-          border: 1,
-          borderColor: "info.200",
-        }}
-      >
-        <Typography
-          variant="h6"
-          gutterBottom
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            mb: 2,
-            fontWeight: 600,
-            color: "info.900",
-          }}
-        >
-          📊 Construtor de Tabela Dinâmica
-        </Typography>
-
-        <Typography
-          variant="body2"
-          sx={{
-            color: "info.800",
-            lineHeight: 1.6,
-            "& strong": {
-              fontWeight: 600,
-              color: "info.900",
-            },
-          }}
-        >
-          💡 <strong>Como usar o Drag & Drop:</strong>{" "}
-          <strong>① Arraste campos</strong> da lista à esquerda para as áreas de
-          configuração. <strong>② Filtros/Linhas/Colunas</strong> aceitam campos
-          de texto e data. <strong>③ Valores</strong> aceita apenas campos
-          numéricos para agregação. <strong>④ Reordene</strong> arrastando
-          dentro das áreas. <strong>⑤ Remova</strong> clicando no ✕ ou
-          arrastando de volta para a lista.
-        </Typography>
-      </Box>
     </Paper>
   );
 };
