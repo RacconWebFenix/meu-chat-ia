@@ -6,7 +6,8 @@ import {
   DataGrid,
   GridColDef,
   GridPaginationModel,
-  GridFilterModel, // <<<<<< IMPORTAÇÃO ADICIONADA
+  GridFilterModel,
+  GridSortModel, // ✅ 1. IMPORTAR GridSortModel
 } from "@mui/x-data-grid";
 import { ptBR } from "@mui/x-data-grid/locales";
 import { Box, SxProps, Theme } from "@mui/material";
@@ -15,7 +16,6 @@ interface BaseRow {
   id: string | number;
 }
 
-// ATUALIZAÇÃO DA INTERFACE DE PROPRIEDADES
 interface AdvancedDataGridProps<T extends BaseRow> {
   rows: T[];
   columns: GridColDef<T>[];
@@ -23,9 +23,15 @@ interface AdvancedDataGridProps<T extends BaseRow> {
   rowCount: number;
   paginationModel: GridPaginationModel;
   onPaginationModelChange: (model: GridPaginationModel) => void;
-  filterModel?: GridFilterModel; // <<<<<< PROPRIEDADE ADICIONADA
-  onFilterModelChange?: (model: GridFilterModel) => void; // <<<<<< PROPRIEDADE ADICIONADA
-  sx?: SxProps<Theme>; // <<<<<< PROPRIEDADE ADICIONADA PARA ESTILOS
+  filterModel?: GridFilterModel;
+  onFilterModelChange?: (model: GridFilterModel) => void;
+  sx?: SxProps<Theme>;
+
+  // ✅ 2. ADICIONAR AS NOVAS PROPRIEDADES
+  disableColumnFilter?: boolean;
+  sortModel?: GridSortModel;
+  onSortModelChange?: (model: GridSortModel) => void;
+  sortingMode?: "client" | "server";
 }
 
 export default function AdvancedDataGrid<T extends BaseRow>({
@@ -35,9 +41,15 @@ export default function AdvancedDataGrid<T extends BaseRow>({
   rowCount,
   paginationModel,
   onPaginationModelChange,
-  filterModel, // <<<<<< NOVA PROP RECEBIDA
-  onFilterModelChange, // <<<<<< NOVA PROP RECEBIDA
-  sx, // <<<<<< NOVA PROP RECEBIDA
+  filterModel,
+  onFilterModelChange,
+  sx,
+
+  // ✅ 3. RECEBER AS NOVAS PROPRIEDADES
+  disableColumnFilter,
+  sortModel,
+  onSortModelChange,
+  sortingMode = "client",
 }: AdvancedDataGridProps<T>) {
   return (
     <Box sx={{ height: 650, width: "100%" }}>
@@ -51,12 +63,15 @@ export default function AdvancedDataGrid<T extends BaseRow>({
         paginationMode="server"
         paginationModel={paginationModel}
         onPaginationModelChange={onPaginationModelChange}
-        // ATIVAÇÃO DA FILTRAGEM NO SERVIDOR
-        filterMode="server" // <<<<<< PROPRIEDADE ADICIONADA
+        filterMode="server"
         filterModel={filterModel}
         onFilterModelChange={onFilterModelChange}
+        disableColumnFilter={disableColumnFilter}
+        sortingMode={sortingMode}
+        sortModel={sortModel}
+        onSortModelChange={onSortModelChange}
         localeText={ptBR.components.MuiDataGrid.defaultProps.localeText}
-        sx={sx} // <<<<<< PROPRIEDADE ADICIONADA PARA ESTILOS
+        sx={sx}
       />
     </Box>
   );

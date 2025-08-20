@@ -1,17 +1,8 @@
-/**
- * DRAG & DROP PIVOT BUILDER - COMPONENTE PRINCIPAL
- *
- * Seguindo Clean Code e SOLID:
- * - Interface Component (UI Layer)
- * - Responsabilidade única: Coordenar drag & drop
- * - Dependency Inversion: Recebe dependências via props
- * - Open/Closed: Extensível sem modificar código
- */
-
+// src/app/(app)/relatorios/components/DragDropPivotBuilder/index.tsx
 "use client";
 
 import React, { useState } from "react";
-import { Grid, Paper, Typography, Box } from "@mui/material";
+import { Paper, Typography, Box, Button, TextField } from "@mui/material";
 import {
   DndContext,
   DragOverlay,
@@ -30,35 +21,27 @@ import { DropZone } from "./DropZone";
 import { DraggableField } from "./DraggableField";
 import { DROP_ZONE_CONFIGS } from "./zoneConfig";
 
-/**
- * Componente principal do construtor de tabela dinâmica com drag & drop
- * Interface similar ao Excel para configuração de pivots
- */
 export const DragDropPivotBuilder: React.FC<DragDropPivotBuilderProps> = ({
   availableFields,
   availableMetrics,
   currentConfig,
   onConfigChange,
   isLoading = false,
+  filters,
+  onFilterChange,
+  onApplyFilters,
+  filterLoading = false,
 }) => {
-  // ====================================
-  // CONFIGURAÇÃO DE SENSORES
-  // ====================================
-
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // Previne conflito com cliques
+        distance: 8,
       },
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-
-  // ====================================
-  // HOOKS CUSTOMIZADOS
-  // ====================================
 
   const {
     activeField,
@@ -70,34 +53,17 @@ export const DragDropPivotBuilder: React.FC<DragDropPivotBuilderProps> = ({
   } = useDragDropPivot(currentConfig, onConfigChange);
 
   const { usedFields } = useUsedFields(currentConfig);
-
-  // ====================================
-  // STATE MANAGEMENT
-  // ====================================
-
   const [searchTerm, setSearchTerm] = useState("");
-
-  // ====================================
-  // CAMPOS COMBINADOS
-  // ====================================
 
   const allFields = React.useMemo(
     () => [...availableFields, ...availableMetrics],
     [availableFields, availableMetrics]
   );
 
-  // ====================================
-  // CONFIGURAÇÕES DAS ZONAS
-  // ====================================
-
-  const dropZones = React.useMemo(
-    () => DROP_ZONE_CONFIGS.filter((zone) => zone.id !== "available"),
-    []
-  );
-
-  // ====================================
-  // RENDER
-  // ====================================
+  // Separa as configurações das zonas para controle de layout
+  const rowsZoneConfig = DROP_ZONE_CONFIGS.find((z) => z.id === "rows");
+  const columnsZoneConfig = DROP_ZONE_CONFIGS.find((z) => z.id === "columns");
+  const valuesZoneConfig = DROP_ZONE_CONFIGS.find((z) => z.id === "values");
 
   return (
     <Paper
@@ -109,9 +75,6 @@ export const DragDropPivotBuilder: React.FC<DragDropPivotBuilderProps> = ({
         pointerEvents: isLoading ? "none" : "auto",
       }}
     >
-      {/* ====================================
-          TÍTULO E INSTRUÇÕES DE USO
-          ==================================== */}
       <Box
         sx={{
           mb: 3,
@@ -122,56 +85,62 @@ export const DragDropPivotBuilder: React.FC<DragDropPivotBuilderProps> = ({
           borderColor: "info.200",
         }}
       >
-        <Typography
-          variant="h6"
-          gutterBottom
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            mb: 2,
-            fontWeight: 600,
-            color: "info.900",
-          }}
-        >
+        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
           📊 Construtor de Tabela Dinâmica
         </Typography>
+        <Typography variant="body2" sx={{ mb: 2 }}>
+          💡 <strong>Arraste os campos</strong> da lista para as áreas de
+          configuração para montar seu relatório.
+        </Typography>
 
-        <Typography
-          variant="body2"
-          sx={{
-            color: "info.800",
-            lineHeight: 1.6,
-            "& strong": {
-              fontWeight: 600,
-              color: "info.900",
-            },
-          }}
-        >
-          💡 <strong>Como usar o Drag & Drop:</strong>{" "}
-          <strong>① Arraste campos</strong> da lista à esquerda para as áreas de
-          configuração. <strong>② Linhas/Colunas</strong> aceitam campos
-          de texto e data. <strong>③ Valores</strong> aceita apenas campos
-          numéricos para agregação. <strong>④ Reordene</strong> arrastando
-          dentro das áreas. <strong>⑤ Remova</strong> clicando no ✕ ou
-          arrastando de volta para a lista. 
-        </Typography>
+        {/* Filtros de Data */}
+        {filters && onFilterChange && onApplyFilters && (
+          <Box>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ fontWeight: 600, mt: 2 }}
+            >
+              📅 Filtros de Data
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                alignItems: "center",
+                flexWrap: "wrap",
+              }}
+            >
+              <TextField
+                label="Data Início"
+                type="date"
+                value={(filters?.startDate as string) || ""}
+                onChange={(e) => onFilterChange?.("startDate", e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                size="small"
+                sx={{ minWidth: 150 }}
+              />
+              <TextField
+                label="Data Fim"
+                type="date"
+                value={(filters?.endDate as string) || ""}
+                onChange={(e) => onFilterChange?.("endDate", e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                size="small"
+                sx={{ minWidth: 150 }}
+              />
+              <Button
+                variant="contained"
+                onClick={onApplyFilters}
+                disabled={filterLoading}
+                sx={{ height: 40 }}
+              >
+                {filterLoading ? "Filtrando..." : "FILTRAR"}
+              </Button>
+            </Box>
+          </Box>
+        )}
       </Box>
-      {/* Indicador de Drag Ativo */}
-      {isDragging && (
-        <Typography
-          variant="caption"
-          sx={{
-            display: "block",
-            mb: 2,
-            color: "primary.main",
-            fontStyle: "italic",
-            textAlign: "center",
-            fontWeight: 500,
-          }}
-        >
-          🔄 Arrastando: {activeField?.label}
-        </Typography>
-      )}
 
       <DndContext
         sensors={sensors}
@@ -180,63 +149,64 @@ export const DragDropPivotBuilder: React.FC<DragDropPivotBuilderProps> = ({
         onDragEnd={onDragEnd}
         onDragCancel={onDragCancel}
       >
-        <Box sx={{ display: "flex", gap: 3, height: 500 }}>
-          {/* ====================================
-              LISTA DE CAMPOS DISPONÍVEIS
-              ==================================== */}
-          <Box sx={{ flex: 1, minWidth: 300 }}>
+        <Box sx={{ display: "flex", gap: 3, minHeight: 500 }}>
+          <Box sx={{ flex: 1, minWidth: 300, maxWidth: 400 }}>
             <FieldsList
               fields={allFields}
               usedFields={usedFields}
               searchTerm={searchTerm}
-              onSearchChange={(value) => setSearchTerm(value)}
+              onSearchChange={setSearchTerm}
             />
           </Box>
 
-          {/* ====================================
-              ÁREAS DE CONFIGURAÇÃO
-              ==================================== */}
-          <Box sx={{ flex: 1, minWidth: 300 }}>
-            <Typography
-              variant="subtitle1"
-              gutterBottom
-              sx={{ fontWeight: 600, mb: 2 }}
-            >
-              🎯 Configuração da Tabela Dinâmica
+          {/* ✅ ÁREA DE CONFIGURAÇÃO COM LAYOUT CORRIGIDO */}
+          <Box
+            sx={{ flex: 2, display: "flex", flexDirection: "column", gap: 2 }}
+          >
+            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+              🎯 Áreas da Tabela
             </Typography>
 
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 2,
-                height: "calc(100% - 40px)",
-              }}
-            >
-              {dropZones.map((zoneConfig) => {
-                const currentItems = getCurrentZoneItems(
-                  currentConfig,
-                  zoneConfig.id
-                );
+            {/* Linha para Colunas e Linhas */}
+            <Box sx={{ display: "flex", gap: 2, flex: 1 }}>
+              {rowsZoneConfig && (
+                <Box sx={{ flex: 1 }}>
+                  <DropZone
+                    config={rowsZoneConfig}
+                    items={getCurrentZoneItems(currentConfig, "rows")}
+                    fields={allFields}
+                    onRemoveItem={onRemoveField}
+                  />
+                </Box>
+              )}
+              {columnsZoneConfig && (
+                <Box sx={{ flex: 1 }}>
+                  <DropZone
+                    config={columnsZoneConfig}
+                    items={getCurrentZoneItems(currentConfig, "columns")}
+                    fields={allFields}
+                    onRemoveItem={onRemoveField}
+                  />
+                </Box>
+              )}
+            </Box>
 
-                return (
-                  <Box key={zoneConfig.id}>
-                    <DropZone
-                      config={zoneConfig}
-                      items={currentItems}
-                      fields={allFields}
-                      onRemoveItem={onRemoveField}
-                    />
-                  </Box>
-                );
-              })}
+            {/* Linha para Valores */}
+            <Box sx={{ display: "flex", flex: 1 }}>
+              {valuesZoneConfig && (
+                <Box sx={{ flex: 1 }}>
+                  <DropZone
+                    config={valuesZoneConfig}
+                    items={getCurrentZoneItems(currentConfig, "values")}
+                    fields={allFields}
+                    onRemoveItem={onRemoveField}
+                  />
+                </Box>
+              )}
             </Box>
           </Box>
         </Box>
 
-        {/* ====================================
-            DRAG OVERLAY - Visual Feedback
-            ==================================== */}
         <DragOverlay>
           {activeField ? (
             <DraggableField
@@ -253,10 +223,6 @@ export const DragDropPivotBuilder: React.FC<DragDropPivotBuilderProps> = ({
     </Paper>
   );
 };
-
-// ====================================
-// UTILITY FUNCTIONS
-// ====================================
 
 const getCurrentZoneItems = (
   config: PivotConfiguration,

@@ -6,4 +6,5 @@ export { default as ChatLoading } from "./ChatLoading";
 export { default as Citations } from "./Citations";
 export { default as FadeSwitch } from "./FadeSwitch";
 export { default as TabsSwitcher } from "./TabsSwitcher";
+export { default as AdvancedDataGrid } from "./AdvancedDataGrid/AdvancedDataGrid";
 export { customMenuProps, largeMenuProps, smallMenuProps } from "./MenuProps";

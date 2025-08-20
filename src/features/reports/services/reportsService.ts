@@ -1,22 +1,17 @@
 // src/features/reports/services/reportsService.ts
-import { ReportRow, QuotationFilters } from "../types";
-
-interface N8nRow {
-  json: Record<string, string | number | null>;
-}
-
-export interface PaginatedN8nResponse {
-  rows: N8nRow[];
-  totalRowCount: number;
-}
+import {
+  AggregatedRow,
+  ExtendedQuotationFilters,
+  PivotApiResponse,
+} from "../types";
 
 const N8N_QUOTATIONS_WEBHOOK_URL =
   process.env.NEXT_PUBLIC_N8N_QUOTATIONS_WEBHOOK_URL;
 
 export const reportsService = {
   getQuotations: async (
-    filters: QuotationFilters
-  ): Promise<{ rows: ReportRow[]; totalRowCount: number }> => {
+    filters: ExtendedQuotationFilters
+  ): Promise<{ rows: AggregatedRow[]; totalRowCount: number }> => {
     if (!N8N_QUOTATIONS_WEBHOOK_URL) {
       throw new Error(
         "Variável de ambiente NEXT_PUBLIC_N8N_QUOTATIONS_WEBHOOK_URL não está configurada."
@@ -41,15 +36,24 @@ export const reportsService = {
         return { rows: [], totalRowCount: 0 };
       }
 
-      const data: PaginatedN8nResponse = JSON.parse(responseText);
+      const data: PivotApiResponse = JSON.parse(responseText);
 
-      const extractedRows: ReportRow[] = data.rows.map((item, index) => {
-        const rowData = item.json;
+      // ✅ AJUSTE DE ROBUSTEZ: Verifica se 'data.rows' é de fato um array.
+      if (!data || !Array.isArray(data.rows)) {
+        console.error(
+          "Erro de formato na resposta do N8N: 'rows' não é um array.",
+          data
+        );
+        // Retorna um estado vazio para evitar que a aplicação quebre.
+        return { rows: [], totalRowCount: 0 };
+      }
 
-        // --- CORREÇÃO DA CHAVE ÚNICA ---
-        // A primeira coluna da tabela dinâmica (ex: nome do comprador) é a chave única.
-        const firstColumnValue = Object.values(rowData)[0];
-        const uniqueId = String(firstColumnValue || index);
+      const extractedRows: AggregatedRow[] = data.rows.map((rowData, index) => {
+        if (!rowData || typeof rowData !== "object") {
+          return { id: `invalid_row_${index}` };
+        }
+
+        const uniqueId = Object.values(rowData).join("-") || String(index);
 
         return {
           ...rowData,
@@ -59,7 +63,7 @@ export const reportsService = {
 
       return {
         rows: extractedRows,
-        totalRowCount: data.totalRowCount,
+        totalRowCount: data.totalRowCount || 0,
       };
     } catch (error) {
       console.error("Falha ao buscar ou processar dados do n8n:", error);

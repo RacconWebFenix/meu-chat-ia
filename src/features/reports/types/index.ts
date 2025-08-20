@@ -25,6 +25,7 @@ export interface Quotation {
 }
 
 // A interface de filtros permanece a mesma.
+// searchTerm já está corretamente como opcional.
 export interface QuotationFilters {
   reportType: string;
   startDate: string;

@@ -78,6 +78,10 @@ export interface DragDropPivotBuilderProps {
   readonly currentConfig: PivotConfiguration;
   readonly onConfigChange: (config: PivotConfiguration) => void;
   readonly isLoading?: boolean;
+  readonly filters?: Record<string, unknown>;
+  readonly onFilterChange?: <K extends string>(field: K, value: string) => void;
+  readonly onApplyFilters?: () => void;
+  readonly filterLoading?: boolean;
 }
 
 export interface FieldsListProps {
