@@ -1,8 +1,15 @@
 /**
  * DRAG & DROP HOOKS - APPLICATION LOGIC
  *
- * Seguindo Clean Code e SOLID:
- * - Separação de responsabilidades
+ * Seguindo Clean Code e SO  const getCurrentZone = useCallback(
+    (fieldValue: string): DropZoneId | null => {
+      if (config.rows.includes(fieldValue)) return "rows";
+      if (config.columns.includes(fieldValue)) return "columns";
+      if (config.values.includes(fieldValue)) return "values";
+      return null;
+    },
+    [config]
+  );Separação de responsabilidades
  * - Hooks específicos para cada funcionalidade
  * - Estado imutável com readonly
  * - Tipagem estrita sem 'any'
@@ -59,7 +66,6 @@ export const useUsedFields = (config: PivotConfiguration) => {
   const usedFields = useMemo(() => {
     const allUsedFields = new Set<string>();
 
-    config.filters.forEach((field) => allUsedFields.add(field));
     config.rows.forEach((field) => allUsedFields.add(field));
     config.columns.forEach((field) => allUsedFields.add(field));
     config.values.forEach((field) => allUsedFields.add(field));
@@ -76,7 +82,6 @@ export const useUsedFields = (config: PivotConfiguration) => {
 
   const getFieldZone = useCallback(
     (fieldValue: string): DropZoneId | null => {
-      if (config.filters.includes(fieldValue)) return "filters";
       if (config.rows.includes(fieldValue)) return "rows";
       if (config.columns.includes(fieldValue)) return "columns";
       if (config.values.includes(fieldValue)) return "values";
@@ -193,8 +198,6 @@ const getCurrentZoneItems = (
   zoneId: string
 ): ReadonlyArray<string> => {
   switch (zoneId) {
-    case "filters":
-      return config.filters;
     case "rows":
       return config.rows;
     case "columns":
@@ -212,7 +215,6 @@ const removeFieldFromAllZones = (
 ): PivotConfiguration => {
   return {
     ...config,
-    filters: config.filters.filter((id) => id !== fieldId),
     rows: config.rows.filter((id) => id !== fieldId),
     columns: config.columns.filter((id) => id !== fieldId),
     values: config.values.filter((id) => id !== fieldId),
@@ -229,8 +231,6 @@ const moveFieldToZone = (
 
   // Depois adiciona na zona de destino
   switch (targetZoneId) {
-    case "filters":
-      return { ...cleanConfig, filters: [...cleanConfig.filters, fieldId] };
     case "rows":
       return { ...cleanConfig, rows: [...cleanConfig.rows, fieldId] };
     case "columns":
@@ -249,11 +249,6 @@ const reorderFields = (
   newIndex: number
 ): PivotConfiguration => {
   switch (zoneId) {
-    case "filters":
-      return {
-        ...config,
-        filters: arrayMove([...config.filters], oldIndex, newIndex),
-      };
     case "rows":
       return {
         ...config,

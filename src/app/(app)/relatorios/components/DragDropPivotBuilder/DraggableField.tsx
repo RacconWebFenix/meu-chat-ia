@@ -90,7 +90,9 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({ item }) => {
               color: item.isDisabled ? "text.disabled" : "text.secondary",
               textTransform: "uppercase",
               fontSize: "0.7rem",
-              display: "block",
+              display: "flex",
+              alignItems: "center",
+              gap: 0.5,
             }}
           >
             {item.field.dataType === "number"

@@ -34,12 +34,7 @@ export type FieldOption = DimensionOption | MetricOption;
 // DRAG & DROP ZONES - Interface Segregation
 // ====================================
 
-export type DropZoneId =
-  | "filters"
-  | "rows"
-  | "columns"
-  | "values"
-  | "available";
+export type DropZoneId = "rows" | "columns" | "values" | "available";
 
 export interface DropZoneConfig {
   readonly id: DropZoneId;
@@ -65,7 +60,6 @@ export interface DraggableFieldItem {
 // ====================================
 
 export interface PivotConfiguration {
-  readonly filters: ReadonlyArray<string>;
   readonly rows: ReadonlyArray<string>;
   readonly columns: ReadonlyArray<string>;
   readonly values: ReadonlyArray<string>;

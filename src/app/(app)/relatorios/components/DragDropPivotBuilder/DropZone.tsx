@@ -24,7 +24,6 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import CloseIcon from "@mui/icons-material/Close";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
 import CalculateIcon from "@mui/icons-material/Calculate";
@@ -56,8 +55,6 @@ export const DropZone: React.FC<DropZoneProps> = ({
 
   const getZoneIcon = () => {
     switch (config.id) {
-      case "filters":
-        return <FilterListIcon />;
       case "rows":
         return <ViewListIcon />;
       case "columns":
@@ -71,8 +68,6 @@ export const DropZone: React.FC<DropZoneProps> = ({
 
   const getZoneColor = () => {
     switch (config.id) {
-      case "filters":
-        return "info";
       case "rows":
         return "primary";
       case "columns":

@@ -25,7 +25,6 @@ const convertToNewConfig = (
   oldConfig: OldPivotConfiguration
 ): NewPivotConfiguration => {
   return {
-    filters: [], // Novo campo - inicia vazio
     rows: [...oldConfig.rows],
     columns: [...oldConfig.columns],
     values: [...oldConfig.values],
@@ -59,6 +58,9 @@ const getMetricLabel = (valueField: string): string => {
 };
 
 export default function PivotTab() {
+  // Estado local para filtros do drag & drop (não enviados ao backend)
+  const [localFilters, setLocalFilters] = React.useState<string[]>([]);
+
   const {
     loading,
     pivotTableColumns,
@@ -94,6 +96,7 @@ export default function PivotTab() {
           availableMetrics={METRIC_OPTIONS}
           currentConfig={convertToNewConfig(pivotConfig)}
           onConfigChange={(newConfig) => {
+            // Converte para configuração antiga
             const oldConfig = convertToOldConfig(newConfig);
             handlePivotConfigChange(oldConfig);
           }}

@@ -258,8 +258,6 @@ const getCurrentZoneItems = (
   zoneId: string
 ): ReadonlyArray<string> => {
   switch (zoneId) {
-    case "filters":
-      return config.filters || [];
     case "rows":
       return config.rows || [];
     case "columns":

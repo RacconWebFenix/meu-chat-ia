@@ -21,12 +21,6 @@ import { isMetricField, isDimensionField } from "./fieldConfig";
 
 export const DROP_ZONE_CONFIGS: ReadonlyArray<DropZoneConfig> = [
   {
-    id: "filters",
-    title: "Filtros",
-    acceptedTypes: ["string", "date"],
-    description: "Arraste campos para filtrar os dados",
-  },
-  {
     id: "rows",
     title: "Linhas",
     acceptedTypes: ["string", "date"],
@@ -57,31 +51,6 @@ export const DROP_ZONE_CONFIGS: ReadonlyArray<DropZoneConfig> = [
 // ====================================
 
 export const ZONE_VALIDATION_RULES: Record<string, ZoneValidationRules> = {
-  filters: {
-    canAcceptField: (
-      field: FieldOption,
-      currentItems: ReadonlyArray<string>
-    ): FieldValidationResult => {
-      if (isMetricField(field)) {
-        return {
-          isValid: false,
-          errorMessage: "Campos numéricos não podem ser usados como filtros",
-        };
-      }
-
-      if (currentItems.includes(field.value)) {
-        return {
-          isValid: false,
-          errorMessage: "Campo já está sendo usado nesta área",
-        };
-      }
-
-      return { isValid: true };
-    },
-    maxItems: 5,
-    requiredTypes: ["string", "date"],
-  },
-
   rows: {
     canAcceptField: (
       field: FieldOption,
