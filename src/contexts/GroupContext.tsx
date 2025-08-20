@@ -31,38 +31,61 @@ export function GroupProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Função auto-executável para buscar os grupos da nossa API
-    (async () => {
-      try {
-        const response = await fetch("/api/get-groups");
-        if (!response.ok) {
-          throw new Error("Falha ao buscar a lista de grupos.");
-        }
-        const data: Group[] = await response.json();
+    // Dados mockados dos grupos
+    const mockGroups: Group[] = [
+      {
+        id: 476,
+        nome_do_grupo: "BRANCO PERES AGRO S/A",
+      },
+      {
+        id: 50,
+        nome_do_grupo: "COMÉRCIO INTEGRADO",
+      },
+      {
+        id: 99,
+        nome_do_grupo: "DIANA BIOENERGIA",
+      },
+      {
+        id: 110,
+        nome_do_grupo: "GRUPO FARIAS",
+      },
+      {
+        id: 489,
+        nome_do_grupo: "NIDEC MOBILIDADE BRASIL IND AUT LTDA",
+      },
+      {
+        id: 720,
+        nome_do_grupo: "PRIME RIBEIRÃO SOLUÇÕES EMPRESARIAIS",
+      },
+      {
+        id: 719,
+        nome_do_grupo: "UMOE BIOENERGY S.A",
+      },
+      {
+        id: 114,
+        nome_do_grupo: "VITERRA BIOENERGIA",
+      },
+    ];
 
+    // Simula um pequeno delay para parecer mais realista
+    setTimeout(() => {
+      try {
         // Adiciona a opção "Todos os Grupos" no início da lista
         const allGroupsOption: Group = {
           id: 0,
           nome_do_grupo: "Visão Geral (Todos os Grupos)",
         };
-        setGroups([allGroupsOption, ...data]);
+        setGroups([allGroupsOption, ...mockGroups]);
 
-        // Define a Viterra (ID 114) como padrão, se existir na lista
-        const viterraGroup = data.find((group) => group.id === 114);
-        if (viterraGroup) {
-          setSelectedGroupId(114);
-        } else if (data.length > 0) {
-          setSelectedGroupId(data[0].id);
-        } else {
-          setSelectedGroupId(0); // Fallback para "Todos" se não houver grupos
-        }
+        // Define a Viterra (ID 114) como padrão, conforme solicitado
+        setSelectedGroupId(114);
       } catch (error) {
         console.error("Erro ao carregar grupos:", error);
         setGroups([{ id: 0, nome_do_grupo: "Erro ao carregar grupos" }]);
       } finally {
         setIsLoading(false);
       }
-    })();
+    }, 500); // 500ms de delay para simular carregamento
   }, []);
 
   const value = { groups, selectedGroupId, setSelectedGroupId, isLoading };

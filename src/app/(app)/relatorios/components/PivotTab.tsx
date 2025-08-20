@@ -2,11 +2,47 @@
 "use client";
 
 import React from "react";
-import { Box, Paper, Typography } from "@mui/material";
+import { Box, Paper, Typography, Button } from "@mui/material";
 import QuotationsFilters from "./QuotationsFilters";
-import PivotControls from "./PivotControls";
+import { DragDropPivotBuilder } from "./DragDropPivotBuilder/exports";
+import {
+  DIMENSION_OPTIONS,
+  METRIC_OPTIONS,
+} from "./DragDropPivotBuilder/fieldConfig";
 import { usePivotTable } from "@/features/reports/hooks/usePivotTable";
 import AdvancedDataGrid from "@/components/shared/AdvancedDataGrid/AdvancedDataGrid";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+
+// Tipos
+import type { PivotConfiguration as OldPivotConfiguration } from "@/features/reports/types/pivot.types";
+import type { PivotConfiguration as NewPivotConfiguration } from "./DragDropPivotBuilder/types";
+
+// ====================================
+// ADAPTADORES DE TIPOS
+// ====================================
+
+const convertToNewConfig = (
+  oldConfig: OldPivotConfiguration
+): NewPivotConfiguration => {
+  return {
+    filters: [], // Novo campo - inicia vazio
+    rows: [...oldConfig.rows],
+    columns: [...oldConfig.columns],
+    values: [...oldConfig.values],
+    aggregation: oldConfig.aggregation,
+  };
+};
+
+const convertToOldConfig = (
+  newConfig: NewPivotConfiguration
+): OldPivotConfiguration => {
+  return {
+    rows: [...newConfig.rows],
+    columns: [...newConfig.columns],
+    values: [...newConfig.values],
+    aggregation: newConfig.aggregation,
+  };
+};
 
 // ✅ FUNÇÃO AUXILIAR: Obter label amigável da métrica
 const getMetricLabel = (valueField: string): string => {
@@ -51,13 +87,45 @@ export default function PivotTab() {
         loading={loading}
       />
 
-      {/* Controles da Tabela Dinâmica */}
-      <PivotControls
-        config={pivotConfig}
-        onConfigChange={handlePivotConfigChange}
-        onApplyPivot={applyPivot}
-        loading={loading}
-      />
+      {/* Controles da Tabela Dinâmica com Drag & Drop */}
+      <Box sx={{ mb: 3 }}>
+        <DragDropPivotBuilder
+          availableFields={DIMENSION_OPTIONS}
+          availableMetrics={METRIC_OPTIONS}
+          currentConfig={convertToNewConfig(pivotConfig)}
+          onConfigChange={(newConfig) => {
+            const oldConfig = convertToOldConfig(newConfig);
+            handlePivotConfigChange(oldConfig);
+          }}
+          isLoading={loading}
+        />
+
+        {/* Botão para Aplicar Configuração */}
+        <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={applyPivot}
+            disabled={loading}
+            startIcon={<PlayArrowIcon />}
+            sx={{
+              px: 4,
+              py: 1.5,
+              fontSize: "1.1rem",
+              fontWeight: 600,
+              borderRadius: 2,
+              boxShadow: 2,
+              "&:hover": {
+                boxShadow: 4,
+                transform: "translateY(-1px)",
+              },
+              transition: "all 0.2s ease-in-out",
+            }}
+          >
+            {loading ? "Gerando Tabela..." : "Gerar Tabela Dinâmica"}
+          </Button>
+        </Box>
+      </Box>
 
       {/* Estatísticas da Tabela Dinâmica */}
       {processedPivotData && (
