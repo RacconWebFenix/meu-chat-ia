@@ -204,29 +204,10 @@ export default function PivotTab() {
       ) : (
         <Box sx={{ textAlign: "center", py: 4 }}>
           {!hasSearched ? (
-            <Box>
-              <Typography variant="h6" color="primary" gutterBottom>
-                🎯 Como usar a Tabela Dinâmica
-              </Typography>
-              <Typography color="text.secondary" sx={{ mb: 2 }}>
-                1. Configure os <strong>filtros de dados</strong> acima
-                (período, termo de busca)
-                <br />
-                2. Clique em <strong>&quot;Aplicar Filtros&quot;</strong> para
-                buscar os dados
-                <br />
-                3. Configure a <strong>tabela dinâmica</strong> (linhas,
-                colunas, valores)
-                <br />
-                4. Clique em <strong>
-                  &quot;Gerar Tabela Dinâmica&quot;
-                </strong>{" "}
-                para processar
-              </Typography>
-              <Typography variant="body2" color="warning.main">
-                💡 Nenhuma requisição será feita automaticamente
-              </Typography>
-            </Box>
+            <Typography color="text.secondary">
+              Configure a tabela dinâmica e clique em &quot;Gerar Tabela
+              Dinâmica&quot;.
+            </Typography>
           ) : loading ? (
             <Typography color="text.secondary">Carregando dados...</Typography>
           ) : (
