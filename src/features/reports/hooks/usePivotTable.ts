@@ -272,11 +272,24 @@ class PivotColumnGenerator {
   }
 
   private formatCurrency = (value: number): string => {
-    return value != null
-      ? new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2 }).format(
-          value
-        )
-      : "";
+    if (value == null) return "";
+
+    // ✅ FORMATAÇÃO INTELIGENTE: Se for número inteiro, não mostrar casas decimais
+    const isInteger = Number.isInteger(value) || value % 1 === 0;
+
+    if (isInteger) {
+      // Para números inteiros, não mostrar casas decimais
+      return new Intl.NumberFormat("pt-BR", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(value);
+    } else {
+      // Para números decimais, mostrar 2 casas decimais
+      return new Intl.NumberFormat("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(value);
+    }
   };
 }
 
@@ -570,6 +583,64 @@ export function usePivotTable() {
     fetchData();
   }, [fetchData]);
 
+  // ✅ INFORMAÇÕES DE RESUMO PARA A TABELA DINÂMICA
+  const pivotSummary = useMemo(() => {
+    const mainRows = sortedAndFilteredRows.filter((row) =>
+      row.id.toString().includes("_main_")
+    );
+
+    const subRows = sortedAndFilteredRows.filter((row) =>
+      row.id.toString().includes("_sub_")
+    );
+
+    const fieldsInUse = [
+      ...pivotConfig.rows,
+      ...pivotConfig.columns,
+      ...pivotConfig.values,
+    ].length;
+
+    // 📊 Calcular totalizadores dos valores
+    let totalGeral = 0;
+    let valoresNaoZero: number[] = [];
+    let linhasAtivas = 0;
+    let todosValores: number[] = [];
+
+    subRows.forEach((row) => {
+      const total = Number(row.Total) || 0;
+      totalGeral += total;
+      todosValores.push(total);
+
+      if (total > 0) {
+        valoresNaoZero.push(total);
+        linhasAtivas++;
+      }
+    });
+
+    const valorMedio =
+      valoresNaoZero.length > 0 ? totalGeral / valoresNaoZero.length : 0;
+
+    const maiorValor =
+      valoresNaoZero.length > 0 ? Math.max(...valoresNaoZero) : 0;
+
+    const menorValor =
+      valoresNaoZero.length > 0 ? Math.min(...valoresNaoZero) : 0;
+
+    return {
+      // Totalizadores existentes
+      totalFields: pivotTableColumns.length || 0,
+      fieldsInUse,
+      displayedRows: mainRows.length,
+      totalRows: pivotTableRows.length,
+
+      // 🆕 Novos totalizadores de valores
+      totalGeral,
+      valorMedio,
+      maiorValor,
+      menorValor,
+      linhasAtivas,
+    };
+  }, [sortedAndFilteredRows, pivotTableColumns, pivotConfig, pivotTableRows]);
+
   return {
     loading,
     pivotTableColumns,
@@ -584,5 +655,6 @@ export function usePivotTable() {
     applyFilters,
     applyPivot,
     hasSearched,
+    pivotSummary, // ✅ NOVO: Informações de resumo
   };
 }

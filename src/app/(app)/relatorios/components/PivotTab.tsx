@@ -11,6 +11,7 @@ import {
   METRIC_OPTIONS,
 } from "./DragDropPivotBuilder/fieldConfig";
 import { AdvancedDataGrid } from "@/components/shared";
+import { PivotTableSummary } from "@/components/PivotTableSummary";
 import { AggregatedRow } from "@/features/reports/types";
 import { PivotConfiguration } from "./DragDropPivotBuilder/types";
 
@@ -49,6 +50,7 @@ export default function PivotTab() {
     applyFilters,
     applyPivot,
     hasSearched,
+    pivotSummary, // ✅ NOVO: Informações de resumo
   } = usePivotTable();
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
@@ -97,24 +99,29 @@ export default function PivotTab() {
         {/* Tabela */}
         <Box>
           {hasSearched && (
-            <AdvancedDataGrid<AggregatedRow>
-              rows={pivotTableRows}
-              columns={pivotTableColumns}
-              loading={loading}
-              rowCount={totalRowCount}
-              paginationModel={paginationModel}
-              onPaginationModelChange={setPaginationModel}
-              sortModel={sortModel}
-              onSortModelChange={setSortModel}
-              sortingMode="client"
-              disableColumnFilter
-              sx={{
-                "& .total-column-cell": {
-                  fontWeight: "bold",
-                  backgroundColor: "grey.50",
-                },
-              }}
-            />
+            <>
+              <AdvancedDataGrid<AggregatedRow>
+                rows={pivotTableRows}
+                columns={pivotTableColumns}
+                loading={loading}
+                rowCount={totalRowCount}
+                paginationModel={paginationModel}
+                onPaginationModelChange={setPaginationModel}
+                sortModel={sortModel}
+                onSortModelChange={setSortModel}
+                sortingMode="client"
+                disableColumnFilter
+                sx={{
+                  "& .total-column-cell": {
+                    fontWeight: "bold",
+                    backgroundColor: "grey.50",
+                  },
+                }}
+              />
+
+              {/* ✅ NOVO: Resumo da Tabela Dinâmica */}
+              <PivotTableSummary summary={pivotSummary} />
+            </>
           )}
         </Box>
       </Stack>

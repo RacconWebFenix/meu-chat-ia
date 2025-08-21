@@ -10,5 +10,8 @@ export { default as FeedbackForm } from "./FeedbackForm/FeedbackForm";
 export { default as ImageGrid } from "./ImageGrid/ImageGrid";
 export { default as TabsSwitcher } from "./shared/TabsSwitcher";
 
+// Report Components
+export { PivotTableSummary } from "./PivotTableSummary";
+
 // Shared Components (re-export for convenience)
 export * from "./shared";
