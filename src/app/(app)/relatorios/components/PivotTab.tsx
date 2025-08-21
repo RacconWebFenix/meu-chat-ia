@@ -43,8 +43,6 @@ export default function PivotTab() {
     totalRowCount,
     filters,
     pivotConfig,
-    sortModel,
-    setSortModel,
     handleFilterChange,
     handlePivotConfigChange,
     applyFilters,
@@ -107,14 +105,26 @@ export default function PivotTab() {
                 rowCount={totalRowCount}
                 paginationModel={paginationModel}
                 onPaginationModelChange={setPaginationModel}
-                sortModel={sortModel}
-                onSortModelChange={setSortModel}
+                sortModel={[]} // ✅ DESABILITAR: Array vazio para não ter ordenação
+                onSortModelChange={() => {}} // ✅ DESABILITAR: Função vazia para ignorar mudanças
                 sortingMode="client"
                 disableColumnFilter
+                disableColumnSorting={true} // ✅ NOVO: Desabilita completamente a ordenação
                 sx={{
                   "& .total-column-cell": {
                     fontWeight: "bold",
                     backgroundColor: "grey.50",
+                  },
+                  "& .MuiDataGrid-columnHeaderTitle": {
+                    cursor: "default !important", // ✅ DESABILITAR: Remove cursor de clique
+                  },
+                  "& .MuiDataGrid-columnHeader": {
+                    "&:hover": {
+                      backgroundColor: "transparent !important", // ✅ DESABILITAR: Remove hover
+                    },
+                  },
+                  "& .MuiDataGrid-sortIcon": {
+                    display: "none !important", // ✅ DESABILITAR: Remove ícones de ordenação
                   },
                 }}
               />

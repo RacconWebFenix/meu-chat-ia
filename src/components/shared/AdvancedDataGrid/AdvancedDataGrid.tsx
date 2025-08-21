@@ -32,6 +32,7 @@ interface AdvancedDataGridProps<T extends BaseRow> {
   sortModel?: GridSortModel;
   onSortModelChange?: (model: GridSortModel) => void;
   sortingMode?: "client" | "server";
+  disableColumnSorting?: boolean; // ✅ NOVO: Propriedade para desabilitar ordenação
 }
 
 export default function AdvancedDataGrid<T extends BaseRow>({
@@ -50,6 +51,7 @@ export default function AdvancedDataGrid<T extends BaseRow>({
   sortModel,
   onSortModelChange,
   sortingMode = "client",
+  disableColumnSorting = false, // ✅ NOVO: Default false
 }: AdvancedDataGridProps<T>) {
   return (
     <Box sx={{ height: 650, width: "100%" }}>
@@ -70,6 +72,7 @@ export default function AdvancedDataGrid<T extends BaseRow>({
         sortingMode={sortingMode}
         sortModel={sortModel}
         onSortModelChange={onSortModelChange}
+        disableColumnSorting={disableColumnSorting} // ✅ NOVO: Aplicar propriedade
         localeText={ptBR.components.MuiDataGrid.defaultProps.localeText}
         sx={sx}
       />

@@ -18,7 +18,7 @@ import {
 
 const INITIAL_PIVOT_CONFIG: PivotConfiguration = {
   rows: ["COMPRADOR"],
-  columns: ["FINALIZADA"], // ✅ Configuração Padrão
+  columns: ["DATA_REQUISICAO"], // ✅ CORREÇÃO: Usar DATA_REQUISICAO que está vindo dos dados
   values: ["VALOR_TOTAL_NEGOCIADO"],
   aggregation: "sum",
 };
@@ -67,12 +67,6 @@ interface ValueFormatter {
  * Princípio: Single Responsibility Principle (SRP)
  */
 class DateValueFormatter implements ValueFormatter {
-  private readonly DATE_PATTERNS = [
-    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/, // ISO com tempo
-    /^\d{4}-\d{2}-\d{2}/, // ISO simples
-    /^\d{2}\/\d{2}\/\d{4}/, // DD/MM/AAAA
-  ];
-
   canHandle(fieldName: string): boolean {
     return isDateField(fieldName);
   }
@@ -87,10 +81,9 @@ class DateValueFormatter implements ValueFormatter {
         try {
           const date = new Date(value);
           if (!isNaN(date.getTime())) {
-            // Usar UTC para evitar problemas de timezone
-            const day = date.getUTCDate().toString().padStart(2, "0");
-            const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
-            const year = date.getUTCFullYear();
+            const day = date.getDate().toString().padStart(2, "0");
+            const month = (date.getMonth() + 1).toString().padStart(2, "0");
+            const year = date.getFullYear();
             return `${day}/${month}/${year}`;
           }
         } catch {
@@ -101,9 +94,9 @@ class DateValueFormatter implements ValueFormatter {
 
     // Se for um objeto Date
     if (value instanceof Date && !isNaN(value.getTime())) {
-      const day = value.getUTCDate().toString().padStart(2, "0");
-      const month = (value.getUTCMonth() + 1).toString().padStart(2, "0");
-      const year = value.getUTCFullYear();
+      const day = value.getDate().toString().padStart(2, "0");
+      const month = (value.getMonth() + 1).toString().padStart(2, "0");
+      const year = value.getFullYear();
       return `${day}/${month}/${year}`;
     }
 
@@ -151,6 +144,19 @@ class GroupKeyFormatter {
   constructor(private readonly formatterFactory: ValueFormatterFactory) {}
 
   formatGroupKey(fields: string[], item: Record<string, unknown>): string {
+    return fields
+      .map((field) => {
+        const value = item[field];
+        // Para chaves, sempre usar valor bruto para manter integridade na ordenação
+        return String(value || "N/A");
+      })
+      .join(" | ");
+  }
+
+  formatGroupKeyForDisplay(
+    fields: string[],
+    item: Record<string, unknown>
+  ): string {
     return fields
       .map((field) => {
         const value = item[field];
@@ -220,17 +226,29 @@ class PivotColumnGenerator {
   }
 
   private formatColumnHeader(colValue: string): string {
+    // Se o valor contém múltiplos campos separados por " | "
+    if (colValue.includes(" | ")) {
+      return colValue
+        .split(" | ")
+        .map((part) => this.formatSingleColumnValue(part.trim()))
+        .join(" | ");
+    }
+
+    // Se é um único valor
+    return this.formatSingleColumnValue(colValue);
+  }
+
+  private formatSingleColumnValue(value: string): string {
     // Se o valor é uma data ISO, formatar para padrão brasileiro
     const isoDatePattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
 
-    if (isoDatePattern.test(colValue)) {
+    if (isoDatePattern.test(value)) {
       try {
-        const date = new Date(colValue);
+        const date = new Date(value);
         if (!isNaN(date.getTime())) {
-          // Usar UTC para evitar problemas de timezone
-          const day = date.getUTCDate().toString().padStart(2, "0");
-          const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
-          const year = date.getUTCFullYear();
+          const day = date.getDate().toString().padStart(2, "0");
+          const month = (date.getMonth() + 1).toString().padStart(2, "0");
+          const year = date.getFullYear();
           return `${day}/${month}/${year}`;
         }
       } catch {
@@ -238,7 +256,7 @@ class PivotColumnGenerator {
       }
     }
 
-    return colValue;
+    return value;
   }
 
   private addValueColumn(columns: GridColDef[], valueField: string): void {
@@ -305,6 +323,32 @@ class PivotDataProcessor {
     this.keyFormatter
   );
 
+  /**
+   * ✅ CORREÇÃO: Método para ordenar valores de coluna cronologicamente
+   * Princípio: Single Responsibility Principle (SRP)
+   */
+  private sortColumnValuesChronologically(columnValues: string[]): string[] {
+    return [...columnValues].sort((a, b) => {
+      // Verificar se ambos são datas ISO (com ou sem tempo)
+      const isoDatePattern = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}.*)?$/;
+      const aIsDate = isoDatePattern.test(a);
+      const bIsDate = isoDatePattern.test(b);
+
+      if (aIsDate && bIsDate) {
+        // Ordenação cronológica para datas
+        const dateA = new Date(a);
+        const dateB = new Date(b);
+        return dateA.getTime() - dateB.getTime();
+      }
+
+      if (aIsDate && !bIsDate) return -1; // Datas vêm primeiro
+      if (!aIsDate && bIsDate) return 1; // Datas vêm primeiro
+
+      // Ordenação alfabética para outros valores
+      return a.localeCompare(b);
+    });
+  }
+
   process(longData: AggregatedRow[], config: PivotConfiguration) {
     if (this.isInvalidInput(longData, config)) {
       return { pivotRows: [], pivotColumns: [] };
@@ -314,6 +358,7 @@ class PivotDataProcessor {
       longData,
       config
     );
+
     const finalRows = this.generateRows(
       pivotDataMap,
       config,
@@ -321,7 +366,7 @@ class PivotDataProcessor {
     );
     const pivotColumns = this.columnGenerator.generateColumns(
       config,
-      Array.from(uniqueColumnValues).sort()
+      this.sortColumnValuesChronologically(Array.from(uniqueColumnValues))
     );
 
     return { pivotRows: finalRows, pivotColumns };
@@ -388,7 +433,9 @@ class PivotDataProcessor {
     uniqueColumnValues: Set<string>
   ): (AggregatedRow & { rowHeader: string })[] {
     const finalRows: (AggregatedRow & { rowHeader: string })[] = [];
-    const sortedColumnValues = Array.from(uniqueColumnValues).sort();
+    const sortedColumnValues = this.sortColumnValuesChronologically(
+      Array.from(uniqueColumnValues)
+    );
     let rowIndex = 0;
 
     pivotDataMap.forEach((entry, rowKey) => {
