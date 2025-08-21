@@ -67,7 +67,7 @@ export default function QuotationsFilters({
         disabled={loading}
         sx={{ height: "56px" }}
       >
-        Filtrar
+        Montar Tabela Dinâmica
       </Button>
     </Box>
   );

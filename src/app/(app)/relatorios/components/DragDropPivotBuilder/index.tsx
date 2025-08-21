@@ -75,6 +75,9 @@ export const DragDropPivotBuilder: React.FC<DragDropPivotBuilderProps> = ({
         pointerEvents: isLoading ? "none" : "auto",
       }}
     >
+      <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+        📊 Construtor de Tabela Dinâmica
+      </Typography>
       <Box
         sx={{
           mb: 3,
@@ -85,13 +88,60 @@ export const DragDropPivotBuilder: React.FC<DragDropPivotBuilderProps> = ({
           borderColor: "info.200",
         }}
       >
-        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-          📊 Construtor de Tabela Dinâmica
-        </Typography>
         <Typography variant="body2" sx={{ mb: 2 }}>
           💡 <strong>Arraste os campos</strong> da lista para as áreas de
           configuração para montar seu relatório.
         </Typography>
+        <Box
+          sx={{
+            p: 2,
+            bgcolor: "background.paper",
+            borderRadius: "8px",
+            border: "1px solid #e0e0e0",
+          }}
+        >
+          <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: "bold" }}>
+            Filtros de Data
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Utilize os campos Data Início e Data Fim para restringir o período
+            da análise. Não se esqueça de clicar em <strong>Montar Tabela Dinâmica</strong>{" "}
+            para aplicar a seleção.
+          </Typography>
+
+          <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: "bold" }}>
+            Campos da Tabela Dinâmica
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Use a caixa Pesquisar campos... para encontrar rapidamente o que
+            você precisa.
+          </Typography>
+
+          <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: "bold" }}>
+            Áreas da Tabela
+          </Typography>
+          {/* AQUI ESTÁ A CORREÇÃO: Usamos um <Box> para o texto e a lista */}
+          <Box component="div" color="text.secondary">
+            <Typography variant="body2">
+              Arraste os campos para as áreas correspondentes para estruturar
+              seu relatório:
+            </Typography>
+            <ul style={{ paddingLeft: "20px", marginTop: "8px" }}>
+              <li>
+                <strong>Linhas:</strong> Para definir a estrutura vertical dos
+                dados.
+              </li>
+              <li>
+                <strong>Colunas:</strong> Para definir a estrutura horizontal
+                dos dados.
+              </li>
+              <li>
+                <strong>Valores:</strong> (Se aplicável) Para realizar cálculos
+                como soma, média, etc.
+              </li>
+            </ul>
+          </Box>
+        </Box>
 
         {/* Filtros de Data */}
         {filters && onFilterChange && onApplyFilters && (
@@ -135,7 +185,7 @@ export const DragDropPivotBuilder: React.FC<DragDropPivotBuilderProps> = ({
                 disabled={filterLoading}
                 sx={{ height: 40 }}
               >
-                {filterLoading ? "Filtrando..." : "FILTRAR"}
+                {filterLoading ? "Filtrando..." : "Montar Tabela Dinâmica"}
               </Button>
             </Box>
           </Box>

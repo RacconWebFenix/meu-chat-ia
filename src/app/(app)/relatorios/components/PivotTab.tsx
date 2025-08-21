@@ -70,6 +70,7 @@ export default function PivotTab() {
     <Box sx={{ p: 3 }}>
       <Typography
         variant="h5"
+        color="text.primary"
         component="h2"
         gutterBottom
         sx={{ fontWeight: 600, mb: 3 }}
