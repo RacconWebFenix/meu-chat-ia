@@ -31,64 +31,387 @@ const INITIAL_FILTERS: QuotationFilters = {
 };
 
 // ... (Funções formatDateToBR, getMetricLabel, pivotDataFormatter permanecem as mesmas da versão anterior)
-const formatDateToBR = (dateString: string): string => {
-  if (!/^\d{4}-\d{2}-\d{2}/.test(dateString)) return dateString;
-  try {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(date);
-  } catch {
-    return dateString;
-  }
+
+// ============================================
+// CLEAN CODE: Utility Functions (Single Responsibility)
+// ============================================
+
+/**
+ * Função utilitária para identificar campos de data
+ * Princípio: Single Responsibility Principle (SRP)
+ */
+const isDateField = (fieldName: string): boolean => {
+  const datePatterns = [
+    /data/i,
+    /date/i,
+    /finalizada/i,
+    /criado/i,
+    /atualizado/i,
+    /timestamp/i,
+  ];
+
+  return datePatterns.some((pattern) => pattern.test(fieldName));
 };
-const getMetricLabel = (value: string) =>
-  METRIC_OPTIONS.find((opt) => opt.value === value)?.label || value;
-const pivotDataFormatter = (
-  longData: AggregatedRow[],
-  config: PivotConfiguration
-) => {
-  if (
-    longData.length === 0 ||
-    config.rows.length === 0 ||
-    config.values.length === 0
-  ) {
-    return { pivotRows: [], pivotColumns: [] };
+
+/**
+ * Interface para estratégia de formatação de valores
+ * Princípio: Open/Closed Principle (OCP)
+ */
+interface ValueFormatter {
+  format(value: unknown): string;
+  canHandle(fieldName: string): boolean;
+}
+
+/**
+ * Formatador de datas seguindo Strategy Pattern
+ * Princípio: Single Responsibility Principle (SRP)
+ */
+class DateValueFormatter implements ValueFormatter {
+  private readonly DATE_PATTERNS = [
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/, // ISO com tempo
+    /^\d{4}-\d{2}-\d{2}/, // ISO simples
+    /^\d{2}\/\d{2}\/\d{4}/, // DD/MM/AAAA
+  ];
+
+  canHandle(fieldName: string): boolean {
+    return isDateField(fieldName);
   }
-  const pivotDataMap = new Map<string, Record<string, unknown>>();
-  const uniqueColumnValues = new Set<string>();
-  longData.forEach((item) => {
-    const rowKey = config.rows.map((key) => item[key] || "N/A").join(" | ");
-    const colKey = config.columns.map((key) => item[key] || "N/A").join(" | ");
+
+  format(value: unknown): string {
+    if (!value) return "";
+
+    // Se for uma string de data ISO
+    if (typeof value === "string") {
+      const isoPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
+      if (isoPattern.test(value)) {
+        try {
+          const date = new Date(value);
+          if (!isNaN(date.getTime())) {
+            // Usar UTC para evitar problemas de timezone
+            const day = date.getUTCDate().toString().padStart(2, "0");
+            const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
+            const year = date.getUTCFullYear();
+            return `${day}/${month}/${year}`;
+          }
+        } catch {
+          // Se der erro, continua para outras verificações
+        }
+      }
+    }
+
+    // Se for um objeto Date
+    if (value instanceof Date && !isNaN(value.getTime())) {
+      const day = value.getUTCDate().toString().padStart(2, "0");
+      const month = (value.getUTCMonth() + 1).toString().padStart(2, "0");
+      const year = value.getUTCFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    return String(value);
+  }
+}
+
+/**
+ * Formatador padrão para valores não especializados
+ * Princípio: Single Responsibility Principle (SRP)
+ */
+class DefaultValueFormatter implements ValueFormatter {
+  canHandle(fieldName: string): boolean {
+    return true; // Pode lidar com qualquer campo como fallback
+  }
+
+  format(value: unknown): string {
+    return String(value || "");
+  }
+}
+
+/**
+ * Factory para formatadores seguindo Factory Pattern
+ * Princípio: Dependency Inversion Principle (DIP)
+ */
+class ValueFormatterFactory {
+  private readonly formatters: ValueFormatter[] = [
+    new DateValueFormatter(),
+    new DefaultValueFormatter(), // Sempre por último (fallback)
+  ];
+
+  getFormatter(fieldName: string): ValueFormatter {
+    return (
+      this.formatters.find((formatter) => formatter.canHandle(fieldName)) ||
+      new DefaultValueFormatter()
+    );
+  }
+}
+
+/**
+ * Classe responsável por formatar chaves de agrupamento
+ * Princípio: Single Responsibility Principle (SRP)
+ */
+class GroupKeyFormatter {
+  constructor(private readonly formatterFactory: ValueFormatterFactory) {}
+
+  formatGroupKey(fields: string[], item: Record<string, unknown>): string {
+    return fields
+      .map((field) => {
+        const value = item[field];
+        const formatter = this.formatterFactory.getFormatter(field);
+        return formatter.format(value) || "N/A";
+      })
+      .join(" | ");
+  }
+}
+
+/**
+ * Classe responsável por gerar colunas da tabela dinâmica
+ * Princípio: Single Responsibility Principle (SRP)
+ */
+class PivotColumnGenerator {
+  constructor(
+    private readonly formatterFactory: ValueFormatterFactory,
+    private readonly keyFormatter: GroupKeyFormatter
+  ) {}
+
+  generateColumns(
+    config: PivotConfiguration,
+    uniqueColumnValues: string[]
+  ): GridColDef[] {
+    const columns: GridColDef[] = [
+      {
+        field: "rowHeader",
+        headerName: config.rows.join(" / ").replace(/_/g, " "),
+        minWidth: 250,
+        flex: 1,
+        sortable: true,
+      },
+    ];
+
+    if (config.columns.length > 0) {
+      this.addDynamicColumns(columns, uniqueColumnValues);
+    } else {
+      this.addValueColumn(columns, config.values[0]);
+    }
+
+    this.addTotalColumn(columns);
+    return columns;
+  }
+
+  private addDynamicColumns(
+    columns: GridColDef[],
+    uniqueColumnValues: string[]
+  ): void {
+    const dateFormatter = this.formatterFactory.getFormatter("DATA_REQUISICAO");
+
+    uniqueColumnValues.forEach((colValue) => {
+      // Formatar o cabeçalho da coluna se for uma data
+      const formattedHeader = this.formatColumnHeader(colValue);
+
+      columns.push({
+        field: colValue,
+        headerName: formattedHeader,
+        minWidth: 150,
+        flex: 1,
+        sortable: true,
+        type: "number",
+        align: "right",
+        headerAlign: "right",
+        valueFormatter: this.formatCurrency,
+      });
+    });
+  }
+
+  private formatColumnHeader(colValue: string): string {
+    // Se o valor é uma data ISO, formatar para padrão brasileiro
+    const isoDatePattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
+
+    if (isoDatePattern.test(colValue)) {
+      try {
+        const date = new Date(colValue);
+        if (!isNaN(date.getTime())) {
+          // Usar UTC para evitar problemas de timezone
+          const day = date.getUTCDate().toString().padStart(2, "0");
+          const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
+          const year = date.getUTCFullYear();
+          return `${day}/${month}/${year}`;
+        }
+      } catch {
+        // Se der erro, retorna o valor original
+      }
+    }
+
+    return colValue;
+  }
+
+  private addValueColumn(columns: GridColDef[], valueField: string): void {
+    columns.push({
+      field: valueField,
+      headerName: "Valor",
+      minWidth: 150,
+      flex: 1,
+      sortable: true,
+      type: "number",
+      align: "right",
+      headerAlign: "right",
+      valueFormatter: this.formatCurrency,
+    });
+  }
+
+  private addTotalColumn(columns: GridColDef[]): void {
+    columns.push({
+      field: "Total",
+      headerName: "Total Geral",
+      minWidth: 160,
+      flex: 1,
+      sortable: true,
+      type: "number",
+      align: "right",
+      headerAlign: "right",
+      valueFormatter: this.formatCurrency,
+      cellClassName: (params) =>
+        params.id.toString().includes("_main") ? "" : "total-column-cell",
+    });
+  }
+
+  private formatCurrency = (value: number): string => {
+    return value != null
+      ? new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2 }).format(
+          value
+        )
+      : "";
+  };
+}
+
+/**
+ * Classe principal para processamento de dados do pivot
+ * Princípio: Single Responsibility Principle (SRP)
+ */
+class PivotDataProcessor {
+  private readonly formatterFactory = new ValueFormatterFactory();
+  private readonly keyFormatter = new GroupKeyFormatter(this.formatterFactory);
+  private readonly columnGenerator = new PivotColumnGenerator(
+    this.formatterFactory,
+    this.keyFormatter
+  );
+
+  process(longData: AggregatedRow[], config: PivotConfiguration) {
+    if (this.isInvalidInput(longData, config)) {
+      return { pivotRows: [], pivotColumns: [] };
+    }
+
+    const { pivotDataMap, uniqueColumnValues } = this.aggregateData(
+      longData,
+      config
+    );
+    const finalRows = this.generateRows(
+      pivotDataMap,
+      config,
+      uniqueColumnValues
+    );
+    const pivotColumns = this.columnGenerator.generateColumns(
+      config,
+      Array.from(uniqueColumnValues).sort()
+    );
+
+    return { pivotRows: finalRows, pivotColumns };
+  }
+
+  private isInvalidInput(
+    longData: AggregatedRow[],
+    config: PivotConfiguration
+  ): boolean {
+    return (
+      longData.length === 0 ||
+      config.rows.length === 0 ||
+      config.values.length === 0
+    );
+  }
+
+  private aggregateData(longData: AggregatedRow[], config: PivotConfiguration) {
+    const pivotDataMap = new Map<string, Record<string, unknown>>();
+    const uniqueColumnValues = new Set<string>();
+
+    longData.forEach((item) => {
+      const rowKey = this.keyFormatter.formatGroupKey(config.rows, item);
+      const colKey = this.keyFormatter.formatGroupKey(config.columns, item);
+
+      this.initializeRowIfNeeded(pivotDataMap, rowKey);
+
+      if (config.columns.length > 0) {
+        uniqueColumnValues.add(colKey);
+      }
+
+      this.aggregateValues(pivotDataMap.get(rowKey)!, config, item, colKey);
+    });
+
+    return { pivotDataMap, uniqueColumnValues };
+  }
+
+  private initializeRowIfNeeded(
+    pivotDataMap: Map<string, Record<string, unknown>>,
+    rowKey: string
+  ): void {
     if (!pivotDataMap.has(rowKey)) {
       pivotDataMap.set(rowKey, { id: rowKey, rowHeader: rowKey });
     }
-    if (config.columns.length > 0) {
-      uniqueColumnValues.add(colKey);
-    }
-    const currentEntry = pivotDataMap.get(rowKey);
+  }
+
+  private aggregateValues(
+    currentEntry: Record<string, unknown>,
+    config: PivotConfiguration,
+    item: AggregatedRow,
+    colKey: string
+  ): void {
     config.values.forEach((valueKey) => {
       const compositeKey =
         config.columns.length > 0 ? `${colKey}__${valueKey}` : valueKey;
-      if (currentEntry) {
-        currentEntry[compositeKey] =
-          (Number(currentEntry[compositeKey]) || 0) +
-          Number(item[valueKey] || 0);
-      }
+      const currentValue = Number(currentEntry[compositeKey]) || 0;
+      const newValue = Number(item[valueKey]) || 0;
+      currentEntry[compositeKey] = currentValue + newValue;
     });
-  });
-  const sortedColumnValues = Array.from(uniqueColumnValues).sort();
-  const finalRows: (AggregatedRow & { rowHeader: string })[] = [];
-  let rowIndex = 0;
-  pivotDataMap.forEach((entry, rowKey) => {
-    finalRows.push({
-      ...entry,
-      id: `${rowKey}_main_${rowIndex++}`,
-      rowHeader: rowKey,
-    } as AggregatedRow & { rowHeader: string });
+  }
+
+  private generateRows(
+    pivotDataMap: Map<string, Record<string, unknown>>,
+    config: PivotConfiguration,
+    uniqueColumnValues: Set<string>
+  ): (AggregatedRow & { rowHeader: string })[] {
+    const finalRows: (AggregatedRow & { rowHeader: string })[] = [];
+    const sortedColumnValues = Array.from(uniqueColumnValues).sort();
+    let rowIndex = 0;
+
+    pivotDataMap.forEach((entry, rowKey) => {
+      finalRows.push({
+        ...entry,
+        id: `${rowKey}_main_${rowIndex++}`,
+        rowHeader: rowKey,
+      } as AggregatedRow & { rowHeader: string });
+
+      this.generateSubRows(
+        finalRows,
+        entry,
+        config,
+        sortedColumnValues,
+        rowKey,
+        rowIndex
+      );
+    });
+
+    return finalRows;
+  }
+
+  private generateSubRows(
+    finalRows: (AggregatedRow & { rowHeader: string })[],
+    entry: Record<string, unknown>,
+    config: PivotConfiguration,
+    sortedColumnValues: string[],
+    rowKey: string,
+    rowIndex: number
+  ): void {
     config.values.forEach((valueKey) => {
       const subRow: Record<string, unknown> = {
         id: `${rowKey}_sub_${valueKey}_${rowIndex++}`,
-        rowHeader: `  └─ ${getMetricLabel(valueKey)}`,
+        rowHeader: `  └─ ${this.getMetricLabel(valueKey)}`,
       };
+
       let total = 0;
       if (config.columns.length > 0) {
         sortedColumnValues.forEach((colValue) => {
@@ -102,75 +425,35 @@ const pivotDataFormatter = (
         subRow[config.values[0]] = value;
         total = value;
       }
+
       subRow.Total = total;
       finalRows.push(subRow as AggregatedRow & { rowHeader: string });
     });
-  });
-  const pivotColumns: GridColDef[] = [
-    {
-      field: "rowHeader",
-      headerName: config.rows.join(" / ").replace(/_/g, " "),
-      minWidth: 250,
-      flex: 1,
-      sortable: true,
-    },
-  ];
-  if (config.columns.length > 0) {
-    sortedColumnValues.forEach((colValue) => {
-      pivotColumns.push({
-        field: colValue,
-        headerName: formatDateToBR(colValue),
-        minWidth: 150,
-        flex: 1,
-        sortable: true,
-        type: "number",
-        align: "right",
-        headerAlign: "right",
-        valueFormatter: (value: number) =>
-          value != null
-            ? new Intl.NumberFormat("pt-BR", {
-                minimumFractionDigits: 2,
-              }).format(value)
-            : "",
-      });
-    });
-  } else {
-    pivotColumns.push({
-      field: config.values[0],
-      headerName: "Valor",
-      minWidth: 150,
-      flex: 1,
-      sortable: true,
-      type: "number",
-      align: "right",
-      headerAlign: "right",
-      valueFormatter: (value: number) =>
-        value != null
-          ? new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2 }).format(
-              value
-            )
-          : "",
-    });
   }
-  pivotColumns.push({
-    field: "Total",
-    headerName: "Total Geral",
-    minWidth: 160,
-    flex: 1,
-    sortable: true,
-    type: "number",
-    align: "right",
-    headerAlign: "right",
-    valueFormatter: (value: number) =>
-      value != null
-        ? new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2 }).format(
-            value
-          )
-        : "",
-    cellClassName: (params) =>
-      params.id.toString().includes("_main") ? "" : "total-column-cell",
-  });
-  return { pivotRows: finalRows, pivotColumns };
+
+  private getMetricLabel(value: string): string {
+    return METRIC_OPTIONS.find((opt) => opt.value === value)?.label || value;
+  }
+}
+
+// ============================================
+// LEGACY FUNCTIONS (Compatibilidade com código existente)
+// ============================================
+
+const formatDateToBR = (dateString: string): string => {
+  const formatter = new DateValueFormatter();
+  return formatter.format(dateString);
+};
+
+const getMetricLabel = (value: string) =>
+  METRIC_OPTIONS.find((opt) => opt.value === value)?.label || value;
+
+const pivotDataFormatter = (
+  longData: AggregatedRow[],
+  config: PivotConfiguration
+) => {
+  const processor = new PivotDataProcessor();
+  return processor.process(longData, config);
 };
 
 export function usePivotTable() {
