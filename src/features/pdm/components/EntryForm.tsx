@@ -1,24 +1,28 @@
 /**
  * Entry form component following SOLID principles
- * 
+ *
  * Single Responsibility: Handle product data entry
  * Open/Closed: Extensible via props without modification
  * Interface Segregation: Uses specific, focused interfaces
  * Dependency Inversion: Depends on abstractions (hooks)
  */
 
-import React from 'react';
+import React from "react";
 import {
   Box,
   Card,
   CardContent,
   Typography,
   Alert,
-  FormHelperText
-} from '@mui/material';
-import { CustomInput, CustomButton } from '@/components/shared';
-import { useEntryForm } from '../hooks';
-import { BaseProductInfo, EntryFormField, EntryFormSubmitHandler } from '../types';
+  FormHelperText,
+} from "@mui/material";
+import { CustomInput, CustomButton } from "@/components/shared";
+import { useEntryForm } from "../hooks";
+import {
+  BaseProductInfo,
+  EntryFormField,
+  EntryFormSubmitHandler,
+} from "../types";
 
 interface EntryFormProps {
   readonly onSubmit?: EntryFormSubmitHandler;
@@ -31,55 +35,56 @@ interface EntryFormProps {
 // Field configuration following Open/Closed Principle
 const FORM_FIELDS: EntryFormField[] = [
   {
-    key: 'nome',
-    label: 'Nome do Material',
-    placeholder: 'Ex: Rolamento, Parafuso, Filtro, Trator...',
+    key: "nome",
+    label: "Nome do Material",
+    placeholder: "Ex: Rolamento, Parafuso, Filtro, Trator...",
     required: true,
     maxLength: 100,
-    helpText: 'Digite o nome ou tipo do material que você está procurando'
+    helpText: "Digite o nome ou tipo do material que você está procurando",
   },
   {
-    key: 'referencia',
-    label: 'Referência/Código',
-    placeholder: 'Ex: 6205, M8x20, WL1013, 5075E...',
+    key: "referencia",
+    label: "Referência/Código",
+    placeholder: "Ex: 6205, M8x20, WL1013, 5075E...",
     required: false,
     maxLength: 50,
-    helpText: 'Código, referência ou número do fabricante (opcional)'
+    helpText: "Código, referência ou número do fabricante (opcional)",
   },
   {
-    key: 'marcaFabricante',
-    label: 'Marca/Fabricante',
-    placeholder: 'Ex: SKF, Bosch, Wega, John Deere...',
+    key: "marcaFabricante",
+    label: "Marca/Fabricante",
+    placeholder: "Ex: SKF, Bosch, Wega, John Deere...",
     required: false,
     maxLength: 50,
-    helpText: 'Informar a marca garante dados mais precisos (opcional)'
+    helpText: "Informar a marca garante dados mais precisos (opcional)",
   },
   {
-    key: 'caracteristicas',
-    label: 'Características Físicas',
-    placeholder: 'Ex: 25x52x15mm, M8 x 20mm, Para Fiat Cronos...',
+    key: "caracteristicas",
+    label: "Características Físicas",
+    placeholder: "Ex: 25x52x15mm, M8 x 20mm, Para Fiat Cronos...",
     required: false,
     maxLength: 200,
-    helpText: 'Dimensões, aplicações ou outras características (opcional)'
-  }
+    helpText: "Dimensões, aplicações ou outras características (opcional)",
+  },
 ];
 
 export default function EntryForm({
   onSubmit,
   onCancel,
   disabled = false,
-  title = 'Informações do Material',
-  subtitle = 'Preencha os dados que você possui sobre o material'
+  title = "Informações do Material",
+  subtitle = "Preencha os dados que você possui sobre o material",
 }: EntryFormProps) {
-  const { state, updateField, handleSubmit, handleReset, canSubmit } = useEntryForm({
-    onSubmit
-  });
+  const { state, updateField, handleSubmit, handleReset, canSubmit } =
+    useEntryForm({
+      onSubmit,
+    });
 
   const handleFormSubmit = async () => {
     try {
       await handleSubmit();
     } catch (error) {
-      console.error('Erro no formulário:', error);
+      console.error("Erro no formulário:", error);
     }
   };
 
@@ -89,7 +94,7 @@ export default function EntryForm({
   };
 
   const renderField = (field: EntryFormField) => {
-    const value = state.data[field.key] || '';
+    const value = state.data[field.key] || "";
     const error = state.validation.errors[field.key];
     const hasError = Boolean(error);
 
@@ -112,9 +117,7 @@ export default function EntryForm({
           </FormHelperText>
         )}
         {!error && field.helpText && (
-          <FormHelperText sx={{ mt: 0.5 }}>
-            {field.helpText}
-          </FormHelperText>
+          <FormHelperText sx={{ mt: 0.5 }}>{field.helpText}</FormHelperText>
         )}
       </Box>
     );
@@ -126,27 +129,26 @@ export default function EntryForm({
         <Typography variant="h6" gutterBottom>
           {title}
         </Typography>
-        
-        <Typography 
-          variant="body2" 
-          color="text.secondary" 
-          sx={{ mb: 3 }}
-        >
+
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
           {subtitle}
         </Typography>
 
         <Box component="form" noValidate>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
             {FORM_FIELDS.map(renderField)}
           </Box>
 
-          {!state.validation.isValid && Object.keys(state.validation.errors).length > 0 && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              Por favor, corrija os campos destacados antes de continuar.
-            </Alert>
-          )}
+          {!state.validation.isValid &&
+            Object.keys(state.validation.errors).length > 0 && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                Por favor, corrija os campos destacados antes de continuar.
+              </Alert>
+            )}
 
-          <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+          <Box
+            sx={{ mt: 3, display: "flex", gap: 2, justifyContent: "flex-end" }}
+          >
             {onCancel && (
               <CustomButton
                 colorType="secondary"
@@ -156,13 +158,13 @@ export default function EntryForm({
                 Cancelar
               </CustomButton>
             )}
-            
+
             <CustomButton
               colorType="primary"
               onClick={handleFormSubmit}
               disabled={!canSubmit || disabled}
             >
-              {state.isSubmitting ? 'Processando...' : 'Gerar PDM'}
+              {state.isSubmitting ? "Processando..." : "Gerar PDM"}
             </CustomButton>
           </Box>
         </Box>

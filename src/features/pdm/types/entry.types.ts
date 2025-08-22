@@ -3,7 +3,7 @@
  * Each interface has a single, specific responsibility
  */
 
-import { BaseProductInfo } from './base.types';
+import { BaseProductInfo } from "./base.types";
 
 // Single Responsibility: Handle form validation state
 export interface EntryFormValidation {

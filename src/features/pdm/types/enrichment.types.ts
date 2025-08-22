@@ -3,7 +3,7 @@
  * Each interface has a single, specific responsibility
  */
 
-import { BaseProductInfo, ConfidenceMetrics, DataSource } from './base.types';
+import { BaseProductInfo, ConfidenceMetrics, DataSource } from "./base.types";
 
 // Single Responsibility: Handle enrichment request
 export interface EnrichmentRequest {
@@ -15,7 +15,7 @@ export interface EnrichmentRequest {
 export interface EnrichmentOptions {
   readonly prioritizeManufacturer?: boolean;
   readonly includeAlternatives?: boolean;
-  readonly detailLevel?: 'basic' | 'detailed' | 'comprehensive';
+  readonly detailLevel?: "basic" | "detailed" | "comprehensive";
 }
 
 // Single Responsibility: Handle enriched product data
@@ -40,7 +40,7 @@ export interface EnrichmentResponse {
 
 // Single Responsibility: Handle AI suggestions
 export interface EnrichmentSuggestion {
-  readonly type: 'manufacturer' | 'category' | 'specification';
+  readonly type: "manufacturer" | "category" | "specification";
   readonly field: string;
   readonly suggestedValue: string;
   readonly confidence: number;

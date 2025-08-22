@@ -27,9 +27,9 @@ export default function PDMFlow({ className }: PDMFlowProps) {
 
   // Handle form submission following Dependency Inversion
   const handleEntrySubmit = async (data: BaseProductInfo) => {
-    console.log('Dados submetidos:', data);
+    console.log("Dados submetidos:", data);
     setStatus(ProcessingStatus.PROCESSING);
-    
+
     // Simular delay de processamento
     setTimeout(() => {
       goToStep(PDMStep.ENRICHMENT);
@@ -71,10 +71,14 @@ export default function PDMFlow({ className }: PDMFlowProps) {
             disabled={state.status === ProcessingStatus.PROCESSING}
           />
         );
-      
+
       case PDMStep.ENRICHMENT:
         return (
-          <Typography variant="h6" color="primary" sx={{ textAlign: 'center', py: 4 }}>
+          <Typography
+            variant="h6"
+            color="primary"
+            sx={{ textAlign: "center", py: 4 }}
+          >
             🤖 Etapa: Enriquecimento via IA
             <br />
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
@@ -82,42 +86,58 @@ export default function PDMFlow({ className }: PDMFlowProps) {
             </Typography>
           </Typography>
         );
-      
+
       case PDMStep.FIELD_SELECTION:
         return (
-          <Typography variant="h6" color="primary" sx={{ textAlign: 'center', py: 4 }}>
+          <Typography
+            variant="h6"
+            color="primary"
+            sx={{ textAlign: "center", py: 4 }}
+          >
             ☑️ Etapa: Seleção de Campos
           </Typography>
         );
-      
+
       case PDMStep.EQUIVALENCE_SEARCH:
         return (
-          <Typography variant="h6" color="primary" sx={{ textAlign: 'center', py: 4 }}>
+          <Typography
+            variant="h6"
+            color="primary"
+            sx={{ textAlign: "center", py: 4 }}
+          >
             🔍 Etapa: Busca de Equivalências
           </Typography>
         );
-      
+
       case PDMStep.EXPORT:
         return (
-          <Typography variant="h6" color="primary" sx={{ textAlign: 'center', py: 4 }}>
+          <Typography
+            variant="h6"
+            color="primary"
+            sx={{ textAlign: "center", py: 4 }}
+          >
             📥 Etapa: Exportação
           </Typography>
         );
-      
+
       default:
         return (
-          <Typography variant="h6" color="error" sx={{ textAlign: 'center', py: 4 }}>
+          <Typography
+            variant="h6"
+            color="error"
+            sx={{ textAlign: "center", py: 4 }}
+          >
             Etapa desconhecida
           </Typography>
         );
     }
-  };  return (
+  };
+  return (
     <Box className={className} sx={{ maxWidth: 800, mx: "auto", p: 3 }}>
       <Paper elevation={2} sx={{ p: 3 }}>
         <Typography variant="h4" gutterBottom sx={{ textAlign: "center" }}>
           PDM Flow - Sistema de Padrão de Descrição de Materiais
         </Typography>
-
         <Typography
           variant="body1"
           color="text.secondary"
@@ -125,10 +145,9 @@ export default function PDMFlow({ className }: PDMFlowProps) {
         >
           Em desenvolvimento - Arquitetura SOLID implementada
         </Typography>
-
         {renderStepIndicator()}
-        
-        {renderStepContent()}        <Typography
+        {renderStepContent()}{" "}
+        <Typography
           variant="body2"
           color="text.secondary"
           sx={{ textAlign: "center", mt: 3 }}
