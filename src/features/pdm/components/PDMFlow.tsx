@@ -17,11 +17,13 @@ import {
   BaseProductInfo,
   EnrichmentResponse,
   SelectedFields,
+  EquivalenceSearchResponse,
 } from "../types";
-import { MockEnrichmentService } from "../services";
+import { MockEnrichmentService, MockEquivalenceService } from "../services";
 import EntryForm from "./EntryForm";
 import EnrichmentResult from "./EnrichmentResult";
 import FieldSelection from "./FieldSelection";
+import EquivalenceResults from "./EquivalenceResults";
 
 interface PDMFlowProps {
   readonly className?: string;
@@ -38,9 +40,12 @@ export default function PDMFlow({ className }: PDMFlowProps) {
   const [selectedFields, setSelectedFields] = useState<SelectedFields | null>(
     null
   );
+  const [equivalenceResult, setEquivalenceResult] =
+    useState<EquivalenceSearchResponse | null>(null);
 
-  // Initialize service following Dependency Inversion
+  // Initialize services following Dependency Inversion
   const enrichmentService = new MockEnrichmentService();
+  const equivalenceService = new MockEquivalenceService();
 
   // Handle form submission with actual enrichment
   const handleEntrySubmit = async (data: BaseProductInfo) => {
@@ -75,21 +80,55 @@ export default function PDMFlow({ className }: PDMFlowProps) {
   };
 
   // Handle field selection submission
-  const handleFieldSelectionSubmit = (fields: SelectedFields) => {
-    setSelectedFields(fields);
-    goToStep(PDMStep.EQUIVALENCE_SEARCH);
-    setStatus(ProcessingStatus.PROCESSING);
+  const handleFieldSelectionSubmit = async (fields: SelectedFields) => {
+    if (!enrichmentResult) return;
 
-    // TODO: Implement equivalence search in next step
-    setTimeout(() => {
+    try {
+      setSelectedFields(fields);
+      setStatus(ProcessingStatus.PROCESSING);
+      goToStep(PDMStep.EQUIVALENCE_SEARCH);
+      setError(null);
+
+      // Create search criteria and perform equivalence search
+      const searchCriteria = MockEquivalenceService.createSearchCriteria(
+        enrichmentResult,
+        fields,
+        "fuzzy", // Default search mode
+        20 // Max results
+      );
+
+      const searchResult = await equivalenceService.searchEquivalents(
+        searchCriteria
+      );
+      setEquivalenceResult(searchResult);
       setStatus(ProcessingStatus.COMPLETED);
-    }, 2000);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Erro na busca de equivalências";
+      setError(errorMessage);
+      setStatus(ProcessingStatus.ERROR);
+    }
   };
 
   // Handle field selection back
   const handleFieldSelectionBack = () => {
     goToStep(PDMStep.ENRICHMENT);
     setSelectedFields(null);
+    setEquivalenceResult(null);
+  };
+
+  // Handle equivalence results back to field selection
+  const handleEquivalenceBack = () => {
+    goToStep(PDMStep.FIELD_SELECTION);
+    setEquivalenceResult(null);
+  };
+
+  // Handle export
+  const handleExport = () => {
+    goToStep(PDMStep.EXPORT);
+    // TODO: Implement export functionality in next step
   };
 
   // Render step indicator for development
@@ -156,13 +195,20 @@ export default function PDMFlow({ className }: PDMFlowProps) {
         );
 
       case PDMStep.EQUIVALENCE_SEARCH:
-        return (
+        return equivalenceResult ? (
+          <EquivalenceResults
+            searchResult={equivalenceResult}
+            onBack={handleEquivalenceBack}
+            onExport={handleExport}
+            isLoading={state.status === ProcessingStatus.PROCESSING}
+          />
+        ) : (
           <Typography
             variant="h6"
             color="primary"
             sx={{ textAlign: "center", py: 4 }}
           >
-            🔍 Etapa: Busca de Equivalências
+            🔍 Buscando equivalências...
           </Typography>
         );
 
