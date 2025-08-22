@@ -3,4 +3,5 @@
  * Following Dependency Inversion Principle
  */
 
-export { default as PDMFlow } from "./PDMFlow";
+export { default as PDMFlow } from './PDMFlow';
+export { default as EntryForm } from './EntryForm';

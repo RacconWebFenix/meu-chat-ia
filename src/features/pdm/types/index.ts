@@ -3,5 +3,6 @@
  * Following Dependency Inversion Principle: Export abstractions
  */
 
-export * from "./base.types";
-export * from "./flow.types";
+export * from './base.types';
+export * from './flow.types';
+export * from './entry.types';
