@@ -13,5 +13,8 @@ export { default as TabsSwitcher } from "./shared/TabsSwitcher";
 // Report Components
 export { PivotTableSummary } from "./PivotTableSummary";
 
+// Feature Components
+export { PDMFlow } from "../features/pdm";
+
 // Shared Components (re-export for convenience)
 export * from "./shared";
