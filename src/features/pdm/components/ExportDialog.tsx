@@ -20,13 +20,13 @@ import {
   Typography,
   Divider,
   Alert,
-  LinearProgress
+  LinearProgress,
 } from "@mui/material";
 import {
   GetApp as ExportIcon,
   Description as PDFIcon,
   TableChart as ExcelIcon,
-  Code as CSVIcon
+  Code as CSVIcon,
 } from "@mui/icons-material";
 import { EquivalenceMatch } from "../types";
 import { useExport } from "../hooks";
@@ -37,62 +37,62 @@ interface ExportDialogProps {
   readonly onClose: () => void;
 }
 
-type ExportFormat = 'csv' | 'excel' | 'pdf';
+type ExportFormat = "csv" | "excel" | "pdf";
 
 export function ExportDialog({
   open,
   matches,
-  onClose
+  onClose,
 }: ExportDialogProps): React.JSX.Element {
-  const [format, setFormat] = useState<ExportFormat>('excel');
+  const [format, setFormat] = useState<ExportFormat>("excel");
   const [includeSpecs, setIncludeSpecs] = useState(true);
   const [includePDM, setIncludePDM] = useState(true);
-  
+
   const { isExporting, exportToCSV, exportToExcel, exportToPDF } = useExport();
 
   const handleExport = async () => {
     const options = {
       includeSpecs,
-      includePDM
+      includePDM,
     };
 
     try {
       switch (format) {
-        case 'csv':
+        case "csv":
           await exportToCSV(matches, options);
           break;
-        case 'excel':
+        case "excel":
           await exportToExcel(matches, options);
           break;
-        case 'pdf':
+        case "pdf":
           await exportToPDF(matches, options);
           break;
       }
       onClose();
     } catch (error) {
-      console.error('Export failed:', error);
+      console.error("Export failed:", error);
     }
   };
 
   const getFormatIcon = (formatType: ExportFormat) => {
     switch (formatType) {
-      case 'csv':
+      case "csv":
         return <CSVIcon />;
-      case 'excel':
+      case "excel":
         return <ExcelIcon />;
-      case 'pdf':
+      case "pdf":
         return <PDFIcon />;
     }
   };
 
   const getFormatDescription = (formatType: ExportFormat) => {
     switch (formatType) {
-      case 'csv':
-        return 'Arquivo de valores separados por vírgula (.csv)';
-      case 'excel':
-        return 'Planilha do Excel (.xlsx)';
-      case 'pdf':
-        return 'Documento PDF (.pdf)';
+      case "csv":
+        return "Arquivo de valores separados por vírgula (.csv)";
+      case "excel":
+        return "Planilha do Excel (.xlsx)";
+      case "pdf":
+        return "Documento PDF (.pdf)";
     }
   };
 
@@ -104,17 +104,17 @@ export function ExportDialog({
   };
 
   return (
-    <Dialog 
-      open={open} 
+    <Dialog
+      open={open}
       onClose={!isExporting ? onClose : undefined}
-      maxWidth="sm" 
+      maxWidth="sm"
       fullWidth
     >
-      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <ExportIcon />
         Exportar Equivalências
       </DialogTitle>
-      
+
       <DialogContent>
         {isExporting && (
           <Box sx={{ mb: 2 }}>
@@ -136,16 +136,19 @@ export function ExportDialog({
             value={format}
             onChange={(e) => setFormat(e.target.value as ExportFormat)}
           >
-            {(['excel', 'csv', 'pdf'] as const).map((formatOption) => (
+            {(["excel", "csv", "pdf"] as const).map((formatOption) => (
               <FormControlLabel
                 key={formatOption}
                 value={formatOption}
                 control={<Radio />}
                 label={
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     {getFormatIcon(formatOption)}
                     <Box>
-                      <Typography variant="body1" sx={{ textTransform: 'uppercase' }}>
+                      <Typography
+                        variant="body1"
+                        sx={{ textTransform: "uppercase" }}
+                      >
                         {formatOption}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
@@ -167,7 +170,7 @@ export function ExportDialog({
           <Typography variant="subtitle2" gutterBottom>
             Conteúdo a Incluir
           </Typography>
-          
+
           <FormControlLabel
             control={
               <Checkbox
@@ -178,7 +181,7 @@ export function ExportDialog({
             }
             label="Especificações Técnicas"
           />
-          
+
           <FormControlLabel
             control={
               <Checkbox
@@ -192,33 +195,30 @@ export function ExportDialog({
         </Box>
 
         {/* File Info */}
-        <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+        <Box sx={{ p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
           <Typography variant="body2" color="text.secondary">
             <strong>Estimativa do arquivo:</strong> ~{getFileSize()} KB
           </Typography>
           <Typography variant="body2" color="text.secondary">
             <strong>Incluirá:</strong> Nome, Fabricante, Categoria, Score
-            {includePDM && ', PDM Padronizado'}
-            {includeSpecs && ', Especificações Técnicas'}
+            {includePDM && ", PDM Padronizado"}
+            {includeSpecs && ", Especificações Técnicas"}
           </Typography>
         </Box>
       </DialogContent>
-      
+
       <DialogActions>
-        <Button 
-          onClick={onClose} 
-          disabled={isExporting}
-        >
+        <Button onClick={onClose} disabled={isExporting}>
           Cancelar
         </Button>
-        
+
         <Button
           onClick={handleExport}
           variant="contained"
           disabled={isExporting || matches.length === 0}
           startIcon={<ExportIcon />}
         >
-          {isExporting ? 'Exportando...' : 'Exportar'}
+          {isExporting ? "Exportando..." : "Exportar"}
         </Button>
       </DialogActions>
     </Dialog>

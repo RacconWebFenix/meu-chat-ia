@@ -4,11 +4,11 @@
  */
 
 import { useState, useCallback, useMemo } from "react";
-import { 
-  AdvancedEquivalenceState, 
-  EquivalenceFilters, 
-  SortCriteria, 
-  ComparisonItem 
+import {
+  AdvancedEquivalenceState,
+  EquivalenceFilters,
+  SortCriteria,
+  ComparisonItem,
 } from "../types";
 import { EquivalenceMatch } from "../types";
 
@@ -22,7 +22,7 @@ interface UseAdvancedEquivalenceReturn {
   readonly selectAll: () => void;
   readonly clearSelection: () => void;
   readonly toggleComparisonMode: () => void;
-  readonly setViewMode: (mode: 'grid' | 'list' | 'table') => void;
+  readonly setViewMode: (mode: "grid" | "list" | "table") => void;
   readonly getSelectedMatches: () => readonly EquivalenceMatch[];
 }
 
@@ -31,7 +31,7 @@ const DEFAULT_FILTERS: EquivalenceFilters = {
   manufacturers: [],
   categories: [],
   hasSpecifications: false,
-  hasPDM: false
+  hasPDM: false,
 };
 
 const INITIAL_STATE: AdvancedEquivalenceState = {
@@ -39,7 +39,7 @@ const INITIAL_STATE: AdvancedEquivalenceState = {
   sortBy: SortCriteria.SCORE_DESC,
   selectedItems: [],
   comparisonMode: false,
-  viewMode: 'list'
+  viewMode: "list",
 };
 
 export function useAdvancedEquivalence(
@@ -48,63 +48,66 @@ export function useAdvancedEquivalence(
   const [state, setState] = useState<AdvancedEquivalenceState>(INITIAL_STATE);
 
   // Update filters
-  const updateFilters = useCallback((newFilters: Partial<EquivalenceFilters>) => {
-    setState(prev => ({
-      ...prev,
-      filters: {
-        ...prev.filters,
-        ...newFilters
-      }
-    }));
-  }, []);
+  const updateFilters = useCallback(
+    (newFilters: Partial<EquivalenceFilters>) => {
+      setState((prev) => ({
+        ...prev,
+        filters: {
+          ...prev.filters,
+          ...newFilters,
+        },
+      }));
+    },
+    []
+  );
 
   // Set sort criteria
   const setSortBy = useCallback((sort: SortCriteria) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      sortBy: sort
+      sortBy: sort,
     }));
   }, []);
 
   // Toggle item selection
   const toggleItemSelection = useCallback((id: string) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       selectedItems: prev.selectedItems.includes(id)
-        ? prev.selectedItems.filter(item => item !== id)
-        : [...prev.selectedItems, id]
+        ? prev.selectedItems.filter((item) => item !== id)
+        : [...prev.selectedItems, id],
     }));
   }, []);
 
   // Select all items
   const selectAll = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      selectedItems: matches.map(match => match.id)
+      selectedItems: matches.map((match) => match.id),
     }));
   }, [matches]);
 
   // Clear selection
   const clearSelection = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      selectedItems: []
+      selectedItems: [],
     }));
   }, []);
 
   // Toggle comparison mode
   const toggleComparisonMode = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      comparisonMode: !prev.comparisonMode
+      comparisonMode: !prev.comparisonMode,
     }));
   }, []);
 
   // Set view mode
-  const setViewMode = useCallback((mode: 'grid' | 'list' | 'table') => {
-    setState(prev => ({
+  const setViewMode = useCallback((mode: "grid" | "list" | "table") => {
+    setState((prev) => ({
       ...prev,
-      viewMode: mode
+      viewMode: mode,
     }));
   }, []);
 
@@ -113,36 +116,43 @@ export function useAdvancedEquivalence(
     let filtered = [...matches];
 
     // Score range filter
-    filtered = filtered.filter(match => {
+    filtered = filtered.filter((match) => {
       const score = match.matchScore * 100;
-      return score >= state.filters.scoreRange.min && score <= state.filters.scoreRange.max;
+      return (
+        score >= state.filters.scoreRange.min &&
+        score <= state.filters.scoreRange.max
+      );
     });
 
     // Manufacturer filter
     if (state.filters.manufacturers.length > 0) {
-      filtered = filtered.filter(match => 
-        match.marcaFabricante && state.filters.manufacturers.includes(match.marcaFabricante)
+      filtered = filtered.filter(
+        (match) =>
+          match.marcaFabricante &&
+          state.filters.manufacturers.includes(match.marcaFabricante)
       );
     }
 
     // Category filter
     if (state.filters.categories.length > 0) {
-      filtered = filtered.filter(match => 
+      filtered = filtered.filter((match) =>
         state.filters.categories.includes(match.categoria)
       );
     }
 
     // Has specifications filter
     if (state.filters.hasSpecifications) {
-      filtered = filtered.filter(match => 
-        match.especificacoesTecnicas && Object.keys(match.especificacoesTecnicas).length > 0
+      filtered = filtered.filter(
+        (match) =>
+          match.especificacoesTecnicas &&
+          Object.keys(match.especificacoesTecnicas).length > 0
       );
     }
 
     // Has PDM filter
     if (state.filters.hasPDM) {
-      filtered = filtered.filter(match => 
-        match.pdmPadronizado && match.pdmPadronizado.length > 0
+      filtered = filtered.filter(
+        (match) => match.pdmPadronizado && match.pdmPadronizado.length > 0
       );
     }
 
@@ -152,16 +162,16 @@ export function useAdvancedEquivalence(
 
   // Get comparison items
   const comparisonItems = useMemo(() => {
-    return filteredMatches.map(match => ({
+    return filteredMatches.map((match) => ({
       match,
       selected: state.selectedItems.includes(match.id),
-      notes: undefined
+      notes: undefined,
     }));
   }, [filteredMatches, state.selectedItems]);
 
   // Get selected matches
   const getSelectedMatches = useCallback(() => {
-    return matches.filter(match => state.selectedItems.includes(match.id));
+    return matches.filter((match) => state.selectedItems.includes(match.id));
   }, [matches, state.selectedItems]);
 
   return {
@@ -175,44 +185,47 @@ export function useAdvancedEquivalence(
     clearSelection,
     toggleComparisonMode,
     setViewMode,
-    getSelectedMatches
+    getSelectedMatches,
   };
 }
 
 // Helper function to sort matches
-function sortMatches(matches: readonly EquivalenceMatch[], sortBy: SortCriteria): EquivalenceMatch[] {
+function sortMatches(
+  matches: readonly EquivalenceMatch[],
+  sortBy: SortCriteria
+): EquivalenceMatch[] {
   const sorted = [...matches];
 
   switch (sortBy) {
     case SortCriteria.SCORE_DESC:
       return sorted.sort((a, b) => b.matchScore - a.matchScore);
-    
+
     case SortCriteria.SCORE_ASC:
       return sorted.sort((a, b) => a.matchScore - b.matchScore);
-    
+
     case SortCriteria.NAME_ASC:
       return sorted.sort((a, b) => a.nome.localeCompare(b.nome));
-    
+
     case SortCriteria.NAME_DESC:
       return sorted.sort((a, b) => b.nome.localeCompare(a.nome));
-    
+
     case SortCriteria.MANUFACTURER_ASC:
       return sorted.sort((a, b) => {
-        const aManufacturer = a.marcaFabricante || '';
-        const bManufacturer = b.marcaFabricante || '';
+        const aManufacturer = a.marcaFabricante || "";
+        const bManufacturer = b.marcaFabricante || "";
         return aManufacturer.localeCompare(bManufacturer);
       });
-    
+
     case SortCriteria.MANUFACTURER_DESC:
       return sorted.sort((a, b) => {
-        const aManufacturer = a.marcaFabricante || '';
-        const bManufacturer = b.marcaFabricante || '';
+        const aManufacturer = a.marcaFabricante || "";
+        const bManufacturer = b.marcaFabricante || "";
         return bManufacturer.localeCompare(aManufacturer);
       });
-    
+
     case SortCriteria.CATEGORY_ASC:
       return sorted.sort((a, b) => a.categoria.localeCompare(b.categoria));
-    
+
     default:
       return sorted;
   }

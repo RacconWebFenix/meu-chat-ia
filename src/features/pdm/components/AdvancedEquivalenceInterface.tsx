@@ -31,7 +31,7 @@ import {
   Divider,
   Accordion,
   AccordionSummary,
-  AccordionDetails
+  AccordionDetails,
 } from "@mui/material";
 import {
   ExpandMore as ExpandMoreIcon,
@@ -43,7 +43,7 @@ import {
   CheckBox as CheckBoxIcon,
   CheckBoxOutlineBlank as CheckBoxOutlineBlankIcon,
   Star as StarIcon,
-  Info as InfoIcon
+  Info as InfoIcon,
 } from "@mui/icons-material";
 import { EquivalenceMatch, SortCriteria } from "../types";
 import { useAdvancedEquivalence } from "../hooks";
@@ -57,7 +57,7 @@ interface AdvancedEquivalenceInterfaceProps {
 export function AdvancedEquivalenceInterface({
   matches,
   onExportSelected,
-  onCompareSelected
+  onCompareSelected,
 }: AdvancedEquivalenceInterfaceProps): React.JSX.Element {
   const {
     state,
@@ -70,13 +70,13 @@ export function AdvancedEquivalenceInterface({
     clearSelection,
     toggleComparisonMode,
     setViewMode,
-    getSelectedMatches
+    getSelectedMatches,
   } = useAdvancedEquivalence(matches);
 
   // Get unique manufacturers and categories for filter options
   const uniqueManufacturers = React.useMemo(() => {
     const manufacturers = new Set<string>();
-    matches.forEach(match => {
+    matches.forEach((match) => {
       if (match.marcaFabricante) {
         manufacturers.add(match.marcaFabricante);
       }
@@ -86,7 +86,7 @@ export function AdvancedEquivalenceInterface({
 
   const uniqueCategories = React.useMemo(() => {
     const categories = new Set<string>();
-    matches.forEach(match => {
+    matches.forEach((match) => {
       if (match.categoria) {
         categories.add(match.categoria);
       }
@@ -94,28 +94,31 @@ export function AdvancedEquivalenceInterface({
     return Array.from(categories).sort();
   }, [matches]);
 
-  const handleScoreRangeChange = (event: Event, newValue: number | number[]) => {
+  const handleScoreRangeChange = (
+    event: Event,
+    newValue: number | number[]
+  ) => {
     const [min, max] = newValue as number[];
     updateFilters({
-      scoreRange: { min, max }
+      scoreRange: { min, max },
     });
   };
 
   const handleManufacturerToggle = (manufacturer: string) => {
     const currentManufacturers = state.filters.manufacturers;
     const newManufacturers = currentManufacturers.includes(manufacturer)
-      ? currentManufacturers.filter(m => m !== manufacturer)
+      ? currentManufacturers.filter((m) => m !== manufacturer)
       : [...currentManufacturers, manufacturer];
-    
+
     updateFilters({ manufacturers: newManufacturers });
   };
 
   const handleCategoryToggle = (category: string) => {
     const currentCategories = state.filters.categories;
     const newCategories = currentCategories.includes(category)
-      ? currentCategories.filter(c => c !== category)
+      ? currentCategories.filter((c) => c !== category)
       : [...currentCategories, category];
-    
+
     updateFilters({ categories: newCategories });
   };
 
@@ -144,31 +147,33 @@ export function AdvancedEquivalenceInterface({
           title="Equivalências Encontradas - Interface Avançada"
           subheader={`${filteredCount} de ${totalCount} equivalências | ${selectedCount} selecionadas`}
           action={
-            <Box sx={{ display: 'flex', gap: 1 }}>
+            <Box sx={{ display: "flex", gap: 1 }}>
               <ButtonGroup size="small">
                 <Button
-                  onClick={() => setViewMode('list')}
-                  variant={state.viewMode === 'list' ? 'contained' : 'outlined'}
+                  onClick={() => setViewMode("list")}
+                  variant={state.viewMode === "list" ? "contained" : "outlined"}
                 >
                   <ViewListIcon />
                 </Button>
                 <Button
-                  onClick={() => setViewMode('grid')}
-                  variant={state.viewMode === 'grid' ? 'contained' : 'outlined'}
+                  onClick={() => setViewMode("grid")}
+                  variant={state.viewMode === "grid" ? "contained" : "outlined"}
                 >
                   <ViewModuleIcon />
                 </Button>
                 <Button
-                  onClick={() => setViewMode('table')}
-                  variant={state.viewMode === 'table' ? 'contained' : 'outlined'}
+                  onClick={() => setViewMode("table")}
+                  variant={
+                    state.viewMode === "table" ? "contained" : "outlined"
+                  }
                 >
                   <TableChartIcon />
                 </Button>
               </ButtonGroup>
-              
+
               <Button
                 onClick={toggleComparisonMode}
-                variant={state.comparisonMode ? 'contained' : 'outlined'}
+                variant={state.comparisonMode ? "contained" : "outlined"}
                 startIcon={<CompareIcon />}
               >
                 Comparação
@@ -176,33 +181,40 @@ export function AdvancedEquivalenceInterface({
             </Box>
           }
         />
-        
+
         <CardContent>
           {/* Filters Section */}
           <Accordion defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography
+                variant="h6"
+                sx={{ display: "flex", alignItems: "center", gap: 1 }}
+              >
                 <FilterIcon />
                 Filtros Avançados
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 {/* Score Range Filter */}
                 <Box>
                   <Typography gutterBottom>
-                    Faixa de Score: {state.filters.scoreRange.min}% - {state.filters.scoreRange.max}%
+                    Faixa de Score: {state.filters.scoreRange.min}% -{" "}
+                    {state.filters.scoreRange.max}%
                   </Typography>
                   <Slider
-                    value={[state.filters.scoreRange.min, state.filters.scoreRange.max]}
+                    value={[
+                      state.filters.scoreRange.min,
+                      state.filters.scoreRange.max,
+                    ]}
                     onChange={handleScoreRangeChange}
                     valueLabelDisplay="auto"
                     min={0}
                     max={100}
                     marks={[
-                      { value: 0, label: '0%' },
-                      { value: 50, label: '50%' },
-                      { value: 100, label: '100%' }
+                      { value: 0, label: "0%" },
+                      { value: 50, label: "50%" },
+                      { value: 100, label: "100%" },
                     ]}
                   />
                 </Box>
@@ -215,33 +227,51 @@ export function AdvancedEquivalenceInterface({
                     label="Ordenar por"
                     onChange={(e) => setSortBy(e.target.value as SortCriteria)}
                   >
-                    <MenuItem value={SortCriteria.SCORE_DESC}>Score (Maior → Menor)</MenuItem>
-                    <MenuItem value={SortCriteria.SCORE_ASC}>Score (Menor → Maior)</MenuItem>
-                    <MenuItem value={SortCriteria.NAME_ASC}>Nome (A → Z)</MenuItem>
-                    <MenuItem value={SortCriteria.NAME_DESC}>Nome (Z → A)</MenuItem>
-                    <MenuItem value={SortCriteria.MANUFACTURER_ASC}>Fabricante (A → Z)</MenuItem>
-                    <MenuItem value={SortCriteria.MANUFACTURER_DESC}>Fabricante (Z → A)</MenuItem>
-                    <MenuItem value={SortCriteria.CATEGORY_ASC}>Categoria (A → Z)</MenuItem>
+                    <MenuItem value={SortCriteria.SCORE_DESC}>
+                      Score (Maior → Menor)
+                    </MenuItem>
+                    <MenuItem value={SortCriteria.SCORE_ASC}>
+                      Score (Menor → Maior)
+                    </MenuItem>
+                    <MenuItem value={SortCriteria.NAME_ASC}>
+                      Nome (A → Z)
+                    </MenuItem>
+                    <MenuItem value={SortCriteria.NAME_DESC}>
+                      Nome (Z → A)
+                    </MenuItem>
+                    <MenuItem value={SortCriteria.MANUFACTURER_ASC}>
+                      Fabricante (A → Z)
+                    </MenuItem>
+                    <MenuItem value={SortCriteria.MANUFACTURER_DESC}>
+                      Fabricante (Z → A)
+                    </MenuItem>
+                    <MenuItem value={SortCriteria.CATEGORY_ASC}>
+                      Categoria (A → Z)
+                    </MenuItem>
                   </Select>
                 </FormControl>
 
-                <Box sx={{ display: 'flex', gap: 2 }}>
+                <Box sx={{ display: "flex", gap: 2 }}>
                   {/* Quality Filters */}
                   <FormControlLabel
                     control={
                       <Switch
                         checked={state.filters.hasSpecifications}
-                        onChange={(e) => updateFilters({ hasSpecifications: e.target.checked })}
+                        onChange={(e) =>
+                          updateFilters({ hasSpecifications: e.target.checked })
+                        }
                       />
                     }
                     label="Com Especificações"
                   />
-                  
+
                   <FormControlLabel
                     control={
                       <Switch
                         checked={state.filters.hasPDM}
-                        onChange={(e) => updateFilters({ hasPDM: e.target.checked })}
+                        onChange={(e) =>
+                          updateFilters({ hasPDM: e.target.checked })
+                        }
                       />
                     }
                     label="Com PDM Padronizado"
@@ -252,16 +282,33 @@ export function AdvancedEquivalenceInterface({
                 {uniqueManufacturers.length > 0 && (
                   <Box>
                     <Typography variant="subtitle2" gutterBottom>
-                      Fabricantes ({state.filters.manufacturers.length} selecionados)
+                      Fabricantes ({state.filters.manufacturers.length}{" "}
+                      selecionados)
                     </Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, maxHeight: 120, overflow: 'auto' }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 1,
+                        maxHeight: 120,
+                        overflow: "auto",
+                      }}
+                    >
                       {uniqueManufacturers.map((manufacturer) => (
                         <Chip
                           key={manufacturer}
                           label={manufacturer}
                           onClick={() => handleManufacturerToggle(manufacturer)}
-                          variant={state.filters.manufacturers.includes(manufacturer) ? 'filled' : 'outlined'}
-                          color={state.filters.manufacturers.includes(manufacturer) ? 'primary' : 'default'}
+                          variant={
+                            state.filters.manufacturers.includes(manufacturer)
+                              ? "filled"
+                              : "outlined"
+                          }
+                          color={
+                            state.filters.manufacturers.includes(manufacturer)
+                              ? "primary"
+                              : "default"
+                          }
                           size="small"
                         />
                       ))}
@@ -273,16 +320,33 @@ export function AdvancedEquivalenceInterface({
                 {uniqueCategories.length > 0 && (
                   <Box>
                     <Typography variant="subtitle2" gutterBottom>
-                      Categorias ({state.filters.categories.length} selecionadas)
+                      Categorias ({state.filters.categories.length}{" "}
+                      selecionadas)
                     </Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, maxHeight: 120, overflow: 'auto' }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 1,
+                        maxHeight: 120,
+                        overflow: "auto",
+                      }}
+                    >
                       {uniqueCategories.map((category) => (
                         <Chip
                           key={category}
                           label={category}
                           onClick={() => handleCategoryToggle(category)}
-                          variant={state.filters.categories.includes(category) ? 'filled' : 'outlined'}
-                          color={state.filters.categories.includes(category) ? 'primary' : 'default'}
+                          variant={
+                            state.filters.categories.includes(category)
+                              ? "filled"
+                              : "outlined"
+                          }
+                          color={
+                            state.filters.categories.includes(category)
+                              ? "primary"
+                              : "default"
+                          }
                           size="small"
                         />
                       ))}
@@ -296,21 +360,15 @@ export function AdvancedEquivalenceInterface({
           <Divider sx={{ my: 2 }} />
 
           {/* Action Buttons */}
-          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-            <Button
-              onClick={selectAll}
-              disabled={filteredMatches.length === 0}
-            >
+          <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+            <Button onClick={selectAll} disabled={filteredMatches.length === 0}>
               Selecionar Todos
             </Button>
-            
-            <Button
-              onClick={clearSelection}
-              disabled={selectedCount === 0}
-            >
+
+            <Button onClick={clearSelection} disabled={selectedCount === 0}>
               Limpar Seleção
             </Button>
-            
+
             <Button
               onClick={handleCompareSelected}
               disabled={selectedCount < 2}
@@ -318,7 +376,7 @@ export function AdvancedEquivalenceInterface({
             >
               Comparar Selecionados ({selectedCount})
             </Button>
-            
+
             <Button
               onClick={handleExportSelected}
               disabled={selectedCount === 0}
@@ -329,7 +387,7 @@ export function AdvancedEquivalenceInterface({
           </Box>
 
           {/* Results Display */}
-          {state.viewMode === 'list' && (
+          {state.viewMode === "list" && (
             <EquivalenceList
               items={comparisonItems}
               comparisonMode={state.comparisonMode}
@@ -338,9 +396,10 @@ export function AdvancedEquivalenceInterface({
           )}
 
           {/* Summary */}
-          <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+          <Box sx={{ mt: 2, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
             <Typography variant="body2" color="text.secondary">
-              Exibindo {filteredCount} de {totalCount} equivalências encontradas.
+              Exibindo {filteredCount} de {totalCount} equivalências
+              encontradas.
               {selectedCount > 0 && ` ${selectedCount} itens selecionados.`}
             </Typography>
           </Box>
@@ -360,7 +419,7 @@ interface EquivalenceListProps {
 function EquivalenceList({
   items,
   comparisonMode,
-  onToggleSelection
+  onToggleSelection,
 }: EquivalenceListProps): React.JSX.Element {
   return (
     <List>
@@ -376,22 +435,29 @@ function EquivalenceList({
               />
             </ListItemIcon>
           )}
-          
+
           <ListItemText
             primary={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <Typography variant="subtitle1">{match.nome}</Typography>
-                <Chip 
+                <Chip
                   label={`${Math.round(match.matchScore * 100)}%`}
                   size="small"
-                  color={match.matchScore >= 0.8 ? 'success' : match.matchScore >= 0.6 ? 'warning' : 'default'}
+                  color={
+                    match.matchScore >= 0.8
+                      ? "success"
+                      : match.matchScore >= 0.6
+                      ? "warning"
+                      : "default"
+                  }
                 />
               </Box>
             }
             secondary={
               <Box>
                 <Typography variant="body2" color="text.secondary">
-                  {match.marcaFabricante && `Fabricante: ${match.marcaFabricante}`}
+                  {match.marcaFabricante &&
+                    `Fabricante: ${match.marcaFabricante}`}
                   {match.categoria && ` | Categoria: ${match.categoria}`}
                 </Typography>
                 {match.pdmPadronizado && (
@@ -402,7 +468,7 @@ function EquivalenceList({
               </Box>
             }
           />
-          
+
           <ListItemSecondaryAction>
             <IconButton size="small">
               <InfoIcon />
@@ -410,7 +476,7 @@ function EquivalenceList({
           </ListItemSecondaryAction>
         </ListItem>
       ))}
-      
+
       {items.length === 0 && (
         <ListItem>
           <ListItemText
