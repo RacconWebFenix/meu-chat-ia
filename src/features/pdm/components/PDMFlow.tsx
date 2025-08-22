@@ -16,10 +16,12 @@ import {
   ProcessingStatus,
   BaseProductInfo,
   EnrichmentResponse,
+  SelectedFields,
 } from "../types";
 import { MockEnrichmentService } from "../services";
 import EntryForm from "./EntryForm";
 import EnrichmentResult from "./EnrichmentResult";
+import FieldSelection from "./FieldSelection";
 
 interface PDMFlowProps {
   readonly className?: string;
@@ -33,6 +35,9 @@ export default function PDMFlow({ className }: PDMFlowProps) {
   const { state, goToStep, setStatus, setError } = usePDMFlow();
   const [enrichmentResult, setEnrichmentResult] =
     useState<EnrichmentResponse | null>(null);
+  const [selectedFields, setSelectedFields] = useState<SelectedFields | null>(
+    null
+  );
 
   // Initialize service following Dependency Inversion
   const enrichmentService = new MockEnrichmentService();
@@ -65,7 +70,26 @@ export default function PDMFlow({ className }: PDMFlowProps) {
     goToStep(PDMStep.ENTRY);
     setStatus(ProcessingStatus.IDLE);
     setEnrichmentResult(null);
+    setSelectedFields(null);
     setError(null);
+  };
+
+  // Handle field selection submission
+  const handleFieldSelectionSubmit = (fields: SelectedFields) => {
+    setSelectedFields(fields);
+    goToStep(PDMStep.EQUIVALENCE_SEARCH);
+    setStatus(ProcessingStatus.PROCESSING);
+
+    // TODO: Implement equivalence search in next step
+    setTimeout(() => {
+      setStatus(ProcessingStatus.COMPLETED);
+    }, 2000);
+  };
+
+  // Handle field selection back
+  const handleFieldSelectionBack = () => {
+    goToStep(PDMStep.ENRICHMENT);
+    setSelectedFields(null);
   };
 
   // Render step indicator for development
@@ -115,13 +139,19 @@ export default function PDMFlow({ className }: PDMFlowProps) {
         );
 
       case PDMStep.FIELD_SELECTION:
-        return (
+        return enrichmentResult ? (
+          <FieldSelection
+            enrichmentResult={enrichmentResult}
+            onBack={handleFieldSelectionBack}
+            onContinue={handleFieldSelectionSubmit}
+          />
+        ) : (
           <Typography
             variant="h6"
-            color="primary"
+            color="error"
             sx={{ textAlign: "center", py: 4 }}
           >
-            ☑️ Etapa: Seleção de Campos
+            ❌ Erro: Dados de enriquecimento não encontrados
           </Typography>
         );
 

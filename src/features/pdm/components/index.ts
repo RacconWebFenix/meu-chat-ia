@@ -6,3 +6,4 @@
 export { default as PDMFlow } from "./PDMFlow";
 export { default as EntryForm } from "./EntryForm";
 export { default as EnrichmentResult } from "./EnrichmentResult";
+export { default as FieldSelection } from "./FieldSelection";
