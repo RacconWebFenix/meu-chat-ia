@@ -21,11 +21,11 @@ interface PDMFlowProps {
  * Main PDM Flow component
  * Following Single Responsibility Principle: Only orchestrates the flow
  */
-export default function PDMFlow({ className }: PDMFlowProps): JSX.Element {
+export default function PDMFlow({ className }: PDMFlowProps) {
   const { state } = usePDMFlow();
 
   // Render step indicator for development
-  const renderStepIndicator = (): JSX.Element => (
+  const renderStepIndicator = () => (
     <Box sx={{ mb: 2, p: 2, bgcolor: "grey.100", borderRadius: 1 }}>
       <Typography variant="body2" color="text.secondary">
         Etapa Atual: {state.currentStep}
@@ -42,7 +42,7 @@ export default function PDMFlow({ className }: PDMFlowProps): JSX.Element {
   );
 
   // Render current step content
-  const renderStepContent = (): JSX.Element => {
+  const renderStepContent = () => {
     switch (state.currentStep) {
       case PDMStep.ENTRY:
         return (

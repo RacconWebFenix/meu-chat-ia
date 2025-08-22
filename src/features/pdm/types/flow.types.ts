@@ -8,6 +8,15 @@ import {
   ConfidenceMetrics,
 } from "./base.types";
 
+// PDM Flow steps enumeration
+export enum PDMStep {
+  ENTRY = "entry",
+  ENRICHMENT = "enrichment",
+  FIELD_SELECTION = "field_selection",
+  EQUIVALENCE_SEARCH = "equivalence_search",
+  EXPORT = "export",
+}
+
 // Single Responsibility: Only handles PDM flow state
 export interface PDMFlowState {
   readonly currentStep: PDMStep;
@@ -26,13 +35,4 @@ export interface EnrichmentResult {
   readonly originalData: BaseProductInfo;
   readonly enrichedData: Record<string, unknown>;
   readonly metrics: ConfidenceMetrics;
-}
-
-// PDM Flow steps enumeration
-export enum PDMStep {
-  ENTRY = "entry",
-  ENRICHMENT = "enrichment",
-  FIELD_SELECTION = "field_selection",
-  EQUIVALENCE_SEARCH = "equivalence_search",
-  EXPORT = "export",
 }
