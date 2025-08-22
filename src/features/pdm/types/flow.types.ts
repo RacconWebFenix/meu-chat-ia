@@ -31,7 +31,7 @@ export interface PDMProductData extends BaseProductInfo {
 }
 
 // Single Responsibility: Only handles enrichment results
-export interface EnrichmentResult {
+export interface PDMEnrichmentResult {
   readonly originalData: BaseProductInfo;
   readonly enrichedData: Record<string, unknown>;
   readonly metrics: ConfidenceMetrics;

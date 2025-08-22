@@ -8,11 +8,18 @@
  * Dependency Inversion: Depends on abstractions (hooks), not concretions
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { Box, Typography, Paper } from "@mui/material";
 import { usePDMFlow } from "../hooks";
-import { PDMStep, ProcessingStatus, BaseProductInfo } from "../types";
+import {
+  PDMStep,
+  ProcessingStatus,
+  BaseProductInfo,
+  EnrichmentResponse,
+} from "../types";
+import { MockEnrichmentService } from "../services";
 import EntryForm from "./EntryForm";
+import EnrichmentResult from "./EnrichmentResult";
 
 interface PDMFlowProps {
   readonly className?: string;
@@ -23,24 +30,42 @@ interface PDMFlowProps {
  * Following Single Responsibility Principle: Only orchestrates the flow
  */
 export default function PDMFlow({ className }: PDMFlowProps) {
-  const { state, goToStep, setStatus } = usePDMFlow();
+  const { state, goToStep, setStatus, setError } = usePDMFlow();
+  const [enrichmentResult, setEnrichmentResult] =
+    useState<EnrichmentResponse | null>(null);
 
-  // Handle form submission following Dependency Inversion
+  // Initialize service following Dependency Inversion
+  const enrichmentService = new MockEnrichmentService();
+
+  // Handle form submission with actual enrichment
   const handleEntrySubmit = async (data: BaseProductInfo) => {
-    console.log("Dados submetidos:", data);
-    setStatus(ProcessingStatus.PROCESSING);
+    try {
+      setStatus(ProcessingStatus.PROCESSING);
+      setError(null);
 
-    // Simular delay de processamento
-    setTimeout(() => {
+      // Call enrichment service
+      const result = await enrichmentService.enrichProduct({
+        productInfo: data,
+      });
+
+      // Store result and proceed
+      setEnrichmentResult(result);
       goToStep(PDMStep.ENRICHMENT);
       setStatus(ProcessingStatus.COMPLETED);
-    }, 1000);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro no enriquecimento";
+      setError(errorMessage);
+      setStatus(ProcessingStatus.ERROR);
+    }
   };
 
   // Handle form cancellation
   const handleEntryCancel = () => {
     goToStep(PDMStep.ENTRY);
     setStatus(ProcessingStatus.IDLE);
+    setEnrichmentResult(null);
+    setError(null);
   };
 
   // Render step indicator for development
@@ -73,17 +98,19 @@ export default function PDMFlow({ className }: PDMFlowProps) {
         );
 
       case PDMStep.ENRICHMENT:
-        return (
+        return enrichmentResult ? (
+          <EnrichmentResult
+            result={enrichmentResult}
+            onBack={handleEntryCancel}
+            onContinue={() => goToStep(PDMStep.FIELD_SELECTION)}
+          />
+        ) : (
           <Typography
             variant="h6"
             color="primary"
             sx={{ textAlign: "center", py: 4 }}
           >
-            🤖 Etapa: Enriquecimento via IA
-            <br />
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              Processando dados e buscando informações técnicas...
-            </Typography>
+            Processando enriquecimento...
           </Typography>
         );
 
