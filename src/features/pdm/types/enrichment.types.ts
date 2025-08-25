@@ -1,35 +1,41 @@
 /**
- * Enrichment types following Interface Segregation Principle
- * Each interface has a single, specific responsibility
+ * Tipos de enriquecimento, seguindo o Princípio da Segregação de Interfaces.
  */
 
-import { BaseProductInfo, ConfidenceMetrics, DataSource } from "./base.types";
+import { BaseProductInfo, ConfidenceMetrics } from "./base.types";
 
-// Single Responsibility: Handle enrichment request
+// Interface para uma única especificação técnica.
+// Adicionamos um ID para permitir a manipulação segura em listas React.
+export interface Specification {
+  readonly id: string; // Ex: um UUID gerado no momento da criação
+  readonly key: string; // Ex: "Conectividade"
+  readonly value: string; // Ex: "Sem Fio"
+}
+
+// Responsabilidade Única: Lidar com a requisição de enriquecimento
 export interface EnrichmentRequest {
   readonly productInfo: BaseProductInfo;
   readonly options?: EnrichmentOptions;
 }
 
-// Single Responsibility: Handle enrichment configuration
+// Responsabilidade Única: Lidar com a configuração do enriquecimento
 export interface EnrichmentOptions {
   readonly prioritizeManufacturer?: boolean;
   readonly includeAlternatives?: boolean;
-  readonly detailLevel?: "basic" | "detailed" | "comprehensive";
 }
 
-// Single Responsibility: Handle enriched product data
+// Responsabilidade Única: Lidar com os dados do produto enriquecido
 export interface EnrichedProductData {
   readonly categoria: string;
   readonly subcategoria?: string;
-  readonly especificacoesTecnicas: Record<string, string>;
+  // CORREÇÃO: Estrutura alterada para suportar tanto array quanto objeto (compatibilidade API real)
+  readonly especificacoesTecnicas: Specification[] | Record<string, string>;
   readonly aplicacao?: string;
   readonly normas?: string[];
   readonly pdmPadronizado: string;
-  readonly observacoes?: string[];
 }
 
-// Single Responsibility: Handle enrichment response
+// Responsabilidade Única: Lidar com a resposta do enriquecimento
 export interface EnrichmentResponse {
   readonly original: BaseProductInfo;
   readonly enriched: EnrichedProductData;
@@ -38,16 +44,15 @@ export interface EnrichmentResponse {
   readonly warnings?: string[];
 }
 
-// Single Responsibility: Handle AI suggestions
+// Responsabilidade Única: Lidar com as sugestões da IA
 export interface EnrichmentSuggestion {
-  readonly type: "manufacturer" | "category" | "specification";
   readonly field: string;
   readonly suggestedValue: string;
   readonly confidence: number;
   readonly reason: string;
 }
 
-// Single Responsibility: Handle enrichment service contract
+// Responsabilidade Única: Lidar com o contrato do serviço de enriquecimento
 export interface EnrichmentService {
   enrichProduct(request: EnrichmentRequest): Promise<EnrichmentResponse>;
   isManufacturerSupported(manufacturer: string): boolean;

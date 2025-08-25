@@ -1,28 +1,76 @@
 /**
- * FieldSelection component for selecting fields to use in equivalence search.
- * Refatorado para aplicar o tema "Aço Escovado".
+ * FieldSelection component, refatorado para ser uma interface de edição interativa.
+ * O usuário agora pode editar, adicionar e remover especificações.
  */
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
   Paper,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
   Button,
   Alert,
-  Chip,
-  Divider,
   Stack,
+  TextField,
+  IconButton,
+  Divider,
 } from "@mui/material";
-import { EnrichmentResponse, SelectedFields } from "../types";
+import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { v4 as uuidv4 } from "uuid"; // Para gerar IDs únicos
+import {
+  EnrichmentResponse,
+  EnrichedProductData,
+  Specification,
+} from "../types";
 
+// Função utilitária para converter especificações de objeto para array
+const convertSpecificationsToArray = (
+  specs: Specification[] | Record<string, string> | unknown
+): Specification[] => {
+  if (Array.isArray(specs)) {
+    // Se já é array, retorna como está
+    return specs;
+  }
+
+  if (specs && typeof specs === "object") {
+    // Se é objeto, converte para array
+    return Object.entries(specs as Record<string, string>).map(
+      ([key, value]) => ({
+        id: uuidv4(),
+        key,
+        value: String(value),
+      })
+    );
+  }
+
+  // Se não é nem array nem objeto, retorna array vazio
+  return [];
+};
+
+// Função utilitária para converter array de especificações de volta para objeto
+const convertSpecificationsToObject = (
+  specs: Specification[]
+): Record<string, string> => {
+  const result: Record<string, string> = {};
+  specs.forEach((spec) => {
+    if (spec.key && spec.value) {
+      result[spec.key] = spec.value;
+    }
+  });
+  return result;
+};
+
+// A prop 'onContinue' agora passará os dados enriquecidos e modificados
 interface FieldSelectionProps {
   readonly enrichmentResult: EnrichmentResponse;
   readonly onBack: () => void;
-  readonly onContinue: (selectedFields: SelectedFields) => void;
+  readonly onContinue: (modifiedData: EnrichedProductData) => void;
+}
+
+// Tipo interno para o estado local do componente (sempre array)
+interface EditableEnrichedData
+  extends Omit<EnrichedProductData, "especificacoesTecnicas"> {
+  readonly especificacoesTecnicas: Specification[];
 }
 
 export default function FieldSelection({
@@ -30,145 +78,156 @@ export default function FieldSelection({
   onBack,
   onContinue,
 }: FieldSelectionProps) {
-  const { enriched } = enrichmentResult;
-  const hasTechSpecs =
-    enriched.especificacoesTecnicas &&
-    Object.keys(enriched.especificacoesTecnicas).length > 0;
-
-  const [selectedFields, setSelectedFields] = useState<SelectedFields>({
-    categoria: true,
-    subcategoria: !!enriched.subcategoria,
-    especificacoesTecnicas: [],
-    aplicacao: !!enriched.aplicacao,
-    normas: !!enriched.normas?.length,
-  });
-
-  const handleMainFieldToggle = (
-    field: keyof Omit<SelectedFields, "especificacoesTecnicas">
-  ) => {
-    setSelectedFields((prev) => ({ ...prev, [field]: !prev[field] }));
+  // Função para processar os dados enriquecidos e garantir que especificações seja array
+  const processEnrichedData = (
+    data: EnrichedProductData
+  ): EditableEnrichedData => {
+    return {
+      ...data,
+      especificacoesTecnicas: convertSpecificationsToArray(
+        data.especificacoesTecnicas
+      ),
+    };
   };
 
-  const handleSpecToggle = (specKey: string) => {
-    setSelectedFields((prev) => ({
+  // Cria uma "cópia de trabalho" dos dados enriquecidos no estado local
+  const [editableData, setEditableData] = useState<EditableEnrichedData>(() =>
+    processEnrichedData(structuredClone(enrichmentResult.enriched))
+  );
+
+  // Efeito para sincronizar o estado se o resultado do enriquecimento mudar
+  useEffect(() => {
+    setEditableData(
+      processEnrichedData(structuredClone(enrichmentResult.enriched))
+    );
+  }, [enrichmentResult]);
+
+  // Handler para editar campos de texto principais (categoria, subcategoria)
+  const handleFieldChange = (
+    field: keyof EditableEnrichedData,
+    value: string
+  ) => {
+    setEditableData((prev) => ({
       ...prev,
-      especificacoesTecnicas: prev.especificacoesTecnicas.includes(specKey)
-        ? prev.especificacoesTecnicas.filter((key) => key !== specKey)
-        : [...prev.especificacoesTecnicas, specKey],
+      [field]: value,
     }));
   };
 
-  const hasSelections = useMemo(() => {
-    return Object.values(selectedFields).some((value) => {
-      if (Array.isArray(value)) return value.length > 0;
-      return !!value;
-    });
-  }, [selectedFields]);
+  // Handler para editar uma especificação técnica (seja a chave ou o valor)
+  const handleSpecChange = (
+    id: string,
+    field: "key" | "value",
+    value: string
+  ) => {
+    setEditableData((prev) => ({
+      ...prev,
+      especificacoesTecnicas: prev.especificacoesTecnicas.map((spec) =>
+        spec.id === id ? { ...spec, [field]: value } : spec
+      ),
+    }));
+  };
+
+  // Handler para adicionar uma nova especificação em branco
+  const handleAddNewSpec = () => {
+    const newSpec: Specification = { id: uuidv4(), key: "", value: "" };
+    setEditableData((prev) => ({
+      ...prev,
+      especificacoesTecnicas: [...prev.especificacoesTecnicas, newSpec],
+    }));
+  };
+
+  // Handler para remover uma especificação
+  const handleDeleteSpec = (id: string) => {
+    setEditableData((prev) => ({
+      ...prev,
+      especificacoesTecnicas: prev.especificacoesTecnicas.filter(
+        (spec) => spec.id !== id
+      ),
+    }));
+  };
+
+  // Função para preparar os dados finais antes de enviar
+  const handleContinue = () => {
+    const finalData: EnrichedProductData = {
+      ...editableData,
+      especificacoesTecnicas: convertSpecificationsToObject(
+        editableData.especificacoesTecnicas
+      ),
+    };
+    onContinue(finalData);
+  };
 
   return (
     <Stack gap={3}>
-      <Typography variant="h5">Seleção de Campos para Busca</Typography>
-
+      <Typography variant="h5">Revisão e Ajuste dos Dados</Typography>
       <Alert severity="info">
-        Quanto mais campos você selecionar, mais precisa será a busca por
-        equivalências. Selecione os campos mais relevantes para seu objetivo.
+        Revise os dados extraídos pela IA. Você pode editar, adicionar ou
+        remover características para melhorar a qualidade do PDM antes de
+        prosseguir.
       </Alert>
 
       <Paper variant="outlined" sx={{ p: { xs: 2, sm: 3 } }}>
-        <Typography variant="h6" gutterBottom>
-          Campos Principais
-        </Typography>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={selectedFields.categoria}
-                onChange={() => handleMainFieldToggle("categoria")}
-              />
-            }
-            label={`Categoria: ${enriched.categoria}`}
+        <Stack gap={2}>
+          <TextField
+            label="Categoria"
+            value={editableData.categoria}
+            onChange={(e) => handleFieldChange("categoria", e.target.value)}
+            fullWidth
           />
-          {enriched.subcategoria && (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={selectedFields.subcategoria}
-                  onChange={() => handleMainFieldToggle("subcategoria")}
-                />
-              }
-              label={`Subcategoria: ${enriched.subcategoria}`}
-            />
-          )}
-        </FormGroup>
-
-        {hasTechSpecs && (
-          <>
-            <Divider sx={{ my: 2 }}>
-              <Chip label="Especificações Técnicas" />
-            </Divider>
-            <FormGroup>
-              {Object.entries(enriched.especificacoesTecnicas).map(
-                ([key, value]) => (
-                  <FormControlLabel
-                    key={key}
-                    control={
-                      <Checkbox
-                        checked={selectedFields.especificacoesTecnicas.includes(
-                          key
-                        )}
-                        onChange={() => handleSpecToggle(key)}
-                      />
-                    }
-                    label={`${key}: ${value}`}
-                  />
-                )
-              )}
-            </FormGroup>
-          </>
-        )}
-
-        <Box
-          sx={{
-            mt: 3,
-            p: 2,
-            // CORREÇÃO: Usando cores do tema para o fundo e borda.
-            backgroundColor: "background.default",
-            border: 1,
-            borderColor: "divider",
-            borderRadius: 1,
-          }}
-        >
-          <Typography variant="subtitle2" gutterBottom>
-            Resumo da Seleção:
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {hasSelections
-              ? [
-                  selectedFields.categoria && "Categoria",
-                  selectedFields.subcategoria && "Subcategoria",
-                  selectedFields.aplicacao && "Aplicação",
-                  selectedFields.normas && "Normas",
-                  selectedFields.especificacoesTecnicas.length > 0 &&
-                    `${selectedFields.especificacoesTecnicas.length} especificação(ões)`,
-                ]
-                  .filter(Boolean)
-                  .join(" + ")
-              : "Nenhum campo selecionado."}
-          </Typography>
-        </Box>
+          <TextField
+            label="Subcategoria"
+            value={editableData.subcategoria || ""}
+            onChange={(e) => handleFieldChange("subcategoria", e.target.value)}
+            fullWidth
+          />
+        </Stack>
+        <Divider sx={{ my: 3 }}>
+          <Typography variant="overline">Especificações Técnicas</Typography>
+        </Divider>
+        <Stack gap={2}>
+          {editableData.especificacoesTecnicas.map((spec) => (
+            <Stack direction="row" key={spec.id} gap={2} alignItems="center">
+              <TextField
+                label="Característica"
+                value={spec.key}
+                onChange={(e) =>
+                  handleSpecChange(spec.id, "key", e.target.value)
+                }
+                sx={{ flex: 1 }}
+              />
+              <TextField
+                label="Valor"
+                value={spec.value}
+                onChange={(e) =>
+                  handleSpecChange(spec.id, "value", e.target.value)
+                }
+                sx={{ flex: 1 }}
+              />
+              <IconButton
+                onClick={() => handleDeleteSpec(spec.id)}
+                color="error"
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Stack>
+          ))}
+          <Button
+            onClick={handleAddNewSpec}
+            startIcon={<AddIcon />}
+            variant="outlined"
+            sx={{ mt: 2 }}
+          >
+            Adicionar Característica
+          </Button>
+        </Stack>
       </Paper>
 
       <Stack direction="row" justifyContent="space-between" sx={{ mt: 2 }}>
         <Button variant="outlined" color="secondary" onClick={onBack}>
           Voltar
         </Button>
-        <Button
-          variant="contained"
-          onClick={() => onContinue(selectedFields)}
-          disabled={!hasSelections}
-          size="large"
-        >
-          Buscar Equivalências
+        <Button variant="contained" onClick={handleContinue} size="large">
+          Confirmar e Buscar Equivalências
         </Button>
       </Stack>
     </Stack>

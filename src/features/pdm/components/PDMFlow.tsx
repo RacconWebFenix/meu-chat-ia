@@ -1,6 +1,6 @@
 /**
  * PDMFlow - Orquestrador das etapas do fluxo PDM.
- * Corrigido para usar a fábrica de serviços (Dependency Inversion).
+ * Corrigido para lidar com os dados editados pelo usuário na etapa de FieldSelection.
  */
 import React from "react";
 import {
@@ -17,10 +17,9 @@ import {
   ProcessingStatus,
   BaseProductInfo,
   EnrichmentResponse,
-  SelectedFields,
+  EnrichedProductData, // Importamos o tipo que vamos receber
   EquivalenceSearchResponse,
 } from "../types";
-// CORREÇÃO: Importando a função fábrica em vez da implementação mock.
 import { createEnrichmentService, MockEquivalenceService } from "../services";
 import EntryForm from "./EntryForm";
 import EnrichmentResult from "./EnrichmentResult";
@@ -33,25 +32,20 @@ interface PDMFlowProps {
 
 const STEPS = [
   { key: PDMStep.ENTRY, label: "Entrada de Dados" },
-  { key: PDMStep.ENRICHMENT, label: "Enriquecimento" },
-  { key: PDMStep.FIELD_SELECTION, label: "Seleção de Campos" },
-  { key: PDMStep.EQUIVALENCE_SEARCH, label: "Resultados" },
+  { key: PDMStep.ENRICHMENT, label: "Resultado do Enriquecimento" },
+  { key: PDMStep.FIELD_SELECTION, label: "Revisão e Ajuste" },
+  { key: PDMStep.EQUIVALENCE_SEARCH, label: "Resultados da Equivalência" },
 ];
 
 export default function PDMFlow({ className }: PDMFlowProps) {
   const { state, goToStep, setStatus, setError } = usePDMFlow();
   const [enrichmentResult, setEnrichmentResult] =
     React.useState<EnrichmentResponse | null>(null);
-  const [selectedFields, setSelectedFields] =
-    React.useState<SelectedFields | null>(null);
   const [equivalenceResult, setEquivalenceResult] =
     React.useState<EquivalenceSearchResponse | null>(null);
 
-  // CORREÇÃO: Usando a função fábrica para obter o serviço.
-  // A lógica de qual serviço usar (real ou mock) está agora centralizada
-  // e isolada no arquivo services/index.ts.
   const enrichmentService = createEnrichmentService();
-  const equivalenceService = new MockEquivalenceService(); // Mantido como mock por enquanto
+  const equivalenceService = new MockEquivalenceService();
 
   const handleEntrySubmit = async (data: BaseProductInfo) => {
     try {
@@ -68,15 +62,44 @@ export default function PDMFlow({ className }: PDMFlowProps) {
     }
   };
 
-  const handleFieldSelectionSubmit = async (fields: SelectedFields) => {
-    if (!enrichmentResult) return;
+  // --- CORREÇÃO PRINCIPAL AQUI ---
+  // A função agora aceita o objeto 'EnrichedProductData' completo e editado.
+  const handleFieldSelectionContinue = async (
+    modifiedEnrichedData: EnrichedProductData
+  ) => {
+    // Criamos uma nova versão do resultado do enriquecimento com os dados modificados pelo usuário.
+    const finalEnrichmentResult: EnrichmentResponse = {
+      ...enrichmentResult!,
+      enriched: modifiedEnrichedData,
+    };
+
+    // Atualizamos o estado para refletir as edições do usuário.
+    setEnrichmentResult(finalEnrichmentResult);
+
     try {
       setStatus(ProcessingStatus.PROCESSING);
       goToStep(PDMStep.EQUIVALENCE_SEARCH);
+
+      // Usamos os dados finais e revisados para criar os critérios de busca.
+      // O segundo argumento de createSearchCriteria foi ajustado para refletir
+      // que agora todos os campos editados são importantes.
       const searchCriteria = MockEquivalenceService.createSearchCriteria(
-        enrichmentResult,
-        fields
+        finalEnrichmentResult,
+        {
+          categoria: true,
+          subcategoria: true,
+          especificacoesTecnicas: Array.isArray(
+            modifiedEnrichedData.especificacoesTecnicas
+          )
+            ? modifiedEnrichedData.especificacoesTecnicas.map(
+                (spec: { key: string }) => spec.key
+              )
+            : Object.keys(modifiedEnrichedData.especificacoesTecnicas),
+          aplicacao: true,
+          normas: true,
+        }
       );
+
       const result = await equivalenceService.searchEquivalents(searchCriteria);
       setEquivalenceResult(result);
       setStatus(ProcessingStatus.COMPLETED);
@@ -109,7 +132,7 @@ export default function PDMFlow({ className }: PDMFlowProps) {
           <FieldSelection
             enrichmentResult={enrichmentResult}
             onBack={() => goToStep(PDMStep.ENRICHMENT)}
-            onContinue={handleFieldSelectionSubmit}
+            onContinue={handleFieldSelectionContinue}
           />
         ) : null;
       case PDMStep.EQUIVALENCE_SEARCH:
