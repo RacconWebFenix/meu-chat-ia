@@ -1,6 +1,6 @@
 /**
- * EnrichmentResult component to display enriched product data
- * Following Single Responsibility Principle
+ * EnrichmentResult component to display enriched product data.
+ * Refatorado para corrigir erro de hidratação e aplicar tema "Aço Escovado".
  */
 
 import React from "react";
@@ -14,6 +14,8 @@ import {
   List,
   ListItem,
   ListItemText,
+  Stack,
+  Divider,
 } from "@mui/material";
 import { EnrichmentResponse } from "../types";
 
@@ -30,230 +32,118 @@ export default function EnrichmentResult({
 }: EnrichmentResultProps) {
   const { original, enriched, metrics, suggestions, warnings } = result;
 
+  const getConfidenceColor = (
+    confidence: number
+  ): "success" | "warning" | "default" => {
+    if (confidence > 0.8) return "success";
+    if (confidence > 0.6) return "warning";
+    return "default";
+  };
+
   return (
-    <Box sx={{ width: "100%" }}>
-      {/* Header */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h5" gutterBottom>
-          📋 Resultado do Enriquecimento
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Dados enriquecidos com base em catálogos e algoritmos de IA
-        </Typography>
-      </Box>
+    <Stack gap={3}>
+      <Typography variant="h5">Resultado do Enriquecimento</Typography>
 
-      {/* Confidence and Source */}
-      <Paper sx={{ p: 2, mb: 3 }}>
-        <Box
-          sx={{
-            display: "flex",
-            gap: 2,
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <Chip
-            label={`Confiança: ${Math.round(metrics.confidence * 100)}%`}
-            color={
-              metrics.confidence > 0.8
-                ? "success"
-                : metrics.confidence > 0.6
-                ? "warning"
-                : "error"
-            }
-            variant="outlined"
-          />
-          <Chip
-            label={`Fonte: ${metrics.source}`}
-            color="primary"
-            variant="outlined"
-          />
-        </Box>
-      </Paper>
-
-      {/* Warnings */}
       {warnings && warnings.length > 0 && (
-        <Alert severity="warning" sx={{ mb: 3 }}>
-          <Typography variant="subtitle2" gutterBottom>
-            Avisos importantes:
-          </Typography>
-          <List dense>
-            {warnings.map((warning, index) => (
-              <ListItem key={index} sx={{ py: 0 }}>
-                <ListItemText primary={warning} />
-              </ListItem>
-            ))}
-          </List>
+        <Alert severity="warning">
+          {warnings.map((warning, index) => (
+            <div key={index}>{warning}</div>
+          ))}
         </Alert>
       )}
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", md: "row" },
-          gap: 3,
-          mb: 3,
-        }}
+      <Paper
+        variant="outlined"
+        sx={{ p: 2, display: "flex", gap: 2, alignItems: "center" }}
       >
-        {/* Original Data */}
-        <Box sx={{ flex: 1 }}>
-          <Paper sx={{ p: 2, height: "fit-content" }}>
-            <Typography variant="h6" gutterBottom color="text.secondary">
-              📝 Dados Originais
+        <Chip
+          label={`Confiança: ${Math.round(metrics.confidence * 100)}%`}
+          color={getConfidenceColor(metrics.confidence)}
+        />
+        <Chip
+          label={`Fonte: ${metrics.source.replace(/_/g, " ")}`}
+          variant="outlined"
+        />
+      </Paper>
+
+      <Paper variant="outlined">
+        <Typography variant="h6" sx={{ p: 2 }}>
+          Dados Originais vs. Enriquecidos
+        </Typography>
+        <Divider />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            p: 2,
+          }}
+        >
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="subtitle2" color="text.secondary">
+              INFORMAÇÃO ORIGINAL
             </Typography>
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Nome:
-              </Typography>
-              <Typography variant="body1">{original.nome}</Typography>
-            </Box>
-            {original.referencia && (
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Referência:
-                </Typography>
-                <Typography variant="body1">{original.referencia}</Typography>
-              </Box>
-            )}
-            {original.marcaFabricante && (
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Fabricante:
-                </Typography>
-                <Typography variant="body1">
-                  {original.marcaFabricante}
-                </Typography>
-              </Box>
-            )}
-          </Paper>
-        </Box>
-
-        {/* Enriched Data */}
-        <Box sx={{ flex: 1 }}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom color="primary">
-              ✨ Dados Enriquecidos
-            </Typography>
-
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Categoria:
-              </Typography>
-              <Typography variant="body1" fontWeight="medium">
-                {enriched.categoria}
-              </Typography>
-            </Box>
-
-            {enriched.subcategoria && (
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Subcategoria:
-                </Typography>
-                <Typography variant="body1">{enriched.subcategoria}</Typography>
-              </Box>
-            )}
-
-            {enriched.aplicacao && (
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Aplicação:
-                </Typography>
-                <Typography variant="body1">{enriched.aplicacao}</Typography>
-              </Box>
-            )}
-
-            {enriched.normas && enriched.normas.length > 0 && (
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Normas:
-                </Typography>
-                <Box sx={{ mt: 1 }}>
-                  {enriched.normas.map((norma, index) => (
-                    <Chip
-                      key={index}
-                      label={norma}
-                      size="small"
-                      sx={{ mr: 1, mb: 1 }}
-                    />
-                  ))}
-                </Box>
-              </Box>
-            )}
-          </Paper>
-        </Box>
-      </Box>
-
-      {/* Technical Specifications */}
-      {enriched.especificacoesTecnicas && (
-        <Paper sx={{ p: 2, mb: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            🔧 Especificações Técnicas
-          </Typography>
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: {
-                xs: "1fr",
-                sm: "1fr 1fr",
-                md: "1fr 1fr 1fr",
-              },
-              gap: 2,
-            }}
-          >
-            {Object.entries(enriched.especificacoesTecnicas).map(
-              ([key, value]) => (
-                <Box key={key}>
-                  <Typography variant="body2" color="text.secondary">
-                    {key}:
-                  </Typography>
-                  <Typography variant="body1" fontWeight="medium">
-                    {value}
-                  </Typography>
-                </Box>
-              )
-            )}
+            <List dense>
+              <ListItem>
+                <ListItemText primary="Nome" secondary={original.nome} />
+              </ListItem>
+              <ListItem>
+                <ListItemText
+                  primary="Referência"
+                  secondary={original.referencia || "N/A"}
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemText
+                  primary="Fabricante"
+                  secondary={original.marcaFabricante || "N/A"}
+                />
+              </ListItem>
+            </List>
           </Box>
-        </Paper>
-      )}
-
-      {/* PDM Generated */}
-      {enriched.pdmPadronizado && (
-        <Paper sx={{ p: 2, mb: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            📋 PDM Padronizado
-          </Typography>
-          <Paper
-            sx={{
-              p: 2,
-              bgcolor: "grey.50",
-              border: "1px solid",
-              borderColor: "grey.300",
-              fontFamily: "monospace",
-            }}
-          >
-            <Typography
-              variant="body1"
-              sx={{ wordBreak: "break-word", fontFamily: "inherit" }}
-            >
-              {enriched.pdmPadronizado}
+          <Divider
+            orientation="vertical"
+            flexItem
+            sx={{ mx: 2, display: { xs: "none", md: "block" } }}
+          />
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="subtitle2" color="primary">
+              INFORMAÇÃO ENRIQUECIDA
             </Typography>
-          </Paper>
-        </Paper>
-      )}
+            <List dense>
+              <ListItem>
+                <ListItemText
+                  primary="Categoria"
+                  secondary={enriched.categoria}
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemText
+                  primary="PDM Padronizado"
+                  secondary={enriched.pdmPadronizado}
+                />
+              </ListItem>
+            </List>
+          </Box>
+        </Box>
+      </Paper>
 
-      {/* Suggestions */}
       {suggestions && suggestions.length > 0 && (
-        <Paper sx={{ p: 2, mb: 3 }}>
-          <Typography variant="h6" gutterBottom>
+        <Paper variant="outlined">
+          <Typography variant="h6" sx={{ p: 2 }}>
             💡 Sugestões de Melhoria
           </Typography>
+          <Divider />
           <List>
             {suggestions.map((suggestion, index) => (
               <ListItem key={index} divider={index < suggestions.length - 1}>
                 <ListItemText
                   primary={`Campo: ${suggestion.field}`}
+                  // **AQUI ESTÁ A CORREÇÃO DO ERRO DE HIDRATAÇÃO**
+                  // Esta prop instrui o MUI a usar uma <div> em vez de <p>,
+                  // permitindo aninhar outros elementos de bloco.
+                  secondaryTypographyProps={{ component: "div" }}
                   secondary={
-                    <Box>
+                    <Box sx={{ mt: 0.5 }}>
                       <Typography variant="body2">
                         Valor sugerido:{" "}
                         <strong>{suggestion.suggestedValue}</strong>
@@ -271,15 +161,19 @@ export default function EnrichmentResult({
         </Paper>
       )}
 
-      {/* Action Buttons */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
-        <Button variant="outlined" onClick={onBack} size="large">
-          ← Voltar
+      <Stack direction="row" justifyContent="space-between" sx={{ mt: 2 }}>
+        <Button variant="outlined" color="secondary" onClick={onBack}>
+          Voltar
         </Button>
-        <Button variant="contained" onClick={onContinue} size="large">
-          Continuar →
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={onContinue}
+          size="large"
+        >
+          Continuar
         </Button>
-      </Box>
-    </Box>
+      </Stack>
+    </Stack>
   );
 }

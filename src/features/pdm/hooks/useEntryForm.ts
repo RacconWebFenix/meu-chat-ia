@@ -1,6 +1,7 @@
 /**
- * Entry form hook following Single Responsibility Principle
- * Responsibility: Manage entry form state, validation and submission
+ * Hook do formulário de entrada.
+ * Responsabilidade: Gerenciar estado, validação e submissão do formulário.
+ * REGRA DE NEGÓCIO ATUALIZADA: A validação passa se 'nome', 'referencia' OU 'marcaFabricante' estiver preenchido.
  */
 
 import { useState, useCallback, useMemo } from "react";
@@ -40,33 +41,27 @@ export function useEntryForm(
   const [data, setData] = useState<BaseProductInfo>(INITIAL_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Validation logic following Single Responsibility
+  // Lógica de validação com a nova regra de negócio
   const validation = useMemo((): EntryFormValidation => {
     const errors: Record<string, string> = {};
+    const { nome, referencia, marcaFabricante } = data;
 
-    // Nome é obrigatório
-    if (!data.nome.trim()) {
-      errors.nome = "Nome do material é obrigatório";
-    } else if (data.nome.length < 2) {
+    // CORREÇÃO: Verifica se pelo menos um dos campos chave está preenchido.
+    const isAnyKeyFieldFilled =
+      (nome && nome.trim() !== "") ||
+      (referencia && referencia.trim() !== "") ||
+      (marcaFabricante && marcaFabricante.trim() !== "");
+
+    if (!isAnyKeyFieldFilled) {
+      // Erro genérico para indicar a nova regra.
+      // Pode ser exibido em um componente <Alert>.
+      errors.form =
+        "Preencha ao menos o Nome, Referência ou Fabricante para iniciar a análise.";
+    }
+
+    // Mantemos validações individuais para feedback específico no campo (se necessário)
+    if (nome.trim() && nome.length < 2) {
       errors.nome = "Nome deve ter pelo menos 2 caracteres";
-    } else if (data.nome.length > 100) {
-      errors.nome = "Nome deve ter no máximo 100 caracteres";
-    }
-
-    // Validação opcional para referência
-    if (data.referencia && data.referencia.length > 50) {
-      errors.referencia = "Referência deve ter no máximo 50 caracteres";
-    }
-
-    // Validação opcional para marca
-    if (data.marcaFabricante && data.marcaFabricante.length > 50) {
-      errors.marcaFabricante = "Marca deve ter no máximo 50 caracteres";
-    }
-
-    // Validação opcional para características
-    if (data.caracteristicas && data.caracteristicas.length > 200) {
-      errors.caracteristicas =
-        "Características devem ter no máximo 200 caracteres";
     }
 
     return {
@@ -75,7 +70,6 @@ export function useEntryForm(
     };
   }, [data]);
 
-  // Update field with validation
   const updateField = useCallback(
     (field: keyof BaseProductInfo, value: string) => {
       setData((prev) => ({
@@ -86,12 +80,10 @@ export function useEntryForm(
     []
   );
 
-  // Handle form submission
   const handleSubmit = useCallback(async () => {
     if (!validation.isValid || isSubmitting) {
       return;
     }
-
     setIsSubmitting(true);
     try {
       await onSubmit?.(data);
@@ -103,27 +95,20 @@ export function useEntryForm(
     }
   }, [data, validation.isValid, isSubmitting, onSubmit]);
 
-  // Handle form reset
   const handleReset = useCallback(() => {
     setData(INITIAL_DATA);
     setIsSubmitting(false);
     onReset?.();
   }, [onReset]);
 
-  // Can submit calculation
+  // CORREÇÃO: Lógica de 'canSubmit' simplificada para depender apenas da validação.
   const canSubmit = useMemo(
-    () => validation.isValid && !isSubmitting && data.nome.trim().length > 0,
-    [validation.isValid, isSubmitting, data.nome]
+    () => validation.isValid && !isSubmitting,
+    [validation.isValid, isSubmitting]
   );
 
-  const state: EntryFormState = {
-    data,
-    validation,
-    isSubmitting,
-  };
-
   return {
-    state,
+    state: { data, validation, isSubmitting },
     updateField,
     handleSubmit,
     handleReset,

@@ -11,11 +11,13 @@ import { PDMFlow } from "@/features/pdm/components";
 type PDMMode = "chat" | "flow";
 
 export default function ChatPDM() {
-  const [mode, setMode] = useState<PDMMode>("flow"); // Começar com o flow como padrão
+  const [mode, setMode] = useState<PDMMode>("flow");
   const chat = useChatPDM();
 
   return (
-    <Box>
+    // CORREÇÃO: Adicionado um container principal com largura máxima e centralização.
+    // Todos os filhos deste Box ficarão alinhados dentro deste limite.
+    <Box sx={{ maxWidth: "1200px", mx: "auto" }}>
       {/* Mode Selector */}
       <Paper sx={{ p: 2, mb: 3 }}>
         <Typography variant="h6" gutterBottom>
@@ -46,7 +48,7 @@ export default function ChatPDM() {
 
         <Box sx={{ mt: 2 }}>
           {mode === "flow" ? (
-            <Typography variant="body2" color="primary">
+            <Typography variant="body2" color="text.primary">
               🚀 <strong>PDM Flow:</strong> Interface guiada passo-a-passo com
               enriquecimento de dados, busca de equivalências, filtros avançados
               e exportação profissional.

@@ -1,29 +1,34 @@
 /**
- * Base types for PDM system following SOLID principles
- * Interface Segregation Principle: Small, specific interfaces
+ * Tipos base para o sistema PDM.
+ * Interface BaseProductInfo atualizada com os novos campos.
  */
 
-// Base product information interface
+// Interface de informação base do produto
 export interface BaseProductInfo {
   readonly nome: string;
   readonly referencia?: string;
   readonly marcaFabricante?: string;
   readonly caracteristicas?: string;
+  
+  // NOVOS CAMPOS ADICIONADOS
+  readonly aplicacao?: string;
+  readonly breveDescricao?: string;
+  readonly unidadeMedida?: string;
 }
 
-// Product identification interface
+// Interface de identificação do produto
 export interface ProductIdentification {
   readonly id: string;
   readonly timestamp: Date;
 }
 
-// Confidence tracking interface
+// Interface de métricas de confiança
 export interface ConfidenceMetrics {
   readonly confidence: number;
   readonly source: DataSource;
 }
 
-// Data source enumeration
+// Enumeração de fontes de dados
 export enum DataSource {
   USER_INPUT = "user_input",
   AI_ENRICHMENT = "ai_enrichment",
@@ -31,7 +36,7 @@ export enum DataSource {
   GENERIC_DATABASE = "generic_database",
 }
 
-// Processing status enumeration
+// Enumeração de status de processamento
 export enum ProcessingStatus {
   IDLE = "idle",
   PROCESSING = "processing",

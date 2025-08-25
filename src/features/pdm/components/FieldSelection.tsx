@@ -1,9 +1,9 @@
 /**
- * FieldSelection component for selecting fields to use in equivalence search
- * Following Single Responsibility Principle
+ * FieldSelection component for selecting fields to use in equivalence search.
+ * Refatorado para aplicar o tema "Aço Escovado".
  */
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Box,
   Typography,
@@ -15,6 +15,7 @@ import {
   Alert,
   Chip,
   Divider,
+  Stack,
 } from "@mui/material";
 import { EnrichmentResponse, SelectedFields } from "../types";
 
@@ -30,27 +31,24 @@ export default function FieldSelection({
   onContinue,
 }: FieldSelectionProps) {
   const { enriched } = enrichmentResult;
+  const hasTechSpecs =
+    enriched.especificacoesTecnicas &&
+    Object.keys(enriched.especificacoesTecnicas).length > 0;
 
-  // State for field selection
   const [selectedFields, setSelectedFields] = useState<SelectedFields>({
-    categoria: true, // Default selected
+    categoria: true,
     subcategoria: !!enriched.subcategoria,
     especificacoesTecnicas: [],
     aplicacao: !!enriched.aplicacao,
     normas: !!enriched.normas?.length,
   });
 
-  // Handle main field toggle
   const handleMainFieldToggle = (
     field: keyof Omit<SelectedFields, "especificacoesTecnicas">
   ) => {
-    setSelectedFields((prev) => ({
-      ...prev,
-      [field]: !prev[field],
-    }));
+    setSelectedFields((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
-  // Handle technical specs selection
   const handleSpecToggle = (specKey: string) => {
     setSelectedFields((prev) => ({
       ...prev,
@@ -60,49 +58,27 @@ export default function FieldSelection({
     }));
   };
 
-  // Check if at least one field is selected
-  const hasSelections =
-    selectedFields.categoria ||
-    selectedFields.subcategoria ||
-    selectedFields.aplicacao ||
-    selectedFields.normas ||
-    selectedFields.especificacoesTecnicas.length > 0;
-
-  const handleContinue = () => {
-    if (hasSelections) {
-      onContinue(selectedFields);
-    }
-  };
+  const hasSelections = useMemo(() => {
+    return Object.values(selectedFields).some((value) => {
+      if (Array.isArray(value)) return value.length > 0;
+      return !!value;
+    });
+  }, [selectedFields]);
 
   return (
-    <Box sx={{ width: "100%" }}>
-      {/* Header */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h5" gutterBottom>
-          ☑️ Seleção de Campos para Equivalência
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Escolha quais campos serão utilizados para buscar produtos
-          equivalentes
-        </Typography>
-      </Box>
+    <Stack gap={3}>
+      <Typography variant="h5">Seleção de Campos para Busca</Typography>
 
-      {/* Instructions */}
-      <Alert severity="info" sx={{ mb: 3 }}>
-        <Typography variant="body2">
-          <strong>Dica:</strong> Campos selecionados serão usados como critérios
-          de busca. Mais campos = busca mais específica. Menos campos = busca
-          mais ampla.
-        </Typography>
+      <Alert severity="info">
+        Quanto mais campos você selecionar, mais precisa será a busca por
+        equivalências. Selecione os campos mais relevantes para seu objetivo.
       </Alert>
 
-      <Paper sx={{ p: 3 }}>
-        {/* Basic Fields */}
+      <Paper variant="outlined" sx={{ p: { xs: 2, sm: 3 } }}>
         <Typography variant="h6" gutterBottom>
-          📋 Campos Básicos
+          Campos Principais
         </Typography>
-
-        <FormGroup sx={{ mb: 3 }}>
+        <FormGroup>
           <FormControlLabel
             control={
               <Checkbox
@@ -110,14 +86,8 @@ export default function FieldSelection({
                 onChange={() => handleMainFieldToggle("categoria")}
               />
             }
-            label={
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Typography>Categoria</Typography>
-                <Chip label={enriched.categoria} size="small" />
-              </Box>
-            }
+            label={`Categoria: ${enriched.categoria}`}
           />
-
           {enriched.subcategoria && (
             <FormControlLabel
               control={
@@ -126,156 +96,81 @@ export default function FieldSelection({
                   onChange={() => handleMainFieldToggle("subcategoria")}
                 />
               }
-              label={
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Typography>Subcategoria</Typography>
-                  <Chip label={enriched.subcategoria} size="small" />
-                </Box>
-              }
-            />
-          )}
-
-          {enriched.aplicacao && (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={selectedFields.aplicacao}
-                  onChange={() => handleMainFieldToggle("aplicacao")}
-                />
-              }
-              label={
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Typography>Aplicação</Typography>
-                  <Chip
-                    label={enriched.aplicacao}
-                    size="small"
-                    color="secondary"
-                  />
-                </Box>
-              }
-            />
-          )}
-
-          {enriched.normas && enriched.normas.length > 0 && (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={selectedFields.normas}
-                  onChange={() => handleMainFieldToggle("normas")}
-                />
-              }
-              label={
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Typography>Normas</Typography>
-                  <Box sx={{ display: "flex", gap: 0.5 }}>
-                    {enriched.normas.slice(0, 2).map((norma, index) => (
-                      <Chip
-                        key={index}
-                        label={norma}
-                        size="small"
-                        color="success"
-                      />
-                    ))}
-                    {enriched.normas.length > 2 && (
-                      <Chip
-                        label={`+${enriched.normas.length - 2}`}
-                        size="small"
-                      />
-                    )}
-                  </Box>
-                </Box>
-              }
+              label={`Subcategoria: ${enriched.subcategoria}`}
             />
           )}
         </FormGroup>
 
-        <Divider sx={{ my: 3 }} />
+        {hasTechSpecs && (
+          <>
+            <Divider sx={{ my: 2 }}>
+              <Chip label="Especificações Técnicas" />
+            </Divider>
+            <FormGroup>
+              {Object.entries(enriched.especificacoesTecnicas).map(
+                ([key, value]) => (
+                  <FormControlLabel
+                    key={key}
+                    control={
+                      <Checkbox
+                        checked={selectedFields.especificacoesTecnicas.includes(
+                          key
+                        )}
+                        onChange={() => handleSpecToggle(key)}
+                      />
+                    }
+                    label={`${key}: ${value}`}
+                  />
+                )
+              )}
+            </FormGroup>
+          </>
+        )}
 
-        {/* Technical Specifications */}
-        {enriched.especificacoesTecnicas &&
-          Object.keys(enriched.especificacoesTecnicas).length > 0 && (
-            <>
-              <Typography variant="h6" gutterBottom>
-                🔧 Especificações Técnicas
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Selecione as especificações mais importantes para encontrar
-                equivalências:
-              </Typography>
-
-              <FormGroup>
-                {Object.entries(enriched.especificacoesTecnicas).map(
-                  ([key, value]) => (
-                    <FormControlLabel
-                      key={key}
-                      control={
-                        <Checkbox
-                          checked={selectedFields.especificacoesTecnicas.includes(
-                            key
-                          )}
-                          onChange={() => handleSpecToggle(key)}
-                        />
-                      }
-                      label={
-                        <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                        >
-                          <Typography>{key}</Typography>
-                          <Chip
-                            label={value}
-                            size="small"
-                            variant="outlined"
-                            color="primary"
-                          />
-                        </Box>
-                      }
-                    />
-                  )
-                )}
-              </FormGroup>
-            </>
-          )}
-
-        {/* Selection Summary */}
-        <Box sx={{ mt: 4, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
+        <Box
+          sx={{
+            mt: 3,
+            p: 2,
+            // CORREÇÃO: Usando cores do tema para o fundo e borda.
+            backgroundColor: "background.default",
+            border: 1,
+            borderColor: "divider",
+            borderRadius: 1,
+          }}
+        >
           <Typography variant="subtitle2" gutterBottom>
-            📊 Resumo da Seleção:
+            Resumo da Seleção:
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {hasSelections ? (
-              <>
-                {[
+            {hasSelections
+              ? [
                   selectedFields.categoria && "Categoria",
                   selectedFields.subcategoria && "Subcategoria",
                   selectedFields.aplicacao && "Aplicação",
                   selectedFields.normas && "Normas",
                   selectedFields.especificacoesTecnicas.length > 0 &&
-                    `${selectedFields.especificacoesTecnicas.length} especificação(ões) técnica(s)`,
+                    `${selectedFields.especificacoesTecnicas.length} especificação(ões)`,
                 ]
                   .filter(Boolean)
-                  .join(" + ")}
-              </>
-            ) : (
-              "Nenhum campo selecionado"
-            )}
+                  .join(" + ")
+              : "Nenhum campo selecionado."}
           </Typography>
         </Box>
       </Paper>
 
-      {/* Action Buttons */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
-        <Button variant="outlined" onClick={onBack} size="large">
-          ← Voltar
+      <Stack direction="row" justifyContent="space-between" sx={{ mt: 2 }}>
+        <Button variant="outlined" color="secondary" onClick={onBack}>
+          Voltar
         </Button>
         <Button
           variant="contained"
-          onClick={handleContinue}
+          onClick={() => onContinue(selectedFields)}
           disabled={!hasSelections}
           size="large"
         >
-          Buscar Equivalências →
+          Buscar Equivalências
         </Button>
-      </Box>
-    </Box>
+      </Stack>
+    </Stack>
   );
 }
