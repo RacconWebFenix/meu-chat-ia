@@ -1,6 +1,6 @@
 /**
  * PDMFlow - Orquestrador das etapas do fluxo PDM.
- * Corrigido erro de tipagem na chamada ao EquivalenceResults.
+ * Corrigido para usar a fábrica de serviços (Dependency Inversion).
  */
 import React from "react";
 import {
@@ -20,7 +20,8 @@ import {
   SelectedFields,
   EquivalenceSearchResponse,
 } from "../types";
-import { MockEnrichmentService, MockEquivalenceService } from "../services";
+// CORREÇÃO: Importando a função fábrica em vez da implementação mock.
+import { createEnrichmentService, MockEquivalenceService } from "../services";
 import EntryForm from "./EntryForm";
 import EnrichmentResult from "./EnrichmentResult";
 import FieldSelection from "./FieldSelection";
@@ -46,8 +47,11 @@ export default function PDMFlow({ className }: PDMFlowProps) {
   const [equivalenceResult, setEquivalenceResult] =
     React.useState<EquivalenceSearchResponse | null>(null);
 
-  const enrichmentService = new MockEnrichmentService();
-  const equivalenceService = new MockEquivalenceService();
+  // CORREÇÃO: Usando a função fábrica para obter o serviço.
+  // A lógica de qual serviço usar (real ou mock) está agora centralizada
+  // e isolada no arquivo services/index.ts.
+  const enrichmentService = createEnrichmentService();
+  const equivalenceService = new MockEquivalenceService(); // Mantido como mock por enquanto
 
   const handleEntrySubmit = async (data: BaseProductInfo) => {
     try {
@@ -60,13 +64,13 @@ export default function PDMFlow({ className }: PDMFlowProps) {
       setStatus(ProcessingStatus.COMPLETED);
     } catch (error) {
       setError(error instanceof Error ? error.message : "Erro desconhecido");
+      setStatus(ProcessingStatus.ERROR);
     }
   };
 
   const handleFieldSelectionSubmit = async (fields: SelectedFields) => {
     if (!enrichmentResult) return;
     try {
-      setSelectedFields(fields);
       setStatus(ProcessingStatus.PROCESSING);
       goToStep(PDMStep.EQUIVALENCE_SEARCH);
       const searchCriteria = MockEquivalenceService.createSearchCriteria(
@@ -78,6 +82,7 @@ export default function PDMFlow({ className }: PDMFlowProps) {
       setStatus(ProcessingStatus.COMPLETED);
     } catch (error) {
       setError(error instanceof Error ? error.message : "Erro desconhecido");
+      setStatus(ProcessingStatus.ERROR);
     }
   };
 
@@ -88,6 +93,7 @@ export default function PDMFlow({ className }: PDMFlowProps) {
           <EntryForm
             onSubmit={handleEntrySubmit}
             onCancel={() => goToStep(PDMStep.ENTRY)}
+            disabled={state.status === ProcessingStatus.PROCESSING}
           />
         );
       case PDMStep.ENRICHMENT:
@@ -108,7 +114,6 @@ export default function PDMFlow({ className }: PDMFlowProps) {
         ) : null;
       case PDMStep.EQUIVALENCE_SEARCH:
         return equivalenceResult ? (
-          // CORREÇÃO: Removida a propriedade 'onExport' que não existe.
           <EquivalenceResults
             searchResult={equivalenceResult}
             onBack={() => goToStep(PDMStep.FIELD_SELECTION)}

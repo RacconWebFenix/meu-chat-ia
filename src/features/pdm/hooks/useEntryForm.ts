@@ -1,7 +1,6 @@
 /**
  * Hook do formulário de entrada.
  * Responsabilidade: Gerenciar estado, validação e submissão do formulário.
- * REGRA DE NEGÓCIO ATUALIZADA: A validação passa se 'nome', 'referencia' OU 'marcaFabricante' estiver preenchido.
  */
 
 import { useState, useCallback, useMemo } from "react";
@@ -26,11 +25,15 @@ interface UseEntryFormParams {
   readonly onReset?: EntryFormResetHandler;
 }
 
+// CORREÇÃO: Adicionados os novos campos ao estado inicial.
 const INITIAL_DATA: BaseProductInfo = {
   nome: "",
   referencia: "",
   marcaFabricante: "",
   caracteristicas: "",
+  aplicacao: "",
+  breveDescricao: "",
+  unidadeMedida: "",
 };
 
 export function useEntryForm(
@@ -41,25 +44,21 @@ export function useEntryForm(
   const [data, setData] = useState<BaseProductInfo>(INITIAL_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Lógica de validação com a nova regra de negócio
+  // A lógica de validação que implementamos antes continua a mesma e funcional.
   const validation = useMemo((): EntryFormValidation => {
     const errors: Record<string, string> = {};
     const { nome, referencia, marcaFabricante } = data;
 
-    // CORREÇÃO: Verifica se pelo menos um dos campos chave está preenchido.
     const isAnyKeyFieldFilled =
       (nome && nome.trim() !== "") ||
       (referencia && referencia.trim() !== "") ||
       (marcaFabricante && marcaFabricante.trim() !== "");
 
     if (!isAnyKeyFieldFilled) {
-      // Erro genérico para indicar a nova regra.
-      // Pode ser exibido em um componente <Alert>.
       errors.form =
         "Preencha ao menos o Nome, Referência ou Fabricante para iniciar a análise.";
     }
 
-    // Mantemos validações individuais para feedback específico no campo (se necessário)
     if (nome.trim() && nome.length < 2) {
       errors.nome = "Nome deve ter pelo menos 2 caracteres";
     }
@@ -101,7 +100,6 @@ export function useEntryForm(
     onReset?.();
   }, [onReset]);
 
-  // CORREÇÃO: Lógica de 'canSubmit' simplificada para depender apenas da validação.
   const canSubmit = useMemo(
     () => validation.isValid && !isSubmitting,
     [validation.isValid, isSubmitting]
