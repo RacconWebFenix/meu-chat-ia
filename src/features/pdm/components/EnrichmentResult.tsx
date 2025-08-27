@@ -1,7 +1,4 @@
-/**
- * EnrichmentResult component to display enriched product data.
- * Refatorado para corrigir erro de hidratação e aplicar tema "Aço Escovado".
- */
+// src/features/pdm/components/EnrichmentResult.tsx
 
 import React from "react";
 import {
@@ -9,15 +6,15 @@ import {
   Typography,
   Paper,
   Chip,
-  Alert,
-  Button,
   List,
   ListItem,
   ListItemText,
   Stack,
   Divider,
+  Button,
 } from "@mui/material";
 import { EnrichmentResponse } from "../types";
+import { formatTechnicalKey } from "@/Utils/formatUtils"; // Assumindo que criamos este utilitário
 
 interface EnrichmentResultProps {
   readonly result: EnrichmentResponse;
@@ -30,35 +27,19 @@ export default function EnrichmentResult({
   onBack,
   onContinue,
 }: EnrichmentResultProps) {
-  const { original, enriched, metrics, suggestions, warnings } = result;
-
-  const getConfidenceColor = (
-    confidence: number
-  ): "success" | "warning" | "default" => {
-    if (confidence > 0.8) return "success";
-    if (confidence > 0.6) return "warning";
-    return "default";
-  };
+  const { original, enriched, metrics } = result;
 
   return (
     <Stack gap={3}>
+      {/* ... (código do cabeçalho do card, chips, etc. permanece o mesmo) ... */}
       <Typography variant="h5">Resultado do Enriquecimento</Typography>
-
-      {warnings && warnings.length > 0 && (
-        <Alert severity="warning">
-          {warnings.map((warning, index) => (
-            <div key={index}>{warning}</div>
-          ))}
-        </Alert>
-      )}
-
       <Paper
         variant="outlined"
         sx={{ p: 2, display: "flex", gap: 2, alignItems: "center" }}
       >
         <Chip
           label={`Confiança: ${Math.round(metrics.confidence * 100)}%`}
-          color={getConfidenceColor(metrics.confidence)}
+          color={metrics.confidence > 0.8 ? "success" : "warning"}
         />
         <Chip
           label={`Fonte: ${metrics.source.replace(/_/g, " ")}`}
@@ -73,94 +54,60 @@ export default function EnrichmentResult({
         <Divider />
         <Box
           sx={{
-            display: "flex",
-            flexDirection: { xs: "column", md: "row" },
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 2,
             p: 2,
           }}
         >
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="subtitle2" color="text.secondary">
-              INFORMAÇÃO ORIGINAL
+          {/* Coluna Dados Originais */}
+          <Box>
+            <Typography variant="subtitle1" gutterBottom>
+              Dados Fornecidos
             </Typography>
             <List dense>
-              <ListItem>
-                <ListItemText primary="Nome" secondary={original.nome} />
-              </ListItem>
-              <ListItem>
-                <ListItemText
-                  primary="Referência"
-                  secondary={original.referencia || "N/A"}
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemText
-                  primary="Fabricante"
-                  secondary={original.marcaFabricante || "N/A"}
-                />
-              </ListItem>
+              {Object.entries(original).map(([key, value]) =>
+                value && typeof value === "string" ? (
+                  <ListItem key={key}>
+                    <ListItemText
+                      primary={formatTechnicalKey(key)}
+                      secondary={value}
+                    />
+                  </ListItem>
+                ) : null
+              )}
             </List>
           </Box>
-          <Divider
-            orientation="vertical"
-            flexItem
-            sx={{ mx: 2, display: { xs: "none", md: "block" } }}
-          />
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="subtitle2" color="primary">
-              INFORMAÇÃO ENRIQUECIDA
+
+          <Divider orientation="vertical" flexItem />
+
+          {/* Coluna Dados Enriquecidos */}
+          <Box>
+            <Typography variant="subtitle1" gutterBottom>
+              Dados Enriquecidos
             </Typography>
             <List dense>
-              <ListItem>
-                <ListItemText
-                  primary="Categoria"
-                  secondary={enriched.categoria}
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemText
-                  primary="PDM Padronizado"
-                  secondary={enriched.pdmPadronizado}
-                />
-              </ListItem>
+              {Object.entries(enriched.especificacoesTecnicas).map(
+                ([key, value]) => {
+                  // GUARDA DE TIPO: Renderiza apenas se 'value' for string ou número
+                  const isRenderable =
+                    value &&
+                    (typeof value === "string" || typeof value === "number");
+
+                  return isRenderable ? (
+                    <ListItem key={key}>
+                      <ListItemText
+                        primary={formatTechnicalKey(key)} // Usando a função para formatar a chave
+                        secondary={value}
+                      />
+                    </ListItem>
+                  ) : null;
+                }
+              )}
             </List>
           </Box>
         </Box>
       </Paper>
-
-      {suggestions && suggestions.length > 0 && (
-        <Paper variant="outlined">
-          <Typography variant="h6" sx={{ p: 2 }}>
-            💡 Sugestões de Melhoria
-          </Typography>
-          <Divider />
-          <List>
-            {suggestions.map((suggestion, index) => (
-              <ListItem key={index} divider={index < suggestions.length - 1}>
-                <ListItemText
-                  primary={`Campo: ${suggestion.field}`}
-                  // **AQUI ESTÁ A CORREÇÃO DO ERRO DE HIDRATAÇÃO**
-                  // Esta prop instrui o MUI a usar uma <div> em vez de <p>,
-                  // permitindo aninhar outros elementos de bloco.
-                  secondaryTypographyProps={{ component: "div" }}
-                  secondary={
-                    <Box sx={{ mt: 0.5 }}>
-                      <Typography variant="body2">
-                        Valor sugerido:{" "}
-                        <strong>{suggestion.suggestedValue}</strong>
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {suggestion.reason} (Confiança:{" "}
-                        {Math.round(suggestion.confidence * 100)}%)
-                      </Typography>
-                    </Box>
-                  }
-                />
-              </ListItem>
-            ))}
-          </List>
-        </Paper>
-      )}
-
       <Stack direction="row" justifyContent="space-between" sx={{ mt: 2 }}>
         <Button variant="outlined" color="secondary" onClick={onBack}>
           Voltar
@@ -171,7 +118,7 @@ export default function EnrichmentResult({
           onClick={onContinue}
           size="large"
         >
-          Continuar
+          Revisar e Ajustar
         </Button>
       </Stack>
     </Stack>

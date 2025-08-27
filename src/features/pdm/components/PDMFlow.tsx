@@ -80,9 +80,6 @@ export default function PDMFlow({ className }: PDMFlowProps) {
       setStatus(ProcessingStatus.PROCESSING);
       goToStep(PDMStep.EQUIVALENCE_SEARCH);
 
-      // Usamos os dados finais e revisados para criar os critérios de busca.
-      // O segundo argumento de createSearchCriteria foi ajustado para refletir
-      // que agora todos os campos editados são importantes.
       const searchCriteria = MockEquivalenceService.createSearchCriteria(
         finalEnrichmentResult,
         {
