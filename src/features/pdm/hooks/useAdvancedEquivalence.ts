@@ -8,14 +8,13 @@ import {
   AdvancedEquivalenceState,
   EquivalenceFilters,
   SortCriteria,
-  ComparisonItem,
 } from "../types";
 import { EquivalenceMatch } from "../types";
 
 interface UseAdvancedEquivalenceReturn {
   readonly state: AdvancedEquivalenceState;
   readonly filteredMatches: readonly EquivalenceMatch[];
-  readonly comparisonItems: readonly ComparisonItem[];
+  readonly comparisonItems: readonly EquivalenceMatch[];
   readonly updateFilters: (filters: Partial<EquivalenceFilters>) => void;
   readonly setSortBy: (sort: SortCriteria) => void;
   readonly toggleItemSelection: (id: string) => void;
@@ -160,19 +159,19 @@ export function useAdvancedEquivalence(
     return sortMatches(filtered, state.sortBy);
   }, [matches, state.filters, state.sortBy]);
 
-  // Get comparison items
-  const comparisonItems = useMemo(() => {
-    return filteredMatches.map((match) => ({
-      match,
-      selected: state.selectedItems.includes(match.id),
-      notes: undefined,
-    }));
-  }, [filteredMatches, state.selectedItems]);
-
-  // Get selected matches
-  const getSelectedMatches = useCallback(() => {
+  // ===================== CORREÇÃO 1: Bug de Recursão Infinita =====================
+  const getSelectedMatches = useCallback((): readonly EquivalenceMatch[] => {
+    // A função deve filtrar a lista de `matches`, não chamar a si mesma.
     return matches.filter((match) => state.selectedItems.includes(match.id));
   }, [matches, state.selectedItems]);
+  // ==============================================================================
+
+  // ===================== CORREÇÃO 2: Estrutura de Dados Incorreta =====================
+  const comparisonItems = useMemo((): readonly EquivalenceMatch[] => {
+    // A propriedade `comparisonItems` deve retornar um array de EquivalenceMatch.
+    // Usamos a função `getSelectedMatches` (agora corrigida) que já faz isso.
+    return getSelectedMatches();
+  }, [getSelectedMatches]);
 
   return {
     state,

@@ -487,15 +487,16 @@ export class MockEquivalenceService implements EquivalenceService {
   }
 
   private static filterSpecifications(
-    specs: Record<string, string> | undefined,
+    specs: Record<string, unknown> | undefined,
     selectedKeys: readonly string[]
   ): Record<string, string> | undefined {
     if (!specs) return undefined;
 
     const filtered: Record<string, string> = {};
     for (const key of selectedKeys) {
-      if (specs[key]) {
-        filtered[key] = specs[key];
+      const value = specs[key];
+      if (value && typeof value === "string") {
+        filtered[key] = value;
       }
     }
 

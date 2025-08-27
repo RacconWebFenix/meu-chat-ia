@@ -4,7 +4,12 @@
  */
 
 import { useState, useCallback } from "react";
-import { EquivalenceMatch, ExportData } from "../types";
+// CORREÇÃO: Importar o tipo 'EquivalenceSearchCriteria' para substituir 'any'
+import {
+  EquivalenceMatch,
+  EquivalenceSearchCriteria,
+  ExportData,
+} from "../types";
 import { createExportService, ExportServiceInterface } from "../services";
 
 interface UseExportReturn {
@@ -26,7 +31,8 @@ interface UseExportReturn {
 interface ExportOptions {
   readonly includeSpecs?: boolean;
   readonly includePDM?: boolean;
-  readonly searchCriteria?: any;
+  // CORREÇÃO: Substituído 'any' por uma tipagem estrita e segura.
+  readonly searchCriteria?: EquivalenceSearchCriteria;
 }
 
 export function useExport(): UseExportReturn {
@@ -41,7 +47,7 @@ export function useExport(): UseExportReturn {
     ): ExportData => {
       return {
         selectedMatches: matches,
-        searchCriteria: options.searchCriteria || {},
+        searchCriteria: options.searchCriteria,
         exportFormat: format,
         includeSpecs: options.includeSpecs ?? true,
         includePDM: options.includePDM ?? true,

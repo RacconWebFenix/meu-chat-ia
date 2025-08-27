@@ -9,3 +9,4 @@ export * from "./entry.types";
 export * from "./enrichment.types";
 export * from "./fieldSelection.types";
 export * from "./advancedEquivalence.types";
+export * from "./export.types";
