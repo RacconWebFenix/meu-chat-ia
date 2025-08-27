@@ -70,10 +70,22 @@ export default function FieldSelection({
       key: formatTechnicalKey(spec.key),
     }));
 
-    // Combina os dados de 'original' e 'enriched' no estado inicial
-    return {
+    // Combina os dados, dando prioridade aos valores de 'enriched' somente se eles existirem.
+    const combinedData = {
       ...enrichmentResult.original,
       ...enrichmentResult.enriched,
+    };
+
+    // Garante que a marca do fabricante do 'original' seja usada se a do 'enriched' for vazia.
+    if (
+      !combinedData.marcaFabricante &&
+      enrichmentResult.original.marcaFabricante
+    ) {
+      combinedData.marcaFabricante = enrichmentResult.original.marcaFabricante;
+    }
+
+    return {
+      ...combinedData,
       especificacoesTecnicas: formattedSpecs,
     };
   });
@@ -85,7 +97,6 @@ export default function FieldSelection({
     setEditableData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // ... (outros handlers como handleSpecChange, handleDeleteSpec, etc. permanecem os mesmos)
   const handleSpecChange = (
     id: string,
     field: "key" | "value",
