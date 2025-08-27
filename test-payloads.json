@@ -1,0 +1,120 @@
+[
+  {
+    "nome": "Caneca Cerâmica Branca 300ml",
+    "referencia": "CNC-300-BRC",
+    "marcaFabricante": "Cerâmica Brasil",
+    "caracteristicas": "Caneca padrão para café",
+    "aplicacao": "Uso doméstico e comercial",
+    "unidadeMedida": "unidade",
+    "breveDescricao": "Caneca cerâmica branca com capacidade de 300ml",
+    "categoria": "Utensílios",
+    "subcategoria": "Canecas",
+    "especificacoesTecnicas": {
+      "Material": "Cerâmica",
+      "Capacidade": "300ml",
+      "Cor": "Branca",
+      "Tipo": "Sem alça",
+      "Altura": "95mm",
+      "Diâmetro": "80mm"
+    },
+    "normas": ["NBR 13902"],
+    "observacoes": [
+      "Resistente a altas temperaturas",
+      "Adequada para sublimação"
+    ]
+  },
+  {
+    "nome": "Mouse Óptico USB Preto",
+    "referencia": "MSE-001-OPT",
+    "marcaFabricante": "TechMouse",
+    "caracteristicas": "Mouse óptico com sensor de 1200 DPI",
+    "aplicacao": "Uso em computadores pessoais",
+    "unidadeMedida": "unidade",
+    "breveDescricao": "Mouse óptico USB com design ergonômico",
+    "categoria": "Periféricos",
+    "subcategoria": "Mouse",
+    "especificacoesTecnicas": {
+      "Tipo": "Óptico",
+      "Interface": "USB",
+      "DPI": "1200",
+      "Cor": "Preto",
+      "Botões": "3",
+      "Scroll": "Sim",
+      "Peso": "85g"
+    },
+    "normas": ["CE", "FCC"],
+    "observacoes": ["Compatível com Windows e Mac", "Bateria não necessária"]
+  },
+  {
+    "nome": "Rolamento Rígido de Esferas 6205",
+    "referencia": "ROL-6205-2RS",
+    "marcaFabricante": "SKF",
+    "caracteristicas": "Rolamento rígido de esferas com vedação dupla",
+    "aplicacao": "Motores elétricos e equipamentos industriais",
+    "unidadeMedida": "unidade",
+    "breveDescricao": "Rolamento rígido de esferas série 6200",
+    "categoria": "Componentes Mecânicos",
+    "subcategoria": "Rolamentos",
+    "especificacoesTecnicas": {
+      "Tipo": "Rígido de Esferas",
+      "Diâmetro Interno": "25mm",
+      "Diâmetro Externo": "52mm",
+      "Largura": "15mm",
+      "Vedação": "2RS",
+      "Material": "Aço Cromo",
+      "Precisão": "P0",
+      "Carga Dinâmica": "14.0 kN"
+    },
+    "normas": ["ISO 15:2011", "DIN 625"],
+    "observacoes": ["Vedação dupla contra poeira", "Lubrificado para vida toda"]
+  },
+  {
+    "nome": "Filtro de Óleo Automotivo Spin-On",
+    "referencia": "FLT-OIL-001",
+    "marcaFabricante": "Bosch",
+    "caracteristicas": "Filtro de óleo spin-on para motores a combustão",
+    "aplicacao": "Filtragem de óleo em motores automotivos",
+    "unidadeMedida": "unidade",
+    "breveDescricao": "Filtro de óleo descartável tipo spin-on",
+    "categoria": "Filtros",
+    "subcategoria": "Filtro de Óleo",
+    "especificacoesTecnicas": {
+      "Tipo": "Spin-On",
+      "Rosca": "3/4-16 UNF",
+      "Altura": "108mm",
+      "Diâmetro": "76mm",
+      "Material Filtrante": "Papel",
+      "Eficiência": "99%",
+      "Capacidade": "150ml",
+      "Compatibilidade": "Múltiplas aplicações"
+    },
+    "normas": ["ISO 4548-12"],
+    "observacoes": [
+      "Fácil instalação",
+      "Substituição recomendada a cada 10.000km"
+    ]
+  },
+  {
+    "nome": "Parafuso Sextavado M8 x 50mm",
+    "referencia": "PAR-M8x50-ZINC",
+    "marcaFabricante": "Tramontina",
+    "caracteristicas": "Parafuso sextavado com cabeça hexagonal",
+    "aplicacao": "Fixação estrutural e montagem industrial",
+    "unidadeMedida": "unidade",
+    "breveDescricao": "Parafuso sextavado métrico com acabamento zincado",
+    "categoria": "Fixadores",
+    "subcategoria": "Parafusos",
+    "especificacoesTecnicas": {
+      "Tipo": "Sextavado",
+      "Diâmetro": "M8",
+      "Comprimento": "50mm",
+      "Passo": "1.25mm",
+      "Material": "Aço",
+      "Acabamento": "Zincado",
+      "Classe de Resistência": "8.8",
+      "Tipo de Rosca": "Métrica"
+    },
+    "normas": ["NBR 9311", "ISO 4017"],
+    "observacoes": ["Resistente à corrosão", "Adequado para ambientes externos"]
+  }
+]
