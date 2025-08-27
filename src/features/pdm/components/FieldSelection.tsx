@@ -42,8 +42,8 @@ const specsToObject = (specs: Specification[]): Record<string, string> => {
   }, {} as Record<string, string>);
 };
 
-// Interface para o estado combinado
-type EditableData = BaseProductInfo &
+// Interface para o estado combinado - campos editáveis
+type EditableData = Omit<BaseProductInfo, 'nome'> & // nome permanece readonly
   Omit<EnrichedProductData, "especificacoesTecnicas"> & {
     especificacoesTecnicas: Specification[];
   };
@@ -51,10 +51,7 @@ type EditableData = BaseProductInfo &
 interface FieldSelectionProps {
   readonly enrichmentResult: EnrichmentResponse;
   readonly onBack: () => void;
-  // O callback onContinue deve ser flexível o suficiente para aceitar os dados combinados
-  readonly onContinue: (
-    modifiedData: EnrichedProductData & BaseProductInfo
-  ) => void;
+  readonly onContinue: (modifiedData: EnrichedProductData) => void;
 }
 
 export default function FieldSelection({
@@ -131,10 +128,30 @@ export default function FieldSelection({
 
   const handleContinue = () => {
     const { especificacoesTecnicas, ...rest } = editableData;
-    onContinue({
-      ...rest,
+    
+    // Extrair apenas os campos que pertencem a EnrichedProductData
+    const {
+      categoria,
+      subcategoria,
+      marcaFabricante,
+      aplicacao,
+      normas,
+      pdmPadronizado,
+      observacoes,
+    } = rest;
+    
+    const enrichedData: EnrichedProductData = {
+      categoria,
+      subcategoria,
+      marcaFabricante,
+      aplicacao,
+      normas,
+      pdmPadronizado,
+      observacoes,
       especificacoesTecnicas: specsToObject(especificacoesTecnicas),
-    });
+    };
+    
+    onContinue(enrichedData);
   };
 
   return (
@@ -146,13 +163,23 @@ export default function FieldSelection({
       </Alert>
       <Paper variant="outlined" sx={{ p: { xs: 2, sm: 3 } }}>
         <Stack gap={2}>
-          {/*********** INÍCIO DA ALTERAÇÃO SOLICITADA ***********/}
-          {/* Mapeia e renderiza os campos do objeto 'original' dinamicamente */}
+          {/* Campo nome - readonly */}
+          <TextField
+            label="Nome do Produto"
+            value={enrichmentResult.original.nome}
+            fullWidth
+            disabled
+            helperText="Este campo não pode ser editado"
+          />
+          
+          {/* Mapeia e renderiza os campos do objeto 'original' dinamicamente, exceto 'nome' */}
           {(
             Object.keys(enrichmentResult.original) as Array<
               keyof BaseProductInfo
             >
-          ).map((key) => {
+          )
+            .filter((key) => key !== 'nome') // Excluir o campo 'nome' que é readonly
+            .map((key) => {
             // A condição é que o valor original não seja nulo ou vazio
             if (enrichmentResult.original[key]) {
               return (

@@ -17,14 +17,20 @@ import {
   ProcessingStatus,
   BaseProductInfo,
   EnrichmentResponse,
-  EnrichedProductData, // Importamos o tipo que vamos receber
+  EnrichedProductData,
   EquivalenceSearchResponse,
+  N8NEquivalenceResponse,
 } from "../types";
-import { createEnrichmentService, MockEquivalenceService } from "../services";
+import {
+  createEnrichmentService,
+  MockEquivalenceService,
+  createN8NService,
+} from "../services";
 import EntryForm from "./EntryForm";
 import EnrichmentResult from "./EnrichmentResult";
 import FieldSelection from "./FieldSelection";
 import EquivalenceResults from "./EquivalenceResults";
+import N8NEquivalenceResults from "./N8NEquivalenceResults";
 
 interface PDMFlowProps {
   readonly className?: string;
@@ -43,9 +49,11 @@ export default function PDMFlow({ className }: PDMFlowProps) {
     React.useState<EnrichmentResponse | null>(null);
   const [equivalenceResult, setEquivalenceResult] =
     React.useState<EquivalenceSearchResponse | null>(null);
+  const [n8nResult, setN8nResult] =
+    React.useState<N8NEquivalenceResponse | null>(null);
 
   const enrichmentService = createEnrichmentService();
-  const equivalenceService = new MockEquivalenceService();
+  const n8nService = createN8NService();
 
   const handleEntrySubmit = async (data: BaseProductInfo) => {
     try {
@@ -62,14 +70,20 @@ export default function PDMFlow({ className }: PDMFlowProps) {
     }
   };
 
-  // --- CORREÇÃO PRINCIPAL AQUI ---
-  // A função agora aceita o objeto 'EnrichedProductData' completo e editado.
+    // A função agora usa o N8NService para buscar equivalências
   const handleFieldSelectionContinue = async (
     modifiedEnrichedData: EnrichedProductData
   ) => {
-    // Criamos uma nova versão do resultado do enriquecimento com os dados modificados pelo usuário.
+    // Verifica se enrichmentResult existe
+    if (!enrichmentResult) {
+      setError("Dados de enriquecimento não encontrados");
+      setStatus(ProcessingStatus.ERROR);
+      return;
+    }
+
+    // Cria uma nova versão do resultado do enriquecimento com os dados modificados pelo usuário.
     const finalEnrichmentResult: EnrichmentResponse = {
-      ...enrichmentResult!,
+      ...enrichmentResult,
       enriched: modifiedEnrichedData,
     };
 
@@ -80,28 +94,47 @@ export default function PDMFlow({ className }: PDMFlowProps) {
       setStatus(ProcessingStatus.PROCESSING);
       goToStep(PDMStep.EQUIVALENCE_SEARCH);
 
-      const searchCriteria = MockEquivalenceService.createSearchCriteria(
-        finalEnrichmentResult,
-        {
-          categoria: true,
-          subcategoria: true,
-          especificacoesTecnicas: Array.isArray(
-            modifiedEnrichedData.especificacoesTecnicas
-          )
-            ? modifiedEnrichedData.especificacoesTecnicas.map(
-                (spec: { key: string }) => spec.key
-              )
-            : Object.keys(modifiedEnrichedData.especificacoesTecnicas),
-          aplicacao: true,
-          normas: true,
-        }
-      );
+      // Cria o objeto BaseProductInfo a partir dos dados originais e enriquecidos
+      const productInfo: BaseProductInfo = {
+        nome: enrichmentResult.original.nome || "Produto sem nome",
+        referencia:
+          enrichmentResult.original.referencia ||
+          (modifiedEnrichedData.especificacoesTecnicas["Referência"] as string) ||
+          (modifiedEnrichedData.especificacoesTecnicas["Código"] as string),
+        marcaFabricante: 
+          modifiedEnrichedData.marcaFabricante || 
+          enrichmentResult.original.marcaFabricante ||
+          "Marca não informada",
+        caracteristicas: Object.entries(
+          modifiedEnrichedData.especificacoesTecnicas
+        )
+          .map(([key, value]) => `${key}: ${value}`)
+          .join(", "),
+        aplicacao: 
+          modifiedEnrichedData.aplicacao || 
+          enrichmentResult.original.aplicacao ||
+          "Aplicação não especificada",
+        unidadeMedida:
+          enrichmentResult.original.unidadeMedida ||
+          (modifiedEnrichedData.especificacoesTecnicas["Unidade"] as string) ||
+          "unidade",
+        breveDescricao: 
+          enrichmentResult.original.breveDescricao || 
+          `Produto da categoria ${modifiedEnrichedData.categoria || "não informada"}`,
+      };
 
-      const result = await equivalenceService.searchEquivalents(searchCriteria);
-      setEquivalenceResult(result);
+      console.log("Enviando para N8N:", productInfo);
+      console.log("Dados originais:", enrichmentResult.original);
+      console.log("Dados modificados:", modifiedEnrichedData);
+
+      const result = await n8nService.searchEquivalents(productInfo);
+      setN8nResult(result);
       setStatus(ProcessingStatus.COMPLETED);
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Erro desconhecido");
+      console.error("Erro ao buscar equivalências no N8N:", error);
+      setError(
+        error instanceof Error ? error.message : "Erro ao buscar equivalências"
+      );
       setStatus(ProcessingStatus.ERROR);
     }
   };
@@ -133,7 +166,19 @@ export default function PDMFlow({ className }: PDMFlowProps) {
           />
         ) : null;
       case PDMStep.EQUIVALENCE_SEARCH:
-        return equivalenceResult ? (
+        return n8nResult ? (
+          <N8NEquivalenceResults
+            searchResult={n8nResult}
+            onBack={() => goToStep(PDMStep.FIELD_SELECTION)}
+            isLoading={state.status === ProcessingStatus.PROCESSING}
+            originalProduct={{
+              nome: enrichmentResult?.original.nome || "Produto Original",
+              especificacoesTecnicas:
+                enrichmentResult?.enriched.especificacoesTecnicas || {},
+              precoEstimado: undefined, // O produto original pode não ter preço definido
+            }}
+          />
+        ) : equivalenceResult ? (
           <EquivalenceResults
             searchResult={equivalenceResult}
             onBack={() => goToStep(PDMStep.FIELD_SELECTION)}
