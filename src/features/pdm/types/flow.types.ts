@@ -11,7 +11,6 @@ import {
 // PDM Flow steps enumeration
 export enum PDMStep {
   ENTRY = "entry",
-  ENRICHMENT = "enrichment",
   FIELD_SELECTION = "field_selection",
   EQUIVALENCE_SEARCH = "equivalence_search",
   EXPORT = "export",

@@ -27,7 +27,6 @@ import {
   createN8NService,
 } from "../services";
 import EntryForm from "./EntryForm";
-import EnrichmentResult from "./EnrichmentResult";
 import FieldSelection from "./FieldSelection";
 import EquivalenceResults from "./EquivalenceResults";
 import N8NEquivalenceResults from "./N8NEquivalenceResults";
@@ -38,7 +37,6 @@ interface PDMFlowProps {
 
 const STEPS = [
   { key: PDMStep.ENTRY, label: "Entrada de Dados" },
-  { key: PDMStep.ENRICHMENT, label: "Resultado do Enriquecimento" },
   { key: PDMStep.FIELD_SELECTION, label: "Revisão e Ajuste" },
   { key: PDMStep.EQUIVALENCE_SEARCH, label: "Resultados da Equivalência" },
 ];
@@ -62,7 +60,7 @@ export default function PDMFlow({ className }: PDMFlowProps) {
         productInfo: data,
       });
       setEnrichmentResult(result);
-      goToStep(PDMStep.ENRICHMENT);
+      goToStep(PDMStep.FIELD_SELECTION);
       setStatus(ProcessingStatus.COMPLETED);
     } catch (error) {
       setError(error instanceof Error ? error.message : "Erro desconhecido");
@@ -70,7 +68,7 @@ export default function PDMFlow({ className }: PDMFlowProps) {
     }
   };
 
-    // A função agora usa o N8NService para buscar equivalências
+  // A função agora usa o N8NService para buscar equivalências
   const handleFieldSelectionContinue = async (
     modifiedEnrichedData: EnrichedProductData
   ) => {
@@ -99,10 +97,12 @@ export default function PDMFlow({ className }: PDMFlowProps) {
         nome: enrichmentResult.original.nome || "Produto sem nome",
         referencia:
           enrichmentResult.original.referencia ||
-          (modifiedEnrichedData.especificacoesTecnicas["Referência"] as string) ||
+          (modifiedEnrichedData.especificacoesTecnicas[
+            "Referência"
+          ] as string) ||
           (modifiedEnrichedData.especificacoesTecnicas["Código"] as string),
-        marcaFabricante: 
-          modifiedEnrichedData.marcaFabricante || 
+        marcaFabricante:
+          modifiedEnrichedData.marcaFabricante ||
           enrichmentResult.original.marcaFabricante ||
           "Marca não informada",
         caracteristicas: Object.entries(
@@ -110,17 +110,19 @@ export default function PDMFlow({ className }: PDMFlowProps) {
         )
           .map(([key, value]) => `${key}: ${value}`)
           .join(", "),
-        aplicacao: 
-          modifiedEnrichedData.aplicacao || 
+        aplicacao:
+          modifiedEnrichedData.aplicacao ||
           enrichmentResult.original.aplicacao ||
           "Aplicação não especificada",
         unidadeMedida:
           enrichmentResult.original.unidadeMedida ||
           (modifiedEnrichedData.especificacoesTecnicas["Unidade"] as string) ||
           "unidade",
-        breveDescricao: 
-          enrichmentResult.original.breveDescricao || 
-          `Produto da categoria ${modifiedEnrichedData.categoria || "não informada"}`,
+        breveDescricao:
+          enrichmentResult.original.breveDescricao ||
+          `Produto da categoria ${
+            modifiedEnrichedData.categoria || "não informada"
+          }`,
       };
 
       console.log("Enviando para N8N:", productInfo);
@@ -149,19 +151,11 @@ export default function PDMFlow({ className }: PDMFlowProps) {
             disabled={state.status === ProcessingStatus.PROCESSING}
           />
         );
-      case PDMStep.ENRICHMENT:
-        return enrichmentResult ? (
-          <EnrichmentResult
-            result={enrichmentResult}
-            onBack={() => goToStep(PDMStep.ENTRY)}
-            onContinue={() => goToStep(PDMStep.FIELD_SELECTION)}
-          />
-        ) : null;
       case PDMStep.FIELD_SELECTION:
         return enrichmentResult ? (
           <FieldSelection
             enrichmentResult={enrichmentResult}
-            onBack={() => goToStep(PDMStep.ENRICHMENT)}
+            onBack={() => goToStep(PDMStep.ENTRY)}
             onContinue={handleFieldSelectionContinue}
           />
         ) : null;
