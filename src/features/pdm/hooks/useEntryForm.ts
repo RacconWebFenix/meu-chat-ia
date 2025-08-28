@@ -47,20 +47,12 @@ export function useEntryForm(
   // A lógica de validação que implementamos antes continua a mesma e funcional.
   const validation = useMemo((): EntryFormValidation => {
     const errors: Record<string, string> = {};
-    const { nome, referencia, marcaFabricante } = data;
+    const { informacoes } = data;
 
-    const isAnyKeyFieldFilled =
-      (nome && nome.trim() !== "") ||
-      (referencia && referencia.trim() !== "") ||
-      (marcaFabricante && marcaFabricante.trim() !== "");
-
-    if (!isAnyKeyFieldFilled) {
+    // Verifica se o campo informações tem pelo menos algum conteúdo
+    if (!informacoes || informacoes.trim() === "") {
       errors.form =
-        "Preencha ao menos o Nome, Referência ou Fabricante para iniciar a análise.";
-    }
-
-    if (nome && nome.trim() && nome.length < 2) {
-      errors.nome = "Nome deve ter pelo menos 2 caracteres";
+        "Digite algumas informações sobre o material para iniciar a análise.";
     }
 
     return {

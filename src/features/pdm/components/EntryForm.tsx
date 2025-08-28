@@ -1,12 +1,11 @@
 /**
- * Entry form component com layout "Aço Escovado" (B2B, minimalista).
- * Adicionados novos campos: Breve Descrição, Aplicação e Unidade de Medida.
+ * Entry form component ultra-compacto
+ * Otimizado para eliminar scroll vertical - Updated: 2025-08-28
  */
 
 import React from "react";
 import {
   Box,
-  Paper,
   Typography,
   Alert,
   Stack,
@@ -53,62 +52,95 @@ export default function EntryForm({
   const error = state.validation.errors[field.key];
 
   return (
-    <Box sx={{ maxWidth: 800, mx: "auto", p: 0 }}>
-      {/* Campo Ultra Compacto */}
-      <TextField
-        fullWidth
-        id={field.key}
-        label={field.label}
-        placeholder={field.placeholder}
-        value={state.data[field.key] || ""}
-        onChange={(e) => updateField(field.key, e.target.value)}
-        disabled={state.isSubmitting || disabled}
-        error={!!error}
-        helperText={error || field.helpText}
-        inputProps={{ maxLength: field.maxLength }}
-        multiline
-        rows={3}
-        sx={{
-          mb: 1.5,
-          "& .MuiFormHelperText-root": {
-            fontSize: "0.75rem",
-            margin: "4px 0 0 0",
-          },
-        }}
-      />
+    <Box 
+      sx={{ 
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        px: 3,
+        py: 2,
+      }}
+    >
+      {/* Container Central */}
+      <Box sx={{ 
+        width: "100%", 
+        maxWidth: 600,
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+      }}>
+        {/* Campo de Entrada */}
+        <TextField
+          fullWidth
+          id={field.key}
+          label={field.label}
+          placeholder={field.placeholder}
+          value={state.data[field.key] || ""}
+          onChange={(e) => updateField(field.key, e.target.value)}
+          disabled={state.isSubmitting || disabled}
+          error={!!error}
+          helperText={error || field.helpText}
+          inputProps={{ maxLength: field.maxLength }}
+          multiline
+          rows={4}
+          variant="outlined"
+          sx={{
+            "& .MuiFormHelperText-root": {
+              fontSize: "0.75rem",
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: "0.9rem",
+            },
+          }}
+        />
 
-      {/* Erro de Validação Compacto */}
-      {state.validation.errors.form && (
-        <Alert severity="warning" sx={{ mb: 1.5, py: 0.5 }}>
-          {state.validation.errors.form}
-        </Alert>
-      )}
-
-      {/* Botões Compactos */}
-      <Stack direction="row" gap={1.5} justifyContent="flex-end">
-        {onCancel && (
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={handleReset}
-            disabled={state.isSubmitting}
-            size="medium"
-            sx={{ minWidth: 80 }}
+        {/* Erro de Validação */}
+        {state.validation.errors.form && (
+          <Alert 
+            severity="warning" 
+            sx={{ 
+              py: 0.5,
+              "& .MuiAlert-message": {
+                fontSize: "0.8rem",
+              },
+            }}
           >
-            Limpar
-          </Button>
+            {state.validation.errors.form}
+          </Alert>
         )}
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit}
-          disabled={!canSubmit || disabled}
-          size="medium"
-          sx={{ minWidth: 160 }}
-        >
-          {state.isSubmitting ? "Analisando..." : "Analisar Material"}
-        </Button>
-      </Stack>
+
+        {/* Botões de Ação */}
+        <Stack direction="row" gap={1.5} justifyContent="flex-end">
+          {onCancel && (
+            <Button
+              variant="outlined"
+              onClick={handleReset}
+              disabled={state.isSubmitting}
+              sx={{ 
+                minWidth: 80,
+                height: 36,
+                fontSize: "0.8rem",
+              }}
+            >
+              Limpar
+            </Button>
+          )}
+          <Button
+            variant="contained"
+            onClick={handleSubmit}
+            disabled={!canSubmit || disabled}
+            sx={{ 
+              minWidth: 160,
+              height: 36,
+              fontSize: "0.8rem",
+            }}
+          >
+            {state.isSubmitting ? "Analisando..." : "Analisar Material"}
+          </Button>
+        </Stack>
+      </Box>
     </Box>
   );
 }

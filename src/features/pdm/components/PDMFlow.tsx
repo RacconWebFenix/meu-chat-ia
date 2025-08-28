@@ -1,11 +1,10 @@
 /**
  * PDMFlow - Orquestrador das etapas do fluxo PDM.
- * Corrigido para lidar com os dados editados pelo usuário na etapa de FieldSelection.
+ * Ultra-compacto - Otimizado para eliminar scroll vertical - Updated: 2025-08-28
  */
 import React from "react";
 import {
   Box,
-  Paper,
   Stepper,
   Step,
   StepLabel,
@@ -174,22 +173,57 @@ export default function PDMFlow({ className }: PDMFlowProps) {
   };
 
   return (
-    <Box className={className}>
-      <Paper sx={{ p: { xs: 2, sm: 4 } }}>
-        <Typography variant="h5" sx={{ textAlign: "center", mb: 1 }}>
+    <Box 
+      className={className}
+      sx={{
+        height: "calc(100vh - 100px)",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
+      {/* Header Ultra-Compacto */}
+      <Box sx={{ 
+        flexShrink: 0, 
+        mb: 1,
+        textAlign: "center",
+      }}>
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            fontSize: "1rem", 
+            fontWeight: 600,
+            mb: 0.3,
+            color: "primary.main",
+          }}
+        >
           Plataforma de Descrição de Materiais (PDM)
         </Typography>
         <Typography
           variant="body2"
-          color="text.secondary"
-          sx={{ textAlign: "center", mb: 4 }}
+          sx={{ 
+            fontSize: "0.7rem",
+            color: "text.secondary",
+            mb: 1,
+          }}
         >
           Siga as etapas para padronizar e encontrar equivalências.
         </Typography>
+        
+        {/* Stepper Ultra-Compacto */}
         <Stepper
           activeStep={STEPS.findIndex((s) => s.key === state.currentStep)}
           alternativeLabel
-          sx={{ mb: 4 }}
+          sx={{ 
+            mb: 1,
+            "& .MuiStepLabel-label": {
+              fontSize: "0.65rem",
+              mt: 0.5,
+            },
+            "& .MuiStepIcon-root": {
+              fontSize: "1.2rem",
+            },
+          }}
         >
           {STEPS.map((step) => (
             <Step key={step.key}>
@@ -197,8 +231,16 @@ export default function PDMFlow({ className }: PDMFlowProps) {
             </Step>
           ))}
         </Stepper>
-        <div>{renderStepContent()}</div>
-      </Paper>
+      </Box>
+
+      {/* Conteúdo Principal - Usa todo espaço restante */}
+      <Box sx={{ 
+        flex: 1, 
+        overflow: "hidden",
+        minHeight: 0,
+      }}>
+        {renderStepContent()}
+      </Box>
     </Box>
   );
 }
