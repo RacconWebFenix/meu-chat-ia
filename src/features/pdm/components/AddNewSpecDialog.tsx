@@ -1,3 +1,4 @@
+// src/features/pdm/components/AddNewSpecDialog.tsx
 import React, { useState } from "react";
 import {
   Dialog,
@@ -6,15 +7,13 @@ import {
   DialogActions,
   TextField,
   Button,
-  Stack,
-  IconButton,
+  Box,
 } from "@mui/material";
-import { Close as CloseIcon, Add as AddIcon } from "@mui/icons-material";
 
 interface AddNewSpecDialogProps {
-  readonly open: boolean;
-  readonly onClose: () => void;
-  readonly onAdd: (key: string, value: string) => void;
+  open: boolean;
+  onClose: () => void;
+  onAdd: (key: string, value: string) => void;
 }
 
 export default function AddNewSpecDialog({
@@ -22,71 +21,62 @@ export default function AddNewSpecDialog({
   onClose,
   onAdd,
 }: AddNewSpecDialogProps) {
-  const [newKey, setNewKey] = useState("");
-  const [newValue, setNewValue] = useState("");
+  const [key, setKey] = useState("");
+  const [value, setValue] = useState("");
 
-  const handleAdd = () => {
-    if (newKey.trim() && newValue.trim()) {
-      onAdd(newKey.trim(), newValue.trim());
-      setNewKey("");
-      setNewValue("");
+  const handleSubmit = () => {
+    if (key.trim() && value.trim()) {
+      onAdd(key.trim(), value.trim());
+      setKey("");
+      setValue("");
       onClose();
     }
   };
 
   const handleClose = () => {
-    setNewKey("");
-    setNewValue("");
+    setKey("");
+    setValue("");
     onClose();
   };
 
-  const canAdd = newKey.trim() && newValue.trim();
-
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        Adicionar Nova Característica
-        <IconButton onClick={handleClose} size="small">
-          <CloseIcon />
-        </IconButton>
+      <DialogTitle sx={{ fontSize: "1rem", pb: 1 }}>
+        Adicionar Nova Especificação
       </DialogTitle>
-
-      <DialogContent>
-        <Stack spacing={3} sx={{ mt: 1 }}>
+      <DialogContent sx={{ pt: 1 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <TextField
             label="Nome da Característica"
-            placeholder="Ex: Peso, Cor, Dimensão..."
-            value={newKey}
-            onChange={(e) => setNewKey(e.target.value)}
             fullWidth
-            autoFocus
+            variant="outlined"
+            value={key}
+            onChange={(e) => setKey(e.target.value)}
+            placeholder="Ex: Marca, Diâmetro, Material..."
           />
-
           <TextField
             label="Valor"
-            placeholder="Ex: 2.5kg, Azul, 100mm..."
-            value={newValue}
-            onChange={(e) => setNewValue(e.target.value)}
             fullWidth
+            variant="outlined"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="Ex: SKF, 25mm, Aço..."
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                handleSubmit();
+              }
+            }}
           />
-        </Stack>
+        </Box>
       </DialogContent>
-
-      <DialogActions sx={{ p: 3 }}>
+      <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={handleClose} color="secondary">
           Cancelar
         </Button>
         <Button
-          onClick={handleAdd}
+          onClick={handleSubmit}
           variant="contained"
-          disabled={!canAdd}
-          startIcon={<AddIcon />}
+          disabled={!key.trim() || !value.trim()}
         >
           Adicionar
         </Button>

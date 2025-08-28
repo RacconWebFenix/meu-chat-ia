@@ -26,11 +26,11 @@ export default function ChatPDM() {
       }}
     >
       {/* Seletor Super Compacto */}
-      <Box
-        sx={{
-          display: "flex",
-          gap: 0.5,
-          mb: 0.3,
+      <Box 
+        sx={{ 
+          display: "flex", 
+          gap: 0.5, 
+          mb: 0.3, 
           flexShrink: 0,
         }}
       >

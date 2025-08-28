@@ -1,30 +1,30 @@
-import React, { useState, useCallback } from "react";
+// src/features/pdm/components/CheckboxSpecCard.tsx
+import React, { useState } from "react";
 import {
+  Card,
+  CardContent,
+  Checkbox,
+  Typography,
   Box,
   Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
   TextField,
-  Typography,
-  Paper,
-  IconButton,
-  Stack,
+  DialogActions,
+  Button,
 } from "@mui/material";
-import {
-  Edit as EditIcon,
-  Check as CheckIcon,
-  Close as CloseIcon,
-  Add as AddIcon,
-} from "@mui/icons-material";
-import { formatTechnicalKey } from "@/Utils/formatUtils";
+import { Edit as EditIcon, Add as AddIcon } from "@mui/icons-material";
 
 interface CheckboxSpecCardProps {
-  readonly id: string;
-  readonly checked: boolean;
-  readonly label: string;
-  readonly value: string;
-  readonly onCheck: (id: string, checked: boolean) => void;
-  readonly onValueChange: (id: string, newValue: string) => void;
-  readonly onLabelChange?: (id: string, newLabel: string) => void;
-  readonly editable?: boolean;
+  id: string;
+  checked: boolean;
+  label: string;
+  value: string;
+  onCheck: (id: string, checked: boolean) => void;
+  onValueChange: (id: string, newValue: string) => void;
+  onLabelChange: (id: string, newLabel: string) => void;
+  editable?: boolean;
 }
 
 export default function CheckboxSpecCard({
@@ -35,248 +35,194 @@ export default function CheckboxSpecCard({
   onCheck,
   onValueChange,
   onLabelChange,
-  editable = true,
+  editable = false,
 }: CheckboxSpecCardProps) {
-  const [isEditingValue, setIsEditingValue] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [tempLabel, setTempLabel] = useState(label);
   const [tempValue, setTempValue] = useState(value);
 
-  // Parse values into array of tags (split by comma, semicolon, or line break)
-  const valueTags = value
-    .split(/[,;\n]/)
-    .map((v) => v.trim())
-    .filter((v) => v.length > 0);
+  // Dividir valores por vírgula e criar tags
+  const values = value.split(",").map((v) => v.trim()).filter(Boolean);
+  const displayValues = values.slice(0, 2); // Mostrar no máximo 2 tags
+  const remainingCount = values.length - 2;
 
-  const handleToggleSelection = useCallback(() => {
-    onCheck(id, !checked);
-  }, [id, checked, onCheck]);
-  const handleValueEdit = useCallback(() => {
-    if (!editable) return;
-    setTempValue(value);
-    setIsEditingValue(true);
-  }, [editable, value]);
-
-  const handleValueSave = useCallback(() => {
+  const handleSave = () => {
+    onLabelChange(id, tempLabel);
     onValueChange(id, tempValue);
-    setIsEditingValue(false);
-  }, [id, tempValue, onValueChange]);
+    setEditDialogOpen(false);
+  };
 
-  const handleValueCancel = useCallback(() => {
+  const handleClose = () => {
+    setTempLabel(label);
     setTempValue(value);
-    setIsEditingValue(false);
-  }, [value]);
-
-  const handleTagDelete = useCallback(
-    (tagToDelete: string) => {
-      const newTags = valueTags.filter((tag) => tag !== tagToDelete);
-      onValueChange(id, newTags.join(", "));
-    },
-    [id, valueTags, onValueChange]
-  );
+    setEditDialogOpen(false);
+  };
 
   return (
-    <Paper
-      variant="outlined"
-      onClick={handleToggleSelection}
-      sx={{
-        p: 0.8,
-        cursor: "pointer",
-        transition: "all 0.2s ease-in-out",
-        bgcolor: checked ? "primary.50" : "background.paper",
-        border: checked ? 2 : 1,
-        borderColor: checked ? "primary.main" : "divider",
-        "&:hover": {
-          bgcolor: checked ? "primary.100" : "grey.50",
-          borderColor: checked ? "primary.dark" : "primary.light",
-        },
-        minHeight: 50,
-        maxHeight: 50,
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-      }}
-    >
-      {/* Label da característica - Não editável */}
-      <Typography
-        variant="subtitle2"
-        fontWeight="600"
-        color="text.primary"
+    <>
+      <Card
+        variant="outlined"
         sx={{
-          mb: 0.4,
-          fontSize: "0.65rem",
-          lineHeight: 1.0,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          flexShrink: 0,
-        }}
-        title={formatTechnicalKey(label)}
-      >
-        {formatTechnicalKey(label)}
-      </Typography>
-
-      {/* Tags de valores em uma linha */}
-      <Box
-        sx={{
-          flex: 1,
+          height: "60px",
           display: "flex",
-          alignItems: "flex-start",
-          minHeight: 0,
+          alignItems: "center",
+          cursor: "pointer",
+          bgcolor: checked ? "primary.50" : "background.paper",
+          border: checked ? "1px solid" : "1px solid",
+          borderColor: checked ? "primary.main" : "grey.300",
+          "&:hover": {
+            bgcolor: checked ? "primary.100" : "grey.50",
+            borderColor: checked ? "primary.dark" : "grey.400",
+          },
+          transition: "all 0.2s ease-in-out",
         }}
+        onClick={() => onCheck(id, !checked)}
       >
-        {isEditingValue ? (
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 0.3,
-              width: "100%",
+        <CardContent
+          sx={{
+            p: 0.8,
+            "&:last-child": { pb: 0.8 },
+            display: "flex",
+            alignItems: "center",
+            gap: 0.8,
+            width: "100%",
+            minHeight: 0,
+          }}
+        >
+          {/* Checkbox */}
+          <Checkbox
+            checked={checked}
+            onChange={(e) => {
+              e.stopPropagation();
+              onCheck(id, e.target.checked);
             }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <TextField
-              value={tempValue}
-              onChange={(e) => setTempValue(e.target.value)}
-              size="small"
-              variant="outlined"
-              fullWidth
-              placeholder="Valores..."
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleValueSave();
-                }
-                if (e.key === "Escape") handleValueCancel();
-              }}
+            size="small"
+            sx={{ p: 0 }}
+          />
+
+          {/* Conteúdo */}
+          <Box sx={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
+            {/* Label */}
+            <Typography
+              variant="caption"
               sx={{
-                "& .MuiInputBase-root": {
-                  fontSize: "0.65rem",
-                  height: "24px",
-                },
-                "& .MuiInputBase-input": {
-                  py: 0.2,
-                  px: 0.5,
-                },
+                fontSize: "0.6rem",
+                fontWeight: 600,
+                color: "text.secondary",
+                display: "block",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                lineHeight: 1.1,
+                mb: 0.2,
               }}
-            />
-            <IconButton
-              size="small"
-              onClick={handleValueSave}
-              color="primary"
-              sx={{ p: 0.2 }}
+              title={label}
             >
-              <CheckIcon sx={{ fontSize: 12 }} />
-            </IconButton>
-            <IconButton
-              size="small"
-              onClick={handleValueCancel}
-              sx={{ p: 0.2 }}
-            >
-              <CloseIcon sx={{ fontSize: 12 }} />
-            </IconButton>
-          </Box>
-        ) : (
-          <Box sx={{ width: "100%", overflow: "hidden" }}>
-            <Stack
-              direction="row"
-              spacing={0.2}
+              {label}
+            </Typography>
+
+            {/* Tags de Valores */}
+            <Box
               sx={{
-                flexWrap: "wrap",
+                display: "flex",
                 gap: 0.2,
-                alignItems: "flex-start",
+                alignItems: "center",
+                overflow: "hidden",
               }}
             >
-              {valueTags.slice(0, 1).map((tag, index) => (
+              {displayValues.map((val, index) => (
                 <Chip
                   key={index}
-                  label={tag.length > 8 ? tag.substring(0, 8) + "..." : tag}
+                  label={val}
                   size="small"
-                  variant={checked ? "filled" : "outlined"}
-                  color={checked ? "primary" : "default"}
-                  onDelete={editable ? () => handleTagDelete(tag) : undefined}
-                  onClick={(e) => e.stopPropagation()}
-                  title={tag}
+                  variant="outlined"
                   sx={{
-                    fontSize: "0.55rem",
-                    height: 14,
-                    maxWidth: "50px",
-                    "& .MuiChip-deleteIcon": {
-                      fontSize: 8,
-                      margin: "0 1px 0 -1px",
-                    },
+                    height: "16px",
+                    fontSize: "0.5rem",
                     "& .MuiChip-label": {
-                      px: 0.2,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
+                      px: 0.4,
+                      py: 0,
                     },
+                    maxWidth: "60px",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
                   }}
                 />
               ))}
-              {valueTags.length > 1 && (
+              {remainingCount > 0 && (
                 <Typography
                   variant="caption"
-                  color="text.secondary"
                   sx={{
-                    fontSize: "0.55rem",
-                    lineHeight: "14px",
-                    alignSelf: "center",
+                    fontSize: "0.45rem",
+                    color: "primary.main",
+                    fontWeight: 600,
                   }}
-                  title={`${valueTags.length - 1} mais valores: ${valueTags
-                    .slice(1)
-                    .join(", ")}`}
                 >
-                  +{valueTags.length - 1}
+                  +{remainingCount}
                 </Typography>
               )}
-              {editable && (
-                <Chip
-                  icon={<AddIcon sx={{ fontSize: 10 }} />}
-                  label=""
-                  size="small"
-                  variant="outlined"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleValueEdit();
-                  }}
-                  sx={{
-                    fontSize: "0.55rem",
-                    height: 14,
-                    minWidth: 16,
-                    width: 16,
-                    borderStyle: "dashed",
-                    "& .MuiChip-label": {
-                      display: "none",
-                    },
-                    "& .MuiChip-icon": {
-                      margin: 0,
-                    },
-                    "&:hover": {
-                      backgroundColor: "primary.50",
-                    },
-                  }}
-                />
-              )}
-            </Stack>
-            {valueTags.length === 0 && (
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{
-                  fontStyle: "italic",
-                  fontSize: "0.55rem",
-                  cursor: "pointer",
-                  lineHeight: 1.0,
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleValueEdit();
-                }}
-              >
-                Clique +
-              </Typography>
-            )}
+            </Box>
           </Box>
-        )}
-      </Box>
-    </Paper>
+
+          {/* Botão de Edição */}
+          {editable && (
+            <EditIcon
+              sx={{
+                fontSize: "14px",
+                color: "action.secondary",
+                cursor: "pointer",
+                "&:hover": { color: "primary.main" },
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditDialogOpen(true);
+              }}
+            />
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Dialog de Edição */}
+      <Dialog
+        open={editDialogOpen}
+        onClose={handleClose}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontSize: "1rem", pb: 1 }}>
+          Editar Especificação
+        </DialogTitle>
+        <DialogContent sx={{ pt: 1 }}>
+          <TextField
+            margin="dense"
+            label="Nome da Característica"
+            fullWidth
+            variant="outlined"
+            value={tempLabel}
+            onChange={(e) => setTempLabel(e.target.value)}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            margin="dense"
+            label="Valores (separados por vírgula)"
+            fullWidth
+            variant="outlined"
+            multiline
+            rows={2}
+            value={tempValue}
+            onChange={(e) => setTempValue(e.target.value)}
+            placeholder="Ex: SKF, 25mm, Aço inoxidável"
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={handleClose} color="secondary">
+            Cancelar
+          </Button>
+          <Button onClick={handleSave} variant="contained">
+            Salvar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }

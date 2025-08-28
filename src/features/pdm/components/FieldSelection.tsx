@@ -1,5 +1,5 @@
 // src/features/pdm/components/FieldSelection.tsx
-// Layout Horizontal 50/50 - Ultra Compacto - Sem Scroll
+// Layout Horizontal 65/35 - Ultra Compacto - Sem Scroll
 
 import React, { useState } from "react";
 import {
@@ -9,8 +9,6 @@ import {
   Stack,
   TextField,
   Box,
-  Chip,
-  Divider,
 } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import { v4 as uuidv4 } from "uuid";
@@ -27,6 +25,29 @@ interface SpecItem {
   readonly checked: boolean;
 }
 
+// Interface para dados editáveis
+interface EditableData {
+  readonly categoria: string;
+  readonly aplicacao: string;
+  readonly informacoes: string;
+  readonly especificacoesTecnicas: SpecItem[];
+}
+
+// Utilitário para converter specs para array
+const specsToArray = (specs: Record<string, unknown>): Array<{key: string; value: string}> => {
+  return Object.entries(specs || {}).map(([key, value]) => ({ key, value: String(value) }));
+};
+
+// Utilitário para converter array para specs object
+const specsToObject = (specs: SpecItem[]): Record<string, unknown> => {
+  return specs.reduce((acc, spec) => {
+    if (spec.checked) {
+      acc[spec.key] = spec.value;
+    }
+    return acc;
+  }, {} as Record<string, unknown>);
+};
+
 interface FieldSelectionProps {
   readonly enrichmentResult: EnrichmentResponse;
   readonly onBack: () => void;
@@ -38,340 +59,200 @@ export default function FieldSelection({
   onBack,
   onContinue,
 }: FieldSelectionProps) {
-  // Estado para informações originais editáveis
-  const [originalInfo, setOriginalInfo] = useState(
-    enrichmentResult.original.informacoes || ""
-  );
-
-  // Estado para especificações com checkbox
-  const [specs, setSpecs] = useState<SpecItem[]>(() => {
-    return Object.entries(
+  // Estado para dados editáveis
+  const [editableData, setEditableData] = useState<EditableData>(() => {
+    const formattedSpecs = specsToArray(
       enrichmentResult.enriched.especificacoesTecnicas || {}
-    ).map(([key, value]) => ({
+    ).map((spec) => ({
       id: uuidv4(),
-      key: formatTechnicalKey(key),
-      value: String(value),
-      checked: false, // Todas desmarcadas por padrão
+      key: formatTechnicalKey(spec.key),
+      value: spec.value,
+      checked: true,
     }));
+
+    return {
+      categoria: enrichmentResult.enriched.categoria || "",
+      aplicacao: enrichmentResult.enriched.aplicacao || "",
+      informacoes: enrichmentResult.original.informacoes || "",
+      especificacoesTecnicas: formattedSpecs,
+    };
   });
 
-  // Estado para diálogo de adicionar nova especificação
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Funções para gerenciar especificações
-  const handleSpecCheck = (id: string, checked: boolean) => {
-    setSpecs((prev) =>
-      prev.map((spec) => (spec.id === id ? { ...spec, checked } : spec))
-    );
+  // Handlers para atualizar campos básicos
+  const handleFieldChange = (
+    field: keyof Omit<EditableData, "especificacoesTecnicas">,
+    value: string
+  ) => {
+    setEditableData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSpecValueChange = (id: string, newValue: string) => {
-    setSpecs((prev) =>
-      prev.map((spec) => (spec.id === id ? { ...spec, value: newValue } : spec))
-    );
-  };
-
-  const handleSpecLabelChange = (id: string, newLabel: string) => {
-    setSpecs((prev) =>
-      prev.map((spec) => (spec.id === id ? { ...spec, key: newLabel } : spec))
-    );
-  };
-
-  const handleAddNewSpec = (key: string, value: string) => {
+  const handleSpecAdd = (key: string, value: string) => {
     const newSpec: SpecItem = {
       id: uuidv4(),
       key,
       value,
       checked: true,
     };
-    setSpecs((prev) => [...prev, newSpec]);
+    setEditableData((prev) => ({
+      ...prev,
+      especificacoesTecnicas: [...prev.especificacoesTecnicas, newSpec],
+    }));
   };
 
-  // Função para continuar o fluxo
   const handleContinue = () => {
-    // Criar objeto de especificações apenas com itens selecionados
-    const selectedSpecs = specs
-      .filter((spec) => spec.checked)
-      .reduce((acc, spec) => {
-        acc[spec.key] = spec.value;
-        return acc;
-      }, {} as Record<string, string>);
-
-    // Criar dados enriquecidos atualizados
-    const enrichedData: EnrichedProductData = {
+    const modifiedData: EnrichedProductData = {
       ...enrichmentResult.enriched,
-      especificacoesTecnicas: selectedSpecs,
+      categoria: editableData.categoria,
+      aplicacao: editableData.aplicacao,
+      especificacoesTecnicas: specsToObject(editableData.especificacoesTecnicas),
     };
-
-    onContinue(enrichedData);
+    onContinue(modifiedData);
   };
-
-  // Estatísticas para exibição
-  const selectedSpecs = specs.filter((spec) => spec.checked);
-  const selectedCount = selectedSpecs.length;
-  const totalCount = specs.length;
-
-  // Gerar preview
-  const previewText =
-    selectedSpecs.length > 0
-      ? selectedSpecs.map((spec) => `${spec.key}: ${spec.value}`).join(", ")
-      : "Nenhuma característica selecionada";
 
   return (
-    <Box
-      sx={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-      }}
-    >
-      {/* Header Ultra Compacto */}
-      <Box sx={{ mb: 0.8, flexShrink: 0 }}>
-        <Typography
-          variant="subtitle1"
-          sx={{ mb: 0, fontWeight: 600, fontSize: "0.95rem" }}
-        >
-          Revisão e Ajuste ({selectedCount}/{totalCount})
-        </Typography>
-      </Box>
-
-      {/* Layout Horizontal - 65% Características / 35% Preview */}
-      <Box
+    <Box sx={{ height: "calc(100vh - 120px)", display: "flex", gap: 2 }}>
+      {/* Painel Esquerdo - 65% */}
+      <Paper
+        elevation={1}
         sx={{
-          display: "flex",
-          gap: 1,
-          flex: 1,
+          flex: "0 0 65%",
+          p: 2,
+          height: "100%",
           overflow: "hidden",
-          minHeight: 0,
-          "@media (max-width: 900px)": {
-            flexDirection: "column",
-          },
+          display: "flex",
+          flexDirection: "column",
         }}
       >
-        {/* LADO ESQUERDO - Características (65%) */}
-        <Paper
-          variant="outlined"
-          sx={{
-            flex: "0 0 65%",
-            p: 1,
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-            minHeight: 0,
-          }}
-        >
-          {/* Header das Características */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 0.6,
-              flexShrink: 0,
-            }}
-          >
-            <Typography
-              variant="subtitle2"
-              fontWeight="600"
-              sx={{ fontSize: "0.8rem" }}
-            >
-              Características
-            </Typography>
-            <Button
-              size="small"
-              variant="outlined"
-              startIcon={<AddIcon />}
-              onClick={() => setAddDialogOpen(true)}
-              sx={{ fontSize: "0.65rem", py: 0.2, px: 0.5, minWidth: "auto" }}
-            >
-              +
-            </Button>
-          </Box>
+        <Typography variant="h6" sx={{ mb: 2, fontSize: "0.9rem" }}>
+          Características
+        </Typography>
 
-          {/* Grid Ultra Compacto de Especificações */}
-          <Box
-            sx={{
-              flex: 1,
-              overflow: "auto",
-              display: "grid",
-              gridTemplateColumns: {
-                xs: "1fr 1fr",
-                sm: "repeat(3, 1fr)",
-                md: "repeat(4, 1fr)",
-                lg: "repeat(5, 1fr)",
-              },
-              gap: 0.5,
-              alignContent: "start",
-              pr: 0.2,
-            }}
-          >
-            {specs.map((spec) => (
-              <CheckboxSpecCard
-                key={spec.id}
-                id={spec.id}
-                checked={spec.checked}
-                label={spec.key}
-                value={spec.value}
-                onCheck={handleSpecCheck}
-                onValueChange={handleSpecValueChange}
-                onLabelChange={handleSpecLabelChange}
-                editable={true}
-              />
-            ))}
-          </Box>
-        </Paper>
-
-        {/* LADO DIREITO - Preview Compacto (35%) */}
+        {/* Grid de Cards */}
         <Box
           sx={{
-            flex: "0 0 35%",
-            display: "flex",
-            flexDirection: "column",
-            minHeight: 0,
-            overflow: "hidden",
+            flex: 1,
+            overflow: "auto",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+            gap: 1,
+            alignContent: "start",
           }}
         >
-          {/* Seção de Preview Ultra Compacta */}
-          <Paper
-            variant="outlined"
-            sx={{
-              flex: 1,
-              p: 0.6,
-              mb: 0.6,
-              bgcolor: "grey.50",
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden",
-              minHeight: 0,
-            }}
-          >
-            <Typography
-              variant="subtitle2"
-              fontWeight="600"
-              sx={{ mb: 0.6, fontSize: "0.7rem" }}
-            >
-              Preview
-            </Typography>
-
-            {/* Campo Original */}
-            <Box sx={{ mb: 0.6, flexShrink: 0 }}>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ mb: 0.2, fontSize: "0.55rem", display: "block" }}
-              >
-                Original:
-              </Typography>
-              <TextField
-                value={originalInfo}
-                onChange={(e) => setOriginalInfo(e.target.value)}
-                size="small"
-                fullWidth
-                placeholder="Ex: Retentor"
-                sx={{
-                  "& .MuiInputBase-root": {
-                    fontSize: "0.6rem",
-                    bgcolor: "white",
-                    height: "24px",
-                  },
-                  "& .MuiInputBase-input": {
-                    py: 0.3,
-                    px: 0.6,
-                  },
-                }}
-              />
-            </Box>
-
-            {/* Contador */}
-            <Box sx={{ mb: 0.4, flexShrink: 0 }}>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ fontSize: "0.65rem", fontWeight: 500 }}
-              >
-                {selectedCount}/{totalCount} selecionadas
-              </Typography>
-            </Box>
-
-            {/* Card com Material Original + Características */}
-            <Box sx={{ flex: 1, overflow: "auto", minHeight: 0 }}>
-              <Paper
-                variant="outlined"
-                sx={{
-                  p: 1,
-                  bgcolor: "white",
-                  borderRadius: 1,
-                  border: "1px solid #e0e0e0",
-                }}
-              >
-                {originalInfo.trim() || selectedSpecs.length > 0 ? (
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      fontSize: "0.85rem",
-                      color: "text.primary",
-                      lineHeight: 1.5,
-                      wordBreak: "break-word",
-                      fontWeight: 400,
-                    }}
-                  >
-                    {[
-                      originalInfo.trim() && `Original: ${originalInfo.trim()}`,
-                      ...selectedSpecs.map(
-                        (spec) => `${spec.key}: ${spec.value}`
-                      ),
-                    ]
-                      .filter(Boolean)
-                      .join(", ")}
-                  </Typography>
-                ) : (
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontSize: "0.75rem",
-                      color: "text.secondary",
-                      fontStyle: "italic",
-                      textAlign: "center",
-                      py: 1,
-                    }}
-                  >
-                    Digite o material original e selecione características
-                  </Typography>
-                )}
-              </Paper>
-            </Box>
-          </Paper>
-
-          {/* Botões Ultra Compactos */}
-          <Stack direction="column" spacing={0.4} sx={{ flexShrink: 0 }}>
-            <Button
-              variant="contained"
-              onClick={handleContinue}
-              disabled={selectedCount === 0 && !originalInfo.trim()}
-              size="small"
-              sx={{ fontSize: "0.65rem", py: 0.4, minHeight: "28px" }}
-            >
-              Buscar →
-            </Button>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={onBack}
-              size="small"
-              sx={{ fontSize: "0.65rem", py: 0.4, minHeight: "28px" }}
-            >
-              ← Voltar
-            </Button>
-          </Stack>
+          {editableData.especificacoesTecnicas.map((spec) => (
+            <CheckboxSpecCard
+              key={spec.id}
+              id={spec.id}
+              label={spec.key}
+              value={spec.value}
+              checked={spec.checked}
+              onCheck={(id, checked) => {
+                setEditableData((prev) => ({
+                  ...prev,
+                  especificacoesTecnicas: prev.especificacoesTecnicas.map((s) =>
+                    s.id === id ? { ...s, checked } : s
+                  ),
+                }));
+              }}
+              onValueChange={(id, newValue) => {
+                setEditableData((prev) => ({
+                  ...prev,
+                  especificacoesTecnicas: prev.especificacoesTecnicas.map((s) =>
+                    s.id === id ? { ...s, value: newValue } : s
+                  ),
+                }));
+              }}
+              onLabelChange={(id, newLabel) => {
+                setEditableData((prev) => ({
+                  ...prev,
+                  especificacoesTecnicas: prev.especificacoesTecnicas.map((s) =>
+                    s.id === id ? { ...s, key: newLabel } : s
+                  ),
+                }));
+              }}
+              editable={true}
+            />
+          ))}
         </Box>
-      </Box>
 
-      {/* Dialog para adicionar nova especificação */}
+        {/* Botão Add */}
+        <Button
+          variant="outlined"
+          onClick={() => setIsDialogOpen(true)}
+          startIcon={<AddIcon />}
+          sx={{ mt: 2, height: 32, fontSize: "0.7rem" }}
+        >
+          Adicionar
+        </Button>
+      </Paper>
+
+      {/* Painel Direito - 35% */}
+      <Paper
+        elevation={1}
+        sx={{
+          flex: "0 0 35%",
+          p: 2,
+          height: "100%",
+          overflow: "auto",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Typography variant="h6" sx={{ mb: 2, fontSize: "0.9rem" }}>
+          Dados do Produto
+        </Typography>
+
+        <Stack spacing={1.5}>
+          <TextField
+            label="Categoria"
+            value={editableData.categoria}
+            onChange={(e) => handleFieldChange("categoria", e.target.value)}
+            size="small"
+            fullWidth
+          />
+          <TextField
+            label="Aplicação"
+            value={editableData.aplicacao}
+            onChange={(e) => handleFieldChange("aplicacao", e.target.value)}
+            size="small"
+            fullWidth
+          />
+          <TextField
+            label="Informações Originais"
+            value={editableData.informacoes}
+            onChange={(e) => handleFieldChange("informacoes", e.target.value)}
+            size="small"
+            multiline
+            rows={4}
+            fullWidth
+          />
+        </Stack>
+
+        {/* Botões de Ação */}
+        <Stack direction="row" spacing={1} sx={{ mt: "auto", pt: 2 }}>
+          <Button
+            variant="outlined"
+            onClick={onBack}
+            sx={{ height: 32, fontSize: "0.7rem" }}
+          >
+            Voltar
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleContinue}
+            sx={{ height: 32, fontSize: "0.7rem", flex: 1 }}
+          >
+            Continuar
+          </Button>
+        </Stack>
+      </Paper>
+
+      {/* Dialog para adicionar novas especificações */}
       <AddNewSpecDialog
-        open={addDialogOpen}
-        onClose={() => setAddDialogOpen(false)}
-        onAdd={handleAddNewSpec}
+        open={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onAdd={handleSpecAdd}
       />
     </Box>
   );
