@@ -127,27 +127,12 @@ export default function FieldSelection({
   };
 
   const handleContinue = () => {
-    const { especificacoesTecnicas, ...rest } = editableData;
+    const { especificacoesTecnicas, informacoes, ...rest } = editableData;
     
-    // Extrair apenas os campos que pertencem a EnrichedProductData
-    const {
-      categoria,
-      subcategoria,
-      marcaFabricante,
-      aplicacao,
-      normas,
-      pdmPadronizado,
-      observacoes,
-    } = rest;
-    
+    // Criar dados enriquecidos com base no que foi editado
     const enrichedData: EnrichedProductData = {
-      categoria,
-      subcategoria,
-      marcaFabricante,
-      aplicacao,
-      normas,
-      pdmPadronizado,
-      observacoes,
+      ...enrichmentResult.enriched, // Manter dados do enriquecimento original
+      ...rest, // Sobrescrever com edições do usuário
       especificacoesTecnicas: specsToObject(especificacoesTecnicas),
     };
     
@@ -163,56 +148,16 @@ export default function FieldSelection({
       </Alert>
       <Paper variant="outlined" sx={{ p: { xs: 2, sm: 3 } }}>
         <Stack gap={2}>
-          {/* Campo nome - readonly */}
+          {/* Campo de informações originais - editável */}
           <TextField
-            label="Nome do Produto"
-            value={enrichmentResult.original.nome}
+            label="Informações do Material"
+            value={editableData.informacoes || ""}
+            onChange={(e) => handleFieldChange("informacoes", e.target.value)}
             fullWidth
-            disabled
-            helperText="Este campo não pode ser editado"
+            multiline
+            rows={3}
+            helperText="Informações originais digitadas pelo usuário - você pode editar se necessário"
           />
-          
-          {/* Mapeia e renderiza os campos do objeto 'original' dinamicamente, exceto 'nome' */}
-          {(
-            Object.keys(enrichmentResult.original) as Array<
-              keyof BaseProductInfo
-            >
-          )
-            .filter((key) => key !== 'nome') // Excluir o campo 'nome' que é readonly
-            .map((key) => {
-            // A condição é que o valor original não seja nulo ou vazio
-            if (enrichmentResult.original[key]) {
-              return (
-                <TextField
-                  key={key}
-                  label={formatTechnicalKey(key)}
-                  value={editableData[key] || ""}
-                  onChange={(e) => handleFieldChange(key, e.target.value)}
-                  fullWidth
-                />
-              );
-            }
-            return null;
-          })}
-
-          {/* Renderiza os campos de 'enriched' que não estão em 'original' */}
-          <TextField
-            label="Categoria"
-            value={editableData.categoria}
-            onChange={(e) => handleFieldChange("categoria", e.target.value)}
-            fullWidth
-          />
-          {editableData.subcategoria && (
-            <TextField
-              label="Subcategoria"
-              value={editableData.subcategoria}
-              onChange={(e) =>
-                handleFieldChange("subcategoria", e.target.value)
-              }
-              fullWidth
-            />
-          )}
-          {/*********** FIM DA ALTERAÇÃO SOLICITADA ***********/}
         </Stack>
         <Divider sx={{ my: 3 }}>
           <Typography variant="overline">Especificações Técnicas</Typography>

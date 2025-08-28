@@ -18,17 +18,14 @@ import {
   BaseProductInfo,
   EnrichmentResponse,
   EnrichedProductData,
-  EquivalenceSearchResponse,
   N8NEquivalenceResponse,
 } from "../types";
 import {
   createEnrichmentService,
-  MockEquivalenceService,
   createN8NService,
 } from "../services";
 import EntryForm from "./EntryForm";
 import FieldSelection from "./FieldSelection";
-import EquivalenceResults from "./EquivalenceResults";
 import N8NEquivalenceResults from "./N8NEquivalenceResults";
 
 interface PDMFlowProps {
@@ -45,8 +42,6 @@ export default function PDMFlow({ className }: PDMFlowProps) {
   const { state, goToStep, setStatus, setError } = usePDMFlow();
   const [enrichmentResult, setEnrichmentResult] =
     React.useState<EnrichmentResponse | null>(null);
-  const [equivalenceResult, setEquivalenceResult] =
-    React.useState<EquivalenceSearchResponse | null>(null);
   const [n8nResult, setN8nResult] =
     React.useState<N8NEquivalenceResponse | null>(null);
 
@@ -171,12 +166,6 @@ export default function PDMFlow({ className }: PDMFlowProps) {
                 enrichmentResult?.enriched.especificacoesTecnicas || {},
               precoEstimado: undefined, // O produto original pode não ter preço definido
             }}
-          />
-        ) : equivalenceResult ? (
-          <EquivalenceResults
-            searchResult={equivalenceResult}
-            onBack={() => goToStep(PDMStep.FIELD_SELECTION)}
-            isLoading={state.status === ProcessingStatus.PROCESSING}
           />
         ) : null;
       default:

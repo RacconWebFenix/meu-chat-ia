@@ -5,7 +5,6 @@ import { MockEnrichmentService } from "./mockEnrichmentService";
 import { RealEnrichmentService } from "./enrichmentService"; // Agora a importação funciona
 
 // Exporta outros serviços para manter o padrão
-export { MockEquivalenceService } from "./mockEquivalenceService";
 export { MockExportService, createExportService } from "./exportService";
 export { N8NService, createN8NService } from "./n8nService";
 export type { ExportServiceInterface } from "./exportService";

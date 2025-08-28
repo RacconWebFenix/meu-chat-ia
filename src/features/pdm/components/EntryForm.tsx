@@ -28,57 +28,15 @@ interface EntryFormProps {
   readonly subtitle?: string;
 }
 
-// Configuração dos campos com as novas adições
+// Configuração do campo único simplificado
 const FORM_FIELDS: EntryFormField[] = [
   {
-    key: "nome",
-    label: "Nome do Material",
-    placeholder: "Ex: Rolamento de esferas, Parafuso sextavado...",
-    required: true, // Mantido como true para a UI, mas a validação do hook é flexível
-    maxLength: 100,
-    helpText: "Nome principal ou tipo do material.",
-  },
-  {
-    key: "referencia",
-    label: "Referência / Part Number",
-    placeholder: "Ex: 6205-2Z, DIN 933...",
-    required: false,
-    maxLength: 50,
-    helpText: "Código do fabricante ou norma técnica (opcional).",
-  },
-  {
-    key: "marcaFabricante",
-    label: "Marca / Fabricante",
-    placeholder: "Ex: SKF, Gerdau, 3M...",
-    required: false,
-    maxLength: 50,
-    helpText: "A marca do produto (opcional).",
-  },
-  // NOVOS CAMPOS ADICIONADOS
-  {
-    key: "breveDescricao",
-    label: "Breve Descrição",
-    placeholder: "Descrição curta do item, como aparece em uma nota fiscal.",
-    required: false,
-    maxLength: 250,
-    helpText: "Uma descrição concisa do material.",
-  },
-  {
-    key: "aplicacao",
-    label: "Aplicação",
-    placeholder:
-      "Ex: Usado em motores elétricos de 50cv, parafusadeira de impacto...",
-    required: false,
-    maxLength: 250,
-    helpText: "Onde este item é utilizado (equipamento, processo, etc.).",
-  },
-  {
-    key: "unidadeMedida",
-    label: "Unidade de Medida",
-    placeholder: "Ex: Peça, Unidade, Caixa, Kg, Metro...",
-    required: false,
-    maxLength: 20,
-    helpText: "Como o item é quantificado.",
+    key: "informacoes",
+    label: "Informações do Material",
+    placeholder: "Ex: Rolamento SKF 6205-2Z, parafuso sextavado M8x50, usado em motores elétricos...",
+    required: true,
+    maxLength: 500,
+    helpText: "Digite todas as informações que possui sobre o material. Separe múltiplas informações por vírgula.",
   },
 ];
 
@@ -87,7 +45,7 @@ export default function EntryForm({
   onCancel,
   disabled = false,
   title = "Análise de Descrição de Material",
-  subtitle = "Forneça os dados abaixo para iniciar o processo de padronização (PDM).",
+  subtitle = "Digite todas as informações que possui sobre o material. Você pode incluir nome, marca, referência, aplicação, etc. Separe múltiplas informações por vírgula.",
 }: EntryFormProps) {
   const { state, updateField, handleSubmit, handleReset, canSubmit } =
     useEntryForm({
@@ -97,9 +55,8 @@ export default function EntryForm({
 
   const renderField = (field: EntryFormField) => {
     const error = state.validation.errors[field.key];
-    // Campos de texto mais longos terão múltiplas linhas
-    const isMultiline =
-      field.key === "aplicacao" || field.key === "breveDescricao";
+    // Campo único será sempre multiline para comportar mais informações
+    const isMultiline = true;
 
     return (
       <Box key={field.key}>
@@ -118,7 +75,7 @@ export default function EntryForm({
           helperText={error || field.helpText}
           inputProps={{ maxLength: field.maxLength }}
           multiline={isMultiline}
-          rows={isMultiline ? 3 : 1}
+          rows={4}
         />
       </Box>
     );

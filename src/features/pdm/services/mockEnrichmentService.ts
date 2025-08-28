@@ -159,7 +159,9 @@ export class MockEnrichmentService implements EnrichmentService {
     const { productInfo } = request;
 
     // Identify product category
-    const category = this.identifyCategory(productInfo.nome);
+    const category = this.identifyCategory(
+      productInfo.nome || ""
+    );
 
     // Find specific product data
     const productData = this.findProductData(category, productInfo);
@@ -274,7 +276,7 @@ export class MockEnrichmentService implements EnrichmentService {
     } else {
       // Generate generic data
       return {
-        categoria: this.generateGenericCategory(original.nome),
+        categoria: this.generateGenericCategory(original.nome || "Produto"),
         especificacoesTecnicas: this.generateGenericSpecs(original),
         aplicacao: "Aplicação industrial geral",
         pdmPadronizado: this.generateGenericPDM(original),
@@ -335,7 +337,7 @@ export class MockEnrichmentService implements EnrichmentService {
     original: BaseProductInfo
   ): Record<string, string> {
     return {
-      Tipo: original.nome,
+      Tipo: original.nome || "Produto",
       Referência: original.referencia || "N/A",
       Fabricante: original.marcaFabricante || "Não especificado",
       Características: original.caracteristicas || "Não informado",
@@ -344,7 +346,7 @@ export class MockEnrichmentService implements EnrichmentService {
   }
 
   private generateGenericPDM(original: BaseProductInfo): string {
-    const categoria = this.generateGenericCategory(original.nome);
+    const categoria = this.generateGenericCategory(original.nome || "Produto");
     const marca = original.marcaFabricante || "GENÉRICO";
     return `${categoria.toUpperCase()}, ${marca}, ${
       original.referencia || "SEM REFERÊNCIA"

@@ -44,23 +44,14 @@ export function useEntryForm(
   const [data, setData] = useState<BaseProductInfo>(INITIAL_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // A lógica de validação que implementamos antes continua a mesma e funcional.
+  // Validação simplificada para campo único
   const validation = useMemo((): EntryFormValidation => {
     const errors: Record<string, string> = {};
-    const { nome, referencia, marcaFabricante } = data;
+    const { informacoes } = data;
 
-    const isAnyKeyFieldFilled =
-      (nome && nome.trim() !== "") ||
-      (referencia && referencia.trim() !== "") ||
-      (marcaFabricante && marcaFabricante.trim() !== "");
-
-    if (!isAnyKeyFieldFilled) {
-      errors.form =
-        "Preencha ao menos o Nome, Referência ou Fabricante para iniciar a análise.";
-    }
-
-    if (nome.trim() && nome.length < 2) {
-      errors.nome = "Nome deve ter pelo menos 2 caracteres";
+    // Verifica se o campo informações tem pelo menos algum conteúdo
+    if (!informacoes || informacoes.trim() === "") {
+      errors.form = "Digite algumas informações sobre o material para iniciar a análise.";
     }
 
     return {
