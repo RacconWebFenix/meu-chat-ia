@@ -5,18 +5,8 @@
 
 // Interface de informação base do produto
 export interface BaseProductInfo {
-  readonly nome?: string;
-  readonly referencia?: string;
-  readonly marcaFabricante?: string;
-  readonly caracteristicas?: string;
-
-  // NOVOS CAMPOS ADICIONADOS
-  readonly aplicacao?: string;
-  readonly breveDescricao?: string;
-  readonly unidadeMedida?: string;
-
-  // CAMPO SIMPLIFICADO PARA ENTRADA ÚNICA
-  readonly informacoes?: string;
+  // CAMPO ÚNICO PARA ENTRADA DE DADOS
+  readonly informacoes: string;
 }
 
 // Interface de identificação do produto

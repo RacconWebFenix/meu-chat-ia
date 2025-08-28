@@ -1,6 +1,6 @@
 /**
  * PDMFlow - Orquestrador das etapas do fluxo PDM.
- * Ultra-compacto - Otimizado para eliminar scroll vertical - Updated: 2025-08-28
+ * Layout flexível sem scroll próprio - Updated: 2025-08-28
  */
 import React from "react";
 import {
@@ -86,37 +86,9 @@ export default function PDMFlow({ className }: PDMFlowProps) {
       setStatus(ProcessingStatus.PROCESSING);
       goToStep(PDMStep.EQUIVALENCE_SEARCH);
 
-      // Cria o objeto BaseProductInfo a partir dos dados originais e enriquecidos
+      // Cria o objeto BaseProductInfo simplificado
       const productInfo: BaseProductInfo = {
-        nome: enrichmentResult.original.nome || "Produto sem nome",
-        referencia:
-          enrichmentResult.original.referencia ||
-          (modifiedEnrichedData.especificacoesTecnicas[
-            "Referência"
-          ] as string) ||
-          (modifiedEnrichedData.especificacoesTecnicas["Código"] as string),
-        marcaFabricante:
-          modifiedEnrichedData.marcaFabricante ||
-          enrichmentResult.original.marcaFabricante ||
-          "Marca não informada",
-        caracteristicas: Object.entries(
-          modifiedEnrichedData.especificacoesTecnicas
-        )
-          .map(([key, value]) => `${key}: ${value}`)
-          .join(", "),
-        aplicacao:
-          modifiedEnrichedData.aplicacao ||
-          enrichmentResult.original.aplicacao ||
-          "Aplicação não especificada",
-        unidadeMedida:
-          enrichmentResult.original.unidadeMedida ||
-          (modifiedEnrichedData.especificacoesTecnicas["Unidade"] as string) ||
-          "unidade",
-        breveDescricao:
-          enrichmentResult.original.breveDescricao ||
-          `Produto da categoria ${
-            modifiedEnrichedData.categoria || "não informada"
-          }`,
+        informacoes: enrichmentResult.original.informacoes || modifiedEnrichedData.informacoes || "Produto sem informações",
       };
 
       console.log("Enviando para N8N:", productInfo);
@@ -160,7 +132,7 @@ export default function PDMFlow({ className }: PDMFlowProps) {
             onBack={() => goToStep(PDMStep.FIELD_SELECTION)}
             isLoading={state.status === ProcessingStatus.PROCESSING}
             originalProduct={{
-              nome: enrichmentResult?.original.nome || "Produto Original",
+              nome: enrichmentResult?.original.informacoes || "Produto Original",
               especificacoesTecnicas:
                 enrichmentResult?.enriched.especificacoesTecnicas || {},
               precoEstimado: undefined, // O produto original pode não ter preço definido
@@ -176,16 +148,14 @@ export default function PDMFlow({ className }: PDMFlowProps) {
     <Box 
       className={className}
       sx={{
-        height: "100%", // Usa 100% do container pai
+        // Removido height e overflow para permitir scroll único
         display: "flex",
         flexDirection: "column",
-        overflow: "hidden",
+        gap: 2,
       }}
     >
-      {/* Header Ultra-Compacto */}
+      {/* Header - Rola junto com o conteúdo */}
       <Box sx={{ 
-        flexShrink: 0, 
-        mb: 1,
         textAlign: "center",
       }}>
         <Typography
@@ -199,12 +169,12 @@ export default function PDMFlow({ className }: PDMFlowProps) {
           Siga as etapas para padronizar e encontrar equivalências.
         </Typography>
         
-        {/* Stepper Ultra-Compacto */}
+        {/* Stepper - Rola junto */}
         <Stepper
           activeStep={STEPS.findIndex((s) => s.key === state.currentStep)}
           alternativeLabel
           sx={{ 
-            mb: 1,
+            mb: 2,
             "& .MuiStepLabel-label": {
               fontSize: "0.65rem",
               mt: 0.5,
@@ -222,14 +192,8 @@ export default function PDMFlow({ className }: PDMFlowProps) {
         </Stepper>
       </Box>
 
-      {/* Conteúdo Principal - Usa todo espaço restante */}
-      <Box sx={{ 
-        flex: 1, 
-        overflow: "hidden",
-        minHeight: 0,
-      }}>
-        {renderStepContent()}
-      </Box>
+      {/* Conteúdo Principal - Sem limitação de altura */}
+      {renderStepContent()}
     </Box>
   );
 }

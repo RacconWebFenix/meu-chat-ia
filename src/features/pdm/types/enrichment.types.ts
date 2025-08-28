@@ -25,7 +25,10 @@ export interface EnrichedProductData {
   readonly subcategoria?: string;
   readonly marcaFabricante?: string;
   readonly informacoes?: string; // Campo para informações originais editáveis
-  readonly especificacoesTecnicas: Record<string, unknown>;
+  readonly especificacoesTecnicas: {
+    readonly resumoPDM?: string; // Novo campo para resumo PDM
+    readonly especificacoesTecnicas: Record<string, unknown>; // Especificações técnicas como cards
+  };
   readonly aplicacao?: string;
   readonly normas?: string[];
   readonly pdmPadronizado?: string;

@@ -1,5 +1,9 @@
 // src/features/pdm/components/FieldSelection.tsx
-// Layout Horizontal 65/35 - Ultra Compacto - Sem Scroll - Updated: 2025-08-28
+// Layout Vertical em Coluna Única - Scroll Único - Updated: 2025-08-28
+// Seção 1: Resumo PDM (largura 100%, conteúdo fixo)
+// Seção 2: Características (largura 100%, grid de cards)  
+// Seção 3: Dados do Produto (largura 100%, formulário)
+// Todas as seções rolam juntas com scroll único
 
 import React, { useState } from "react";
 import {
@@ -60,14 +64,19 @@ export default function FieldSelection({
 }: FieldSelectionProps) {
   // Estado para dados editáveis
   const [editableData, setEditableData] = useState<EditableData>(() => {
-    const formattedSpecs = specsToArray(
-      enrichmentResult.enriched.especificacoesTecnicas || {}
-    ).map((spec) => ({
+    // Acessar as especificações técnicas da nova estrutura
+    const specs = enrichmentResult.enriched.especificacoesTecnicas?.especificacoesTecnicas || {};
+    const formattedSpecs = specsToArray(specs).map((spec) => ({
       id: uuidv4(),
       key: formatTechnicalKey(spec.key),
       value: spec.value,
       checked: true,
     }));
+
+    // Debug para verificar as especificações
+    console.log("🔍 Especificações encontradas:", specs);
+    console.log("📋 Especificações formatadas:", formattedSpecs);
+    console.log("📄 Estrutura completa do enrichmentResult:", enrichmentResult);
 
     return {
       categoria: enrichmentResult.enriched.categoria || "",
@@ -136,80 +145,125 @@ export default function FieldSelection({
       marcaFabricante: editableData.marca,
       // Também passamos as informações originais editadas
       informacoes: editableData.informacoes,
-      especificacoesTecnicas: specsToObject(editableData.especificacoesTecnicas),
+      especificacoesTecnicas: {
+        // Preserva o resumoPDM original
+        resumoPDM: enrichmentResult.enriched.especificacoesTecnicas?.resumoPDM,
+        // Atualiza as especificações técnicas editadas
+        especificacoesTecnicas: specsToObject(editableData.especificacoesTecnicas),
+      },
     };
     onContinue(modifiedData);
   };
 
   return (
     <Box sx={{ 
-      height: "100%", // Usa 100% do container pai
       display: "flex", 
-      gap: 2,
-      overflow: "hidden"
+      flexDirection: "column",
+      gap: 3, // Espaçamento entre seções
+      width: "100%",
+      // Removido padding para não criar limitações
     }}>
-      {/* Painel Esquerdo - 65% */}
+      {/* SEÇÃO 1: Resumo PDM - Conteúdo Fixo - Largura Total */}
+      {enrichmentResult.enriched.especificacoesTecnicas?.resumoPDM && (
+        <Paper
+          elevation={1}
+          sx={{
+            p: 2,
+            bgcolor: "info.50",
+            border: "1px solid",
+            borderColor: "info.200",
+            width: "100%",
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 2, fontSize: "0.9rem", color: "info.main", fontWeight: 600 }}>
+            Resumo PDM
+          </Typography>
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              fontSize: "0.75rem", 
+              lineHeight: 1.4,
+              color: "text.primary",
+              whiteSpace: "pre-line",
+            }}
+          >
+            {enrichmentResult.enriched.especificacoesTecnicas.resumoPDM}
+          </Typography>
+        </Paper>
+      )}
+
+      {/* SEÇÃO 2: Características - Largura Total */}
       <Paper
         elevation={1}
         sx={{
-          flex: "0 0 65%",
           p: 2,
-          display: "flex",
-          flexDirection: "column",
-          minHeight: 0, // Permite que o flex funcione corretamente
+          width: "100%",
         }}
       >
         <Typography variant="h6" sx={{ mb: 2, fontSize: "0.9rem" }}>
-          Características
+          Características ({editableData.especificacoesTecnicas.length})
         </Typography>
 
-        {/* Grid de Cards - Layout original com melhorias de scroll */}
+        {/* Grid de Cards - Mantendo funcionamento original */}
         <Box
           sx={{
-            flex: 1,
-            overflow: "auto",
             display: "grid",
             gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
             gap: 0.8,
-            alignContent: "start",
+            mb: 2,
           }}
         >
-          {editableData.especificacoesTecnicas.map((spec) => (
-            <CheckboxSpecCard
-              key={spec.id}
-              id={spec.id}
-              label={spec.key}
-              value={spec.value}
-              checked={spec.checked}
-              onCheck={(id, checked) => {
-                setEditableData((prev) => ({
-                  ...prev,
-                  especificacoesTecnicas: checked 
-                    ? prev.especificacoesTecnicas.map((s) =>
-                        s.id === id ? { ...s, checked } : s
-                      )
-                    : prev.especificacoesTecnicas.filter((s) => s.id !== id)
-                }));
+          {editableData.especificacoesTecnicas.length === 0 ? (
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                fontSize: "0.75rem", 
+                color: "text.secondary",
+                gridColumn: "1 / -1",
+                textAlign: "center",
+                py: 4
               }}
-              onValueChange={(id, newValue) => {
-                setEditableData((prev) => ({
-                  ...prev,
-                  especificacoesTecnicas: prev.especificacoesTecnicas.map((s) =>
-                    s.id === id ? { ...s, value: newValue } : s
-                  ),
-                }));
-              }}
-              onLabelChange={(id, newLabel) => {
-                setEditableData((prev) => ({
-                  ...prev,
-                  especificacoesTecnicas: prev.especificacoesTecnicas.map((s) =>
-                    s.id === id ? { ...s, key: newLabel } : s
-                  ),
-                }));
-              }}
-              editable={true}
-            />
-          ))}
+            >
+              Nenhuma característica encontrada. Use o botão &quot;Adicionar&quot; para criar novas características.
+            </Typography>
+          ) : (
+            editableData.especificacoesTecnicas.map((spec) => (
+              <CheckboxSpecCard
+                key={spec.id}
+                id={spec.id}
+                label={spec.key}
+                value={spec.value}
+                checked={spec.checked}
+                onCheck={(id, checked) => {
+                  setEditableData((prev) => ({
+                    ...prev,
+                    especificacoesTecnicas: checked 
+                      ? prev.especificacoesTecnicas.map((s) =>
+                          s.id === id ? { ...s, checked } : s
+                        )
+                      : prev.especificacoesTecnicas.filter((s) => s.id !== id)
+                  }));
+                }}
+                onValueChange={(id, newValue) => {
+                  setEditableData((prev) => ({
+                    ...prev,
+                    especificacoesTecnicas: prev.especificacoesTecnicas.map((s) =>
+                      s.id === id ? { ...s, value: newValue } : s
+                    ),
+                  }));
+                }}
+                onLabelChange={(id, newLabel) => {
+                  setEditableData((prev) => ({
+                    ...prev,
+                    especificacoesTecnicas: prev.especificacoesTecnicas.map((s) =>
+                      s.id === id ? { ...s, key: newLabel } : s
+                    ),
+                  }));
+                }}
+                editable={true}
+              />
+            ))
+          )}
         </Box>
 
         {/* Botão Add */}
@@ -218,38 +272,27 @@ export default function FieldSelection({
           onClick={() => setIsDialogOpen(true)}
           startIcon={<AddIcon />}
           sx={{ 
-            mt: 2, 
             height: 32, 
             fontSize: "0.7rem",
-            flexShrink: 0, // Impede que o botão seja comprimido
           }}
         >
           Adicionar
         </Button>
       </Paper>
 
-      {/* Painel Direito - 35% */}
+      {/* SEÇÃO 3: Dados do Produto - Largura Total */}
       <Paper
         elevation={1}
         sx={{
-          flex: "0 0 35%",
           p: 2,
-          display: "flex",
-          flexDirection: "column",
-          minHeight: 0, // Permite que o flex funcione corretamente
+          width: "100%",
         }}
       >
         <Typography variant="h6" sx={{ mb: 2, fontSize: "0.9rem" }}>
           Dados do Produto
         </Typography>
 
-        <Box sx={{ 
-          flex: 1, 
-          overflow: "auto",
-          display: "flex",
-          flexDirection: "column",
-          gap: 2
-        }}>
+        <Stack spacing={2} sx={{ mb: 3 }}>
           {/* Campo Informações Originais */}
           <TextField
             label="Informações Originais"
@@ -323,16 +366,14 @@ export default function FieldSelection({
               {getResumo()}
             </Typography>
           </Box>
-        </Box>
+        </Stack>
 
         {/* Botões de Ação */}
         <Stack 
           direction="row" 
-          spacing={1} 
+          spacing={2} 
           sx={{ 
-            mt: 2, 
             pt: 2,
-            flexShrink: 0, // Impede que os botões sejam comprimidos
             borderTop: "1px solid",
             borderColor: "grey.200",
           }}

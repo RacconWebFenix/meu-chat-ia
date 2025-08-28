@@ -25,15 +25,9 @@ interface UseEntryFormParams {
   readonly onReset?: EntryFormResetHandler;
 }
 
-// CORREÇÃO: Adicionados os novos campos ao estado inicial.
+// CORREÇÃO: Simplificado para usar apenas o campo informacoes.
 const INITIAL_DATA: BaseProductInfo = {
-  nome: "",
-  referencia: "",
-  marcaFabricante: "",
-  caracteristicas: "",
-  aplicacao: "",
-  breveDescricao: "",
-  unidadeMedida: "",
+  informacoes: "",
 };
 
 export function useEntryForm(

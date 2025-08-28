@@ -1,10 +1,15 @@
 /**
  * Mock enrichment service following SOLID principles
+ * 
+ * DEPRECATED: Este mock não está mais sendo usado no fluxo principal
+ * Mantido apenas para referência histórica
  *
  * Single Responsibility: Simulate AI enrichment
  * Open/Closed: Extensible via data configuration
  * Dependency Inversion: Implements abstraction interface
  */
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import {
   EnrichmentService,
@@ -159,7 +164,7 @@ export class MockEnrichmentService implements EnrichmentService {
     const { productInfo } = request;
 
     // Identify product category
-    const category = this.identifyCategory(productInfo.nome || "");
+    const category = this.identifyCategory(productInfo.informacoes || "");
 
     // Find specific product data
     const productData = this.findProductData(category, productInfo);
@@ -240,10 +245,15 @@ export class MockEnrichmentService implements EnrichmentService {
     }
 
     const categoryData = MOCK_ENRICHMENT_DATABASE[category];
-    const referencia = productInfo.referencia?.toLowerCase();
+    const informacoes = productInfo.informacoes?.toLowerCase();
 
-    if (referencia && categoryData.references[referencia]) {
-      return categoryData.references[referencia];
+    // Buscar por referência nas informações
+    if (informacoes && categoryData.references) {
+      for (const [ref, data] of Object.entries(categoryData.references)) {
+        if (informacoes.includes(ref.toLowerCase())) {
+          return data;
+        }
+      }
     }
 
     // Return first reference as fallback
@@ -261,7 +271,10 @@ export class MockEnrichmentService implements EnrichmentService {
       return {
         categoria: productData.categoria,
         subcategoria: productData.subcategoria,
-        especificacoesTecnicas: productData.especificacoesTecnicas,
+        especificacoesTecnicas: {
+          resumoPDM: "",
+          especificacoesTecnicas: productData.especificacoesTecnicas || {},
+        },
         aplicacao: productData.aplicacao,
         normas: productData.normas,
         pdmPadronizado: this.generatePDM(original, productData),
@@ -274,8 +287,11 @@ export class MockEnrichmentService implements EnrichmentService {
     } else {
       // Generate generic data
       return {
-        categoria: this.generateGenericCategory(original.nome || "Produto"),
-        especificacoesTecnicas: this.generateGenericSpecs(original),
+        categoria: this.generateGenericCategory(original.informacoes || "Produto"),
+        especificacoesTecnicas: {
+          resumoPDM: "",
+          especificacoesTecnicas: this.generateGenericSpecs(original),
+        },
         aplicacao: "Aplicação industrial geral",
         pdmPadronizado: this.generateGenericPDM(original),
         observacoes: ["Dados estimados baseados em análise genérica"],

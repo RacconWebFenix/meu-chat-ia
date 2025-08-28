@@ -1,5 +1,5 @@
 // src/components/ChatPDM/ChatPDM.tsx
-// Ultra-compact PDM selector - Last updated: 2025-08-28
+// Layout sem altura fixa - Scroll único - Updated: 2025-08-28
 import React, { useState } from "react";
 import { Box, Button } from "@mui/material";
 import {
@@ -23,19 +23,20 @@ export default function ChatPDM() {
       sx={{
         maxWidth: "1200px",
         mx: "auto",
-        height: "calc(100vh - 64px - 32px)", // 64px Toolbar + 32px padding total
+        // Removido height fixa e overflow: hidden para permitir scroll único
         display: "flex",
         flexDirection: "column",
-        overflow: "hidden",
+        gap: 1,
+        p: 2,
       }}
     >
-      {/* Seletor Super Compacto */}
+      {/* Seletor - Agora rola junto com o conteúdo */}
       <Box 
         sx={{ 
           display: "flex", 
           gap: 0.5, 
-          mb: 0.3, 
-          flexShrink: 0,
+          mb: 1,
+          // Removido flexShrink: 0 para que role junto
         }}
       >
         <Button
@@ -72,10 +73,8 @@ export default function ChatPDM() {
         </Button>
       </Box>
 
-      {/* Content */}
-      <Box sx={{ flex: 1, overflow: "hidden", minHeight: 0 }}>
-        {mode === "flow" ? <PDMFlow /> : <ChatPDMView {...chat} />}
-      </Box>
+      {/* Content - Sem limitação de altura */}
+      {mode === "flow" ? <PDMFlow /> : <ChatPDMView {...chat} />}
     </Box>
   );
 }
