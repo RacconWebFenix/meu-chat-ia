@@ -1,4 +1,5 @@
 // src/features/pdm/components/CheckboxSpecCard.tsx
+// Ultra-compact 60px cards with tag editing - Updated: 2025-08-28
 import React, { useState } from "react";
 import {
   Card,

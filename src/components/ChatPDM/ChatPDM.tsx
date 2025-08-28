@@ -1,3 +1,5 @@
+// src/components/ChatPDM/ChatPDM.tsx
+// Ultra-compact PDM selector - Last updated: 2025-08-28
 import React, { useState } from "react";
 import { Box, Button } from "@mui/material";
 import {
@@ -13,6 +15,8 @@ type PDMMode = "chat" | "flow";
 export default function ChatPDM() {
   const [mode, setMode] = useState<PDMMode>("flow");
   const chat = useChatPDM();
+  
+  console.log("ChatPDM component rendered - Ultra Compact Mode:", mode);
 
   return (
     <Box

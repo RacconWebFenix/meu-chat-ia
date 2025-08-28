@@ -1,5 +1,5 @@
 // src/features/pdm/components/FieldSelection.tsx
-// Layout Horizontal 65/35 - Ultra Compacto - Sem Scroll
+// Layout Horizontal 65/35 - Ultra Compacto - Sem Scroll - Updated: 2025-08-28
 
 import React, { useState } from "react";
 import {
