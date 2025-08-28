@@ -4,13 +4,7 @@
  */
 
 import React from "react";
-import {
-  Box,
-  Typography,
-  Stack,
-  TextField,
-  Button,
-} from "@mui/material";
+import { Box, Typography, Stack, TextField, Button } from "@mui/material";
 import { useEntryForm } from "../hooks";
 import {
   EntryFormField,
@@ -51,8 +45,8 @@ export default function EntryForm({
   const error = state.validation.errors[field.key];
 
   return (
-    <Box 
-      sx={{ 
+    <Box
+      sx={{
         height: "100%",
         display: "flex",
         flexDirection: "column",
@@ -63,13 +57,15 @@ export default function EntryForm({
       }}
     >
       {/* Container Central */}
-      <Box sx={{ 
-        width: "100%", 
-        maxWidth: 600,
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-      }}>
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: 600,
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
+      >
         {/* Campo de Entrada */}
         <TextField
           fullWidth
@@ -102,7 +98,7 @@ export default function EntryForm({
               variant="outlined"
               onClick={handleReset}
               disabled={state.isSubmitting}
-              sx={{ 
+              sx={{
                 minWidth: 80,
                 height: 36,
                 fontSize: "0.8rem",
@@ -115,7 +111,7 @@ export default function EntryForm({
             variant="contained"
             onClick={handleSubmit}
             disabled={!canSubmit || disabled}
-            sx={{ 
+            sx={{
               minWidth: 160,
               height: 36,
               fontSize: "0.8rem",

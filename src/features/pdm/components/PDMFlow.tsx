@@ -3,13 +3,7 @@
  * Layout flexível sem scroll próprio - Updated: 2025-08-28
  */
 import React from "react";
-import {
-  Box,
-  Stepper,
-  Step,
-  StepLabel,
-  Typography,
-} from "@mui/material";
+import { Box, Stepper, Step, StepLabel, Typography } from "@mui/material";
 import { usePDMFlow } from "../hooks";
 import {
   PDMStep,
@@ -19,10 +13,7 @@ import {
   EnrichedProductData,
   N8NEquivalenceResponse,
 } from "../types";
-import {
-  createEnrichmentService,
-  createN8NService,
-} from "../services";
+import { createEnrichmentService, createN8NService } from "../services";
 import EntryForm from "./EntryForm";
 import FieldSelection from "./FieldSelection";
 import N8NEquivalenceResults from "./N8NEquivalenceResults";
@@ -88,7 +79,10 @@ export default function PDMFlow({ className }: PDMFlowProps) {
 
       // Cria o objeto BaseProductInfo simplificado
       const productInfo: BaseProductInfo = {
-        informacoes: enrichmentResult.original.informacoes || modifiedEnrichedData.informacoes || "Produto sem informações",
+        informacoes:
+          enrichmentResult.original.informacoes ||
+          modifiedEnrichedData.informacoes ||
+          "Produto sem informações",
       };
 
       console.log("Enviando para N8N:", productInfo);
@@ -132,7 +126,8 @@ export default function PDMFlow({ className }: PDMFlowProps) {
             onBack={() => goToStep(PDMStep.FIELD_SELECTION)}
             isLoading={state.status === ProcessingStatus.PROCESSING}
             originalProduct={{
-              nome: enrichmentResult?.original.informacoes || "Produto Original",
+              nome:
+                enrichmentResult?.original.informacoes || "Produto Original",
               especificacoesTecnicas:
                 enrichmentResult?.enriched.especificacoesTecnicas || {},
               precoEstimado: undefined, // O produto original pode não ter preço definido
@@ -145,7 +140,7 @@ export default function PDMFlow({ className }: PDMFlowProps) {
   };
 
   return (
-    <Box 
+    <Box
       className={className}
       sx={{
         // Removido height e overflow para permitir scroll único
@@ -155,12 +150,14 @@ export default function PDMFlow({ className }: PDMFlowProps) {
       }}
     >
       {/* Header - Rola junto com o conteúdo */}
-      <Box sx={{ 
-        textAlign: "center",
-      }}>
+      <Box
+        sx={{
+          textAlign: "center",
+        }}
+      >
         <Typography
           variant="body2"
-          sx={{ 
+          sx={{
             fontSize: "0.7rem",
             color: "text.secondary",
             mb: 1,
@@ -168,12 +165,12 @@ export default function PDMFlow({ className }: PDMFlowProps) {
         >
           Siga as etapas para padronizar e encontrar equivalências.
         </Typography>
-        
+
         {/* Stepper - Rola junto */}
         <Stepper
           activeStep={STEPS.findIndex((s) => s.key === state.currentStep)}
           alternativeLabel
-          sx={{ 
+          sx={{
             mb: 2,
             "& .MuiStepLabel-label": {
               fontSize: "0.65rem",

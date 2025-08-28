@@ -13,7 +13,7 @@ import {
 export class MockEnrichmentService implements EnrichmentService {
   async enrichProduct(request: EnrichmentRequest): Promise<EnrichmentResponse> {
     const { productInfo } = request;
-    
+
     return {
       original: productInfo,
       enriched: {
@@ -21,7 +21,7 @@ export class MockEnrichmentService implements EnrichmentService {
         especificacoesTecnicas: {
           resumoPDM: "Resumo PDM genérico",
           especificacoesTecnicas: {
-            "Campo Genérico": "Valor Genérico"
+            "Campo Genérico": "Valor Genérico",
           },
         },
         aplicacao: "Aplicação Genérica",

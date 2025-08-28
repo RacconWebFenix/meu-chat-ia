@@ -15,7 +15,7 @@ type PDMMode = "chat" | "flow";
 export default function ChatPDM() {
   const [mode, setMode] = useState<PDMMode>("flow");
   const chat = useChatPDM();
-  
+
   console.log("ChatPDM component rendered - Ultra Compact Mode:", mode);
 
   return (
@@ -31,10 +31,10 @@ export default function ChatPDM() {
       }}
     >
       {/* Seletor - Agora rola junto com o conteúdo */}
-      <Box 
-        sx={{ 
-          display: "flex", 
-          gap: 0.5, 
+      <Box
+        sx={{
+          display: "flex",
+          gap: 0.5,
           mb: 1,
           // Removido flexShrink: 0 para que role junto
         }}

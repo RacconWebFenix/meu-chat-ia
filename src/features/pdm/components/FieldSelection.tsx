@@ -1,7 +1,7 @@
 // src/features/pdm/components/FieldSelection.tsx
 // Layout Vertical em Coluna Única - Scroll Único - Updated: 2025-08-28
 // Seção 1: Resumo PDM (largura 100%, conteúdo fixo)
-// Seção 2: Características (largura 100%, grid de cards)  
+// Seção 2: Características (largura 100%, grid de cards)
 // Seção 3: Dados do Produto (largura 100%, formulário)
 // Todas as seções rolam juntas com scroll único
 
@@ -39,8 +39,13 @@ interface EditableData {
 }
 
 // Utilitário para converter specs para array
-const specsToArray = (specs: Record<string, unknown>): Array<{key: string; value: string}> => {
-  return Object.entries(specs || {}).map(([key, value]) => ({ key, value: String(value) }));
+const specsToArray = (
+  specs: Record<string, unknown>
+): Array<{ key: string; value: string }> => {
+  return Object.entries(specs || {}).map(([key, value]) => ({
+    key,
+    value: String(value),
+  }));
 };
 
 // Utilitário para converter array para specs object
@@ -65,7 +70,9 @@ export default function FieldSelection({
   // Estado para dados editáveis
   const [editableData, setEditableData] = useState<EditableData>(() => {
     // Acessar as especificações técnicas da nova estrutura
-    const specs = enrichmentResult.enriched.especificacoesTecnicas?.especificacoesTecnicas || {};
+    const specs =
+      enrichmentResult.enriched.especificacoesTecnicas
+        ?.especificacoesTecnicas || {};
     const formattedSpecs = specsToArray(specs).map((spec) => ({
       id: uuidv4(),
       key: formatTechnicalKey(spec.key),
@@ -95,10 +102,12 @@ export default function FieldSelection({
     const nomeOriginal = editableData.informacoes || "Não informado";
     const marca = editableData.marca || "Não informada";
     const caracteristicas = editableData.especificacoesTecnicas
-      .map(spec => `${spec.key}: ${spec.value}`)
+      .map((spec) => `${spec.key}: ${spec.value}`)
       .join(", ");
-    
-    return `Nome Original: ${nomeOriginal}\n\nMarca: ${marca}\n\nCaracterísticas Selecionadas:\n${caracteristicas || "Nenhuma característica selecionada"}`;
+
+    return `Nome Original: ${nomeOriginal}\n\nMarca: ${marca}\n\nCaracterísticas Selecionadas:\n${
+      caracteristicas || "Nenhuma característica selecionada"
+    }`;
   };
 
   // Função para gerar resumo
@@ -135,9 +144,9 @@ export default function FieldSelection({
       setMarcaError("A marca é obrigatória para prosseguir");
       return;
     }
-    
+
     setMarcaError("");
-    
+
     const modifiedData: EnrichedProductData = {
       ...enrichmentResult.enriched,
       categoria: editableData.categoria,
@@ -149,20 +158,24 @@ export default function FieldSelection({
         // Preserva o resumoPDM original
         resumoPDM: enrichmentResult.enriched.especificacoesTecnicas?.resumoPDM,
         // Atualiza as especificações técnicas editadas
-        especificacoesTecnicas: specsToObject(editableData.especificacoesTecnicas),
+        especificacoesTecnicas: specsToObject(
+          editableData.especificacoesTecnicas
+        ),
       },
     };
     onContinue(modifiedData);
   };
 
   return (
-    <Box sx={{ 
-      display: "flex", 
-      flexDirection: "column",
-      gap: 3, // Espaçamento entre seções
-      width: "100%",
-      // Removido padding para não criar limitações
-    }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 3, // Espaçamento entre seções
+        width: "100%",
+        // Removido padding para não criar limitações
+      }}
+    >
       {/* SEÇÃO 1: Resumo PDM - Conteúdo Fixo - Largura Total */}
       {enrichmentResult.enriched.especificacoesTecnicas?.resumoPDM && (
         <Paper
@@ -175,13 +188,21 @@ export default function FieldSelection({
             width: "100%",
           }}
         >
-          <Typography variant="h6" sx={{ mb: 2, fontSize: "0.9rem", color: "info.main", fontWeight: 600 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              mb: 2,
+              fontSize: "0.9rem",
+              color: "info.main",
+              fontWeight: 600,
+            }}
+          >
             Resumo PDM
           </Typography>
-          <Typography 
-            variant="body2" 
-            sx={{ 
-              fontSize: "0.75rem", 
+          <Typography
+            variant="body2"
+            sx={{
+              fontSize: "0.75rem",
               lineHeight: 1.4,
               color: "text.primary",
               whiteSpace: "pre-line",
@@ -214,17 +235,18 @@ export default function FieldSelection({
           }}
         >
           {editableData.especificacoesTecnicas.length === 0 ? (
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                fontSize: "0.75rem", 
+            <Typography
+              variant="body2"
+              sx={{
+                fontSize: "0.75rem",
                 color: "text.secondary",
                 gridColumn: "1 / -1",
                 textAlign: "center",
-                py: 4
+                py: 4,
               }}
             >
-              Nenhuma característica encontrada. Use o botão &quot;Adicionar&quot; para criar novas características.
+              Nenhuma característica encontrada. Use o botão
+              &quot;Adicionar&quot; para criar novas características.
             </Typography>
           ) : (
             editableData.especificacoesTecnicas.map((spec) => (
@@ -237,26 +259,26 @@ export default function FieldSelection({
                 onCheck={(id, checked) => {
                   setEditableData((prev) => ({
                     ...prev,
-                    especificacoesTecnicas: checked 
+                    especificacoesTecnicas: checked
                       ? prev.especificacoesTecnicas.map((s) =>
                           s.id === id ? { ...s, checked } : s
                         )
-                      : prev.especificacoesTecnicas.filter((s) => s.id !== id)
+                      : prev.especificacoesTecnicas.filter((s) => s.id !== id),
                   }));
                 }}
                 onValueChange={(id, newValue) => {
                   setEditableData((prev) => ({
                     ...prev,
-                    especificacoesTecnicas: prev.especificacoesTecnicas.map((s) =>
-                      s.id === id ? { ...s, value: newValue } : s
+                    especificacoesTecnicas: prev.especificacoesTecnicas.map(
+                      (s) => (s.id === id ? { ...s, value: newValue } : s)
                     ),
                   }));
                 }}
                 onLabelChange={(id, newLabel) => {
                   setEditableData((prev) => ({
                     ...prev,
-                    especificacoesTecnicas: prev.especificacoesTecnicas.map((s) =>
-                      s.id === id ? { ...s, key: newLabel } : s
+                    especificacoesTecnicas: prev.especificacoesTecnicas.map(
+                      (s) => (s.id === id ? { ...s, key: newLabel } : s)
                     ),
                   }));
                 }}
@@ -271,8 +293,8 @@ export default function FieldSelection({
           variant="outlined"
           onClick={() => setIsDialogOpen(true)}
           startIcon={<AddIcon />}
-          sx={{ 
-            height: 32, 
+          sx={{
+            height: 32,
             fontSize: "0.7rem",
           }}
         >
@@ -319,21 +341,26 @@ export default function FieldSelection({
           />
 
           {/* Dados Completos */}
-          <Box sx={{ 
-            p: 1.5, 
-            bgcolor: "grey.50", 
-            borderRadius: 1,
-            border: "1px solid",
-            borderColor: "grey.200",
-          }}>
-            <Typography variant="subtitle2" sx={{ fontSize: "0.8rem", mb: 1, fontWeight: 600 }}>
+          <Box
+            sx={{
+              p: 1.5,
+              bgcolor: "grey.50",
+              borderRadius: 1,
+              border: "1px solid",
+              borderColor: "grey.200",
+            }}
+          >
+            <Typography
+              variant="subtitle2"
+              sx={{ fontSize: "0.8rem", mb: 1, fontWeight: 600 }}
+            >
               Dados Completos:
             </Typography>
-            
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                fontSize: "0.65rem", 
+
+            <Typography
+              variant="body2"
+              sx={{
+                fontSize: "0.65rem",
                 lineHeight: 1.4,
                 color: "text.secondary",
                 whiteSpace: "pre-line",
@@ -344,21 +371,26 @@ export default function FieldSelection({
           </Box>
 
           {/* Resumo */}
-          <Box sx={{ 
-            p: 1.5, 
-            bgcolor: "grey.50", 
-            borderRadius: 1,
-            border: "1px solid",
-            borderColor: "grey.200",
-          }}>
-            <Typography variant="subtitle2" sx={{ fontSize: "0.8rem", mb: 1, fontWeight: 600 }}>
+          <Box
+            sx={{
+              p: 1.5,
+              bgcolor: "grey.50",
+              borderRadius: 1,
+              border: "1px solid",
+              borderColor: "grey.200",
+            }}
+          >
+            <Typography
+              variant="subtitle2"
+              sx={{ fontSize: "0.8rem", mb: 1, fontWeight: 600 }}
+            >
               Resumo:
             </Typography>
-            
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                fontSize: "0.65rem", 
+
+            <Typography
+              variant="body2"
+              sx={{
+                fontSize: "0.65rem",
                 lineHeight: 1.4,
                 color: "text.secondary",
               }}
@@ -369,10 +401,10 @@ export default function FieldSelection({
         </Stack>
 
         {/* Botões de Ação */}
-        <Stack 
-          direction="row" 
-          spacing={2} 
-          sx={{ 
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{
             pt: 2,
             borderTop: "1px solid",
             borderColor: "grey.200",
