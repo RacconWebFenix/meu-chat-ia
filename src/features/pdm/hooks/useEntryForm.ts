@@ -47,16 +47,10 @@ export function useEntryForm(
   // A lógica de validação que implementamos antes continua a mesma e funcional.
   const validation = useMemo((): EntryFormValidation => {
     const errors: Record<string, string> = {};
-    const { informacoes } = data;
 
-    // Verifica se o campo informações tem pelo menos algum conteúdo
-    if (!informacoes || informacoes.trim() === "") {
-      errors.form =
-        "Digite algumas informações sobre o material para iniciar a análise.";
-    }
-
+    // Sem validação obrigatória - permite submit com qualquer conteúdo
     return {
-      isValid: Object.keys(errors).length === 0,
+      isValid: true,
       errors,
     };
   }, [data]);

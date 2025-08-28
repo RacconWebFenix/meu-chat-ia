@@ -7,7 +7,6 @@ import React from "react";
 import {
   Box,
   Typography,
-  Alert,
   Stack,
   TextField,
   Button,
@@ -95,21 +94,6 @@ export default function EntryForm({
             },
           }}
         />
-
-        {/* Erro de Validação */}
-        {state.validation.errors.form && (
-          <Alert 
-            severity="warning" 
-            sx={{ 
-              py: 0.5,
-              "& .MuiAlert-message": {
-                fontSize: "0.8rem",
-              },
-            }}
-          >
-            {state.validation.errors.form}
-          </Alert>
-        )}
 
         {/* Botões de Ação */}
         <Stack direction="row" gap={1.5} justifyContent="flex-end">

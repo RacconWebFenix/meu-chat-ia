@@ -64,7 +64,7 @@ export default function CheckboxSpecCard({
       <Card
         variant="outlined"
         sx={{
-          height: "60px",
+          height: "50px",
           display: "flex",
           alignItems: "center",
           cursor: "pointer",
@@ -81,11 +81,11 @@ export default function CheckboxSpecCard({
       >
         <CardContent
           sx={{
-            p: 0.8,
-            "&:last-child": { pb: 0.8 },
+            p: 0.6,
+            "&:last-child": { pb: 0.6 },
             display: "flex",
             alignItems: "center",
-            gap: 0.8,
+            gap: 0.6,
             width: "100%",
             minHeight: 0,
           }}
@@ -107,15 +107,15 @@ export default function CheckboxSpecCard({
             <Typography
               variant="caption"
               sx={{
-                fontSize: "0.6rem",
+                fontSize: "0.55rem",
                 fontWeight: 600,
                 color: "text.secondary",
                 display: "block",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
-                lineHeight: 1.1,
-                mb: 0.2,
+                lineHeight: 1,
+                mb: 0.1,
               }}
               title={label}
             >
@@ -126,7 +126,7 @@ export default function CheckboxSpecCard({
             <Box
               sx={{
                 display: "flex",
-                gap: 0.2,
+                gap: 0.1,
                 alignItems: "center",
                 overflow: "hidden",
               }}
@@ -138,13 +138,13 @@ export default function CheckboxSpecCard({
                   size="small"
                   variant="outlined"
                   sx={{
-                    height: "16px",
-                    fontSize: "0.5rem",
+                    height: "14px",
+                    fontSize: "0.45rem",
                     "& .MuiChip-label": {
-                      px: 0.4,
+                      px: 0.3,
                       py: 0,
                     },
-                    maxWidth: "60px",
+                    maxWidth: "50px",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                   }}
@@ -154,7 +154,7 @@ export default function CheckboxSpecCard({
                 <Typography
                   variant="caption"
                   sx={{
-                    fontSize: "0.45rem",
+                    fontSize: "0.4rem",
                     color: "primary.main",
                     fontWeight: 600,
                   }}
@@ -169,7 +169,7 @@ export default function CheckboxSpecCard({
           {editable && (
             <EditIcon
               sx={{
-                fontSize: "14px",
+                fontSize: "12px",
                 color: "action.secondary",
                 cursor: "pointer",
                 "&:hover": { color: "primary.main" },

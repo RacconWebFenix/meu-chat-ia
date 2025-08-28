@@ -129,14 +129,14 @@ export default function FieldSelection({
           Características
         </Typography>
 
-        {/* Grid de Cards */}
+        {/* Grid de Cards - Menores para caber mais */}
         <Box
           sx={{
             flex: 1,
             overflow: "auto",
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-            gap: 1,
+            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+            gap: 0.8,
             alignContent: "start",
           }}
         >
@@ -203,21 +203,8 @@ export default function FieldSelection({
           Dados do Produto
         </Typography>
 
-        <Stack spacing={1.5}>
-          <TextField
-            label="Categoria"
-            value={editableData.categoria}
-            onChange={(e) => handleFieldChange("categoria", e.target.value)}
-            size="small"
-            fullWidth
-          />
-          <TextField
-            label="Aplicação"
-            value={editableData.aplicacao}
-            onChange={(e) => handleFieldChange("aplicacao", e.target.value)}
-            size="small"
-            fullWidth
-          />
+        <Stack spacing={2}>
+          {/* Campo Editável com Dados Originais */}
           <TextField
             label="Informações Originais"
             value={editableData.informacoes}
@@ -226,7 +213,44 @@ export default function FieldSelection({
             multiline
             rows={4}
             fullWidth
+            helperText="Edite as informações originais conforme necessário"
           />
+
+          {/* Descritivo com Características */}
+          <Box sx={{ 
+            p: 1.5, 
+            bgcolor: "grey.50", 
+            borderRadius: 1,
+            border: "1px solid",
+            borderColor: "grey.200",
+          }}>
+            <Typography variant="subtitle2" sx={{ fontSize: "0.8rem", mb: 1, fontWeight: 600 }}>
+              Resumo dos Dados:
+            </Typography>
+            
+            {/* Nome Original */}
+            <Typography variant="body2" sx={{ fontSize: "0.7rem", mb: 1 }}>
+              <strong>Nome Original:</strong> {enrichmentResult.original.informacoes || "Não informado"}
+            </Typography>
+
+            {/* Características Selecionadas */}
+            <Typography variant="body2" sx={{ fontSize: "0.7rem", mb: 0.5, fontWeight: 600 }}>
+              Características Selecionadas:
+            </Typography>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                fontSize: "0.65rem", 
+                lineHeight: 1.4,
+                color: "text.secondary",
+              }}
+            >
+              {editableData.especificacoesTecnicas
+                .filter(spec => spec.checked)
+                .map(spec => `${spec.key}: ${spec.value}`)
+                .join(", ") || "Nenhuma característica selecionada"}
+            </Typography>
+          </Box>
         </Stack>
 
         {/* Botões de Ação */}
