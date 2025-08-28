@@ -23,7 +23,7 @@ export default function ChatPDM() {
       sx={{
         maxWidth: "1200px",
         mx: "auto",
-        height: "calc(100vh - 100px)",
+        height: "calc(100vh - 64px - 32px)", // 64px Toolbar + 32px padding total
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",

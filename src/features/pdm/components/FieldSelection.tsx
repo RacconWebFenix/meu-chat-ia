@@ -115,8 +115,7 @@ export default function FieldSelection({
 
   return (
     <Box sx={{ 
-      minHeight: "calc(100vh - 120px)", 
-      maxHeight: "calc(100vh - 120px)",
+      height: "100%", // Usa 100% do container pai
       display: "flex", 
       gap: 2,
       overflow: "hidden"

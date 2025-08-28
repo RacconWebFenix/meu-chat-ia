@@ -176,7 +176,7 @@ export default function PDMFlow({ className }: PDMFlowProps) {
     <Box 
       className={className}
       sx={{
-        height: "calc(100vh - 100px)",
+        height: "100%", // Usa 100% do container pai
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
