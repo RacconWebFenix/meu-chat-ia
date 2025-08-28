@@ -30,6 +30,7 @@ interface EditableData {
   readonly categoria: string;
   readonly aplicacao: string;
   readonly informacoes: string;
+  readonly marca: string;
   readonly especificacoesTecnicas: SpecItem[];
 }
 
@@ -41,9 +42,7 @@ const specsToArray = (specs: Record<string, unknown>): Array<{key: string; value
 // Utilitário para converter array para specs object
 const specsToObject = (specs: SpecItem[]): Record<string, unknown> => {
   return specs.reduce((acc, spec) => {
-    if (spec.checked) {
-      acc[spec.key] = spec.value;
-    }
+    acc[spec.key] = spec.value;
     return acc;
   }, {} as Record<string, unknown>);
 };
@@ -74,11 +73,31 @@ export default function FieldSelection({
       categoria: enrichmentResult.enriched.categoria || "",
       aplicacao: enrichmentResult.enriched.aplicacao || "",
       informacoes: enrichmentResult.original.informacoes || "",
+      marca: enrichmentResult.enriched.marcaFabricante || "",
       especificacoesTecnicas: formattedSpecs,
     };
   });
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [marcaError, setMarcaError] = useState("");
+
+  // Função para gerar dados completos
+  const getDadosCompletos = () => {
+    const nomeOriginal = editableData.informacoes || "Não informado";
+    const marca = editableData.marca || "Não informada";
+    const caracteristicas = editableData.especificacoesTecnicas
+      .map(spec => `${spec.key}: ${spec.value}`)
+      .join(", ");
+    
+    return `Nome Original: ${nomeOriginal}\n\nMarca: ${marca}\n\nCaracterísticas Selecionadas:\n${caracteristicas || "Nenhuma característica selecionada"}`;
+  };
+
+  // Função para gerar resumo
+  const getResumo = () => {
+    const nomeOriginal = editableData.informacoes || "Produto";
+    const marca = editableData.marca || "Marca não informada";
+    return `${nomeOriginal} - ${marca}`;
+  };
 
   // Handlers para atualizar campos básicos
   const handleFieldChange = (
@@ -102,10 +121,19 @@ export default function FieldSelection({
   };
 
   const handleContinue = () => {
+    // Validação da marca
+    if (!editableData.marca.trim()) {
+      setMarcaError("A marca é obrigatória para prosseguir");
+      return;
+    }
+    
+    setMarcaError("");
+    
     const modifiedData: EnrichedProductData = {
       ...enrichmentResult.enriched,
       categoria: editableData.categoria,
       aplicacao: editableData.aplicacao,
+      marcaFabricante: editableData.marca,
       // Também passamos as informações originais editadas
       informacoes: editableData.informacoes,
       especificacoesTecnicas: specsToObject(editableData.especificacoesTecnicas),
@@ -156,9 +184,11 @@ export default function FieldSelection({
               onCheck={(id, checked) => {
                 setEditableData((prev) => ({
                   ...prev,
-                  especificacoesTecnicas: prev.especificacoesTecnicas.map((s) =>
-                    s.id === id ? { ...s, checked } : s
-                  ),
+                  especificacoesTecnicas: checked 
+                    ? prev.especificacoesTecnicas.map((s) =>
+                        s.id === id ? { ...s, checked } : s
+                      )
+                    : prev.especificacoesTecnicas.filter((s) => s.id !== id)
                 }));
               }}
               onValueChange={(id, newValue) => {
@@ -220,19 +250,32 @@ export default function FieldSelection({
           flexDirection: "column",
           gap: 2
         }}>
-          {/* Campo Editável com Dados Originais */}
+          {/* Campo Informações Originais */}
           <TextField
             label="Informações Originais"
             value={editableData.informacoes}
             onChange={(e) => handleFieldChange("informacoes", e.target.value)}
             size="small"
-            multiline
-            rows={4}
             fullWidth
             helperText="Edite as informações originais conforme necessário"
           />
 
-          {/* Descritivo com Características */}
+          {/* Campo Marca */}
+          <TextField
+            label="Marca"
+            value={editableData.marca}
+            onChange={(e) => {
+              handleFieldChange("marca", e.target.value);
+              if (marcaError) setMarcaError("");
+            }}
+            size="small"
+            fullWidth
+            error={!!marcaError}
+            helperText={marcaError || "Informe a marca do produto"}
+            required
+          />
+
+          {/* Dados Completos */}
           <Box sx={{ 
             p: 1.5, 
             bgcolor: "grey.50", 
@@ -241,18 +284,34 @@ export default function FieldSelection({
             borderColor: "grey.200",
           }}>
             <Typography variant="subtitle2" sx={{ fontSize: "0.8rem", mb: 1, fontWeight: 600 }}>
-              Resumo dos Dados:
+              Dados Completos:
             </Typography>
             
-            {/* Nome Original - Atualizado dinamicamente */}
-            <Typography variant="body2" sx={{ fontSize: "0.7rem", mb: 1 }}>
-              <strong>Nome Original:</strong> {editableData.informacoes || "Não informado"}
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                fontSize: "0.65rem", 
+                lineHeight: 1.4,
+                color: "text.secondary",
+                whiteSpace: "pre-line",
+              }}
+            >
+              {getDadosCompletos()}
             </Typography>
+          </Box>
 
-            {/* Características Selecionadas */}
-            <Typography variant="body2" sx={{ fontSize: "0.7rem", mb: 0.5, fontWeight: 600 }}>
-              Características Selecionadas:
+          {/* Resumo */}
+          <Box sx={{ 
+            p: 1.5, 
+            bgcolor: "grey.50", 
+            borderRadius: 1,
+            border: "1px solid",
+            borderColor: "grey.200",
+          }}>
+            <Typography variant="subtitle2" sx={{ fontSize: "0.8rem", mb: 1, fontWeight: 600 }}>
+              Resumo:
             </Typography>
+            
             <Typography 
               variant="body2" 
               sx={{ 
@@ -261,10 +320,7 @@ export default function FieldSelection({
                 color: "text.secondary",
               }}
             >
-              {editableData.especificacoesTecnicas
-                .filter(spec => spec.checked)
-                .map(spec => `${spec.key}: ${spec.value}`)
-                .join(", ") || "Nenhuma característica selecionada"}
+              {getResumo()}
             </Typography>
           </Box>
         </Box>

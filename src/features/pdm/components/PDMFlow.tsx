@@ -188,17 +188,6 @@ export default function PDMFlow({ className }: PDMFlowProps) {
         mb: 1,
         textAlign: "center",
       }}>
-        <Typography 
-          variant="h6" 
-          sx={{ 
-            fontSize: "1rem", 
-            fontWeight: 600,
-            mb: 0.3,
-            color: "primary.main",
-          }}
-        >
-          Plataforma de Descrição de Materiais (PDM)
-        </Typography>
         <Typography
           variant="body2"
           sx={{ 
