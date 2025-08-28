@@ -114,30 +114,35 @@ export default function FieldSelection({
   };
 
   return (
-    <Box sx={{ height: "calc(100vh - 120px)", display: "flex", gap: 2 }}>
+    <Box sx={{ 
+      minHeight: "calc(100vh - 120px)", 
+      maxHeight: "calc(100vh - 120px)",
+      display: "flex", 
+      gap: 2,
+      overflow: "hidden"
+    }}>
       {/* Painel Esquerdo - 65% */}
       <Paper
         elevation={1}
         sx={{
           flex: "0 0 65%",
           p: 2,
-          height: "100%",
-          overflow: "hidden",
           display: "flex",
           flexDirection: "column",
+          minHeight: 0, // Permite que o flex funcione corretamente
         }}
       >
         <Typography variant="h6" sx={{ mb: 2, fontSize: "0.9rem" }}>
           Características
         </Typography>
 
-        {/* Grid de Cards - Menores para caber mais */}
+        {/* Grid de Cards - Layout original com melhorias de scroll */}
         <Box
           sx={{
             flex: 1,
             overflow: "auto",
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
             gap: 0.8,
             alignContent: "start",
           }}
@@ -183,7 +188,12 @@ export default function FieldSelection({
           variant="outlined"
           onClick={() => setIsDialogOpen(true)}
           startIcon={<AddIcon />}
-          sx={{ mt: 2, height: 32, fontSize: "0.7rem" }}
+          sx={{ 
+            mt: 2, 
+            height: 32, 
+            fontSize: "0.7rem",
+            flexShrink: 0, // Impede que o botão seja comprimido
+          }}
         >
           Adicionar
         </Button>
@@ -195,17 +205,22 @@ export default function FieldSelection({
         sx={{
           flex: "0 0 35%",
           p: 2,
-          height: "100%",
-          overflow: "auto",
           display: "flex",
           flexDirection: "column",
+          minHeight: 0, // Permite que o flex funcione corretamente
         }}
       >
         <Typography variant="h6" sx={{ mb: 2, fontSize: "0.9rem" }}>
           Dados do Produto
         </Typography>
 
-        <Stack spacing={2}>
+        <Box sx={{ 
+          flex: 1, 
+          overflow: "auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: 2
+        }}>
           {/* Campo Editável com Dados Originais */}
           <TextField
             label="Informações Originais"
@@ -253,10 +268,20 @@ export default function FieldSelection({
                 .join(", ") || "Nenhuma característica selecionada"}
             </Typography>
           </Box>
-        </Stack>
+        </Box>
 
         {/* Botões de Ação */}
-        <Stack direction="row" spacing={1} sx={{ mt: "auto", pt: 2 }}>
+        <Stack 
+          direction="row" 
+          spacing={1} 
+          sx={{ 
+            mt: 2, 
+            pt: 2,
+            flexShrink: 0, // Impede que os botões sejam comprimidos
+            borderTop: "1px solid",
+            borderColor: "grey.200",
+          }}
+        >
           <Button
             variant="outlined"
             onClick={onBack}
