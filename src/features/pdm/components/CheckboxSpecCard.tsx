@@ -42,11 +42,6 @@ export default function CheckboxSpecCard({
   const [tempLabel, setTempLabel] = useState(label);
   const [tempValue, setTempValue] = useState(value);
 
-  // Dividir valores por vírgula e criar tags
-  const values = value.split(",").map((v) => v.trim()).filter(Boolean);
-  const displayValues = values.slice(0, 2); // Mostrar no máximo 2 tags
-  const remainingCount = values.length - 2;
-
   const handleSave = () => {
     onLabelChange(id, tempLabel);
     onValueChange(id, tempValue);
@@ -107,7 +102,7 @@ export default function CheckboxSpecCard({
             <Typography
               variant="caption"
               sx={{
-                fontSize: "0.55rem",
+                fontSize: "0.85rem", // Aumentado de 0.55rem para 0.85rem (+0.3rem)
                 fontWeight: 600,
                 color: "text.secondary",
                 display: "block",
@@ -122,47 +117,22 @@ export default function CheckboxSpecCard({
               {label}
             </Typography>
 
-            {/* Tags de Valores */}
-            <Box
+            {/* Valor Simples */}
+            <Typography
+              variant="body2"
               sx={{
-                display: "flex",
-                gap: 0.1,
-                alignItems: "center",
+                fontSize: "0.75rem", // Aumentado de 0.45rem para 0.75rem (+0.3rem)
+                color: "text.primary",
+                display: "block",
                 overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                lineHeight: 1.2,
               }}
+              title={value}
             >
-              {displayValues.map((val, index) => (
-                <Chip
-                  key={index}
-                  label={val}
-                  size="small"
-                  variant="outlined"
-                  sx={{
-                    height: "14px",
-                    fontSize: "0.45rem",
-                    "& .MuiChip-label": {
-                      px: 0.3,
-                      py: 0,
-                    },
-                    maxWidth: "50px",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                />
-              ))}
-              {remainingCount > 0 && (
-                <Typography
-                  variant="caption"
-                  sx={{
-                    fontSize: "0.4rem",
-                    color: "primary.main",
-                    fontWeight: 600,
-                  }}
-                >
-                  +{remainingCount}
-                </Typography>
-              )}
-            </Box>
+              {value || "Sem valor"}
+            </Typography>
           </Box>
 
           {/* Botão de Edição */}
@@ -205,14 +175,12 @@ export default function CheckboxSpecCard({
           />
           <TextField
             margin="dense"
-            label="Valores (separados por vírgula)"
+            label="Valor da Característica"
             fullWidth
             variant="outlined"
-            multiline
-            rows={2}
             value={tempValue}
             onChange={(e) => setTempValue(e.target.value)}
-            placeholder="Ex: SKF, 25mm, Aço inoxidável"
+            placeholder="Ex: β15μm > 200 absolutos"
           />
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>

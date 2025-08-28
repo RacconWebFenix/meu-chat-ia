@@ -24,6 +24,7 @@ export interface EnrichedProductData {
   readonly categoria: string;
   readonly subcategoria?: string;
   readonly marcaFabricante?: string;
+  readonly informacoes?: string; // Campo para informações originais editáveis
   readonly especificacoesTecnicas: Record<string, unknown>;
   readonly aplicacao?: string;
   readonly normas?: string[];

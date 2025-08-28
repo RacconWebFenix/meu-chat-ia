@@ -106,6 +106,8 @@ export default function FieldSelection({
       ...enrichmentResult.enriched,
       categoria: editableData.categoria,
       aplicacao: editableData.aplicacao,
+      // Também passamos as informações originais editadas
+      informacoes: editableData.informacoes,
       especificacoesTecnicas: specsToObject(editableData.especificacoesTecnicas),
     };
     onContinue(modifiedData);
@@ -228,9 +230,9 @@ export default function FieldSelection({
               Resumo dos Dados:
             </Typography>
             
-            {/* Nome Original */}
+            {/* Nome Original - Atualizado dinamicamente */}
             <Typography variant="body2" sx={{ fontSize: "0.7rem", mb: 1 }}>
-              <strong>Nome Original:</strong> {enrichmentResult.original.informacoes || "Não informado"}
+              <strong>Nome Original:</strong> {editableData.informacoes || "Não informado"}
             </Typography>
 
             {/* Características Selecionadas */}
