@@ -9,12 +9,12 @@ export interface BaseProductInfo {
   readonly referencia?: string;
   readonly marcaFabricante?: string;
   readonly caracteristicas?: string;
-  
+
   // NOVOS CAMPOS ADICIONADOS
   readonly aplicacao?: string;
   readonly breveDescricao?: string;
   readonly unidadeMedida?: string;
-  
+
   // CAMPO SIMPLIFICADO PARA ENTRADA ÚNICA
   readonly informacoes?: string;
 }

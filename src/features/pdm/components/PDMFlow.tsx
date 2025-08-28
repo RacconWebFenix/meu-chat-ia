@@ -20,10 +20,7 @@ import {
   EnrichedProductData,
   N8NEquivalenceResponse,
 } from "../types";
-import {
-  createEnrichmentService,
-  createN8NService,
-} from "../services";
+import { createEnrichmentService, createN8NService } from "../services";
 import EntryForm from "./EntryForm";
 import FieldSelection from "./FieldSelection";
 import N8NEquivalenceResults from "./N8NEquivalenceResults";
@@ -174,31 +171,87 @@ export default function PDMFlow({ className }: PDMFlowProps) {
   };
 
   return (
-    <Box className={className}>
-      <Paper sx={{ p: { xs: 2, sm: 4 } }}>
-        <Typography variant="h5" sx={{ textAlign: "center", mb: 1 }}>
-          Plataforma de Descrição de Materiais (PDM)
-        </Typography>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ textAlign: "center", mb: 4 }}
+    <Box
+      className={className}
+      sx={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
+      {/* Header Ultra Compacto */}
+      <Box
+        sx={{
+          p: 0.8,
+          bgcolor: "background.paper",
+          borderBottom: 1,
+          borderColor: "divider",
+          flexShrink: 0,
+        }}
+      >
+        {/* Stepper Horizontal Minimalista */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 0.4,
+          }}
         >
-          Siga as etapas para padronizar e encontrar equivalências.
-        </Typography>
-        <Stepper
-          activeStep={STEPS.findIndex((s) => s.key === state.currentStep)}
-          alternativeLabel
-          sx={{ mb: 4 }}
-        >
-          {STEPS.map((step) => (
-            <Step key={step.key}>
-              <StepLabel>{step.label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-        <div>{renderStepContent()}</div>
-      </Paper>
+          {STEPS.map((step, index) => {
+            const isActive = step.key === state.currentStep;
+            const isCompleted =
+              STEPS.findIndex((s) => s.key === state.currentStep) > index;
+
+            return (
+              <React.Fragment key={step.key}>
+                <Box
+                  sx={{
+                    width: 18,
+                    height: 18,
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "0.65rem",
+                    fontWeight: 600,
+                    bgcolor: isCompleted
+                      ? "success.main"
+                      : isActive
+                      ? "primary.main"
+                      : "grey.300",
+                    color: isCompleted || isActive ? "white" : "grey.600",
+                  }}
+                >
+                  {isCompleted ? "✓" : index + 1}
+                </Box>
+                {index < STEPS.length - 1 && (
+                  <Box
+                    sx={{
+                      width: 14,
+                      height: 1,
+                      bgcolor: isCompleted ? "success.main" : "grey.300",
+                    }}
+                  />
+                )}
+              </React.Fragment>
+            );
+          })}
+        </Box>
+      </Box>
+
+      {/* Conteúdo da Etapa - Ocupa todo espaço restante */}
+      <Box
+        sx={{
+          flex: 1,
+          overflow: "hidden",
+          p: 0.4,
+          minHeight: 0,
+        }}
+      >
+        {renderStepContent()}
+      </Box>
     </Box>
   );
 }

@@ -51,7 +51,8 @@ export function useEntryForm(
 
     // Verifica se o campo informações tem pelo menos algum conteúdo
     if (!informacoes || informacoes.trim() === "") {
-      errors.form = "Digite algumas informações sobre o material para iniciar a análise.";
+      errors.form =
+        "Digite algumas informações sobre o material para iniciar a análise.";
     }
 
     return {

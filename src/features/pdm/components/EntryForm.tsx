@@ -22,10 +22,8 @@ import {
 
 interface EntryFormProps {
   readonly onSubmit?: EntryFormSubmitHandler;
-  readonly onCancel?: EntryFormResetHandler; // Corrigido para EntryFormResetHandler
+  readonly onCancel?: EntryFormResetHandler;
   readonly disabled?: boolean;
-  readonly title?: string;
-  readonly subtitle?: string;
 }
 
 // Configuração do campo único simplificado
@@ -33,10 +31,10 @@ const FORM_FIELDS: EntryFormField[] = [
   {
     key: "informacoes",
     label: "Informações do Material",
-    placeholder: "Ex: Rolamento SKF 6205-2Z, parafuso sextavado M8x50, usado em motores elétricos...",
+    placeholder: "Ex: Rolamento SKF 6205-2Z, motor WEG 10cv, parafuso M8x50...",
     required: true,
     maxLength: 500,
-    helpText: "Digite todas as informações que possui sobre o material. Separe múltiplas informações por vírgula.",
+    helpText: "Digite nome, marca, referência, aplicação, etc.",
   },
 ];
 
@@ -44,8 +42,6 @@ export default function EntryForm({
   onSubmit,
   onCancel,
   disabled = false,
-  title = "Análise de Descrição de Material",
-  subtitle = "Digite todas as informações que possui sobre o material. Você pode incluir nome, marca, referência, aplicação, etc. Separe múltiplas informações por vírgula.",
 }: EntryFormProps) {
   const { state, updateField, handleSubmit, handleReset, canSubmit } =
     useEntryForm({
@@ -53,73 +49,66 @@ export default function EntryForm({
       onReset: onCancel,
     });
 
-  const renderField = (field: EntryFormField) => {
-    const error = state.validation.errors[field.key];
-    // Campo único será sempre multiline para comportar mais informações
-    const isMultiline = true;
-
-    return (
-      <Box key={field.key}>
-        <TextField
-          fullWidth
-          id={field.key}
-          name={field.key}
-          label={field.label}
-          placeholder={field.placeholder}
-          value={state.data[field.key] || ""}
-          // Corrigido para usar o updateField do hook
-          onChange={(e) => updateField(field.key, e.target.value)}
-          required={field.required}
-          disabled={state.isSubmitting || disabled}
-          error={!!error}
-          helperText={error || field.helpText}
-          inputProps={{ maxLength: field.maxLength }}
-          multiline={isMultiline}
-          rows={4}
-        />
-      </Box>
-    );
-  };
+  const field = FORM_FIELDS[0]; // Apenas um campo
+  const error = state.validation.errors[field.key];
 
   return (
-    <Paper sx={{ p: { xs: 2, sm: 4 } }}>
-      <Typography variant="h5" gutterBottom>
-        {title}
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-        {subtitle}
-      </Typography>
-      <Stack component="form" noValidate gap={3}>
-        {FORM_FIELDS.map(renderField)}
+    <Box sx={{ maxWidth: 800, mx: "auto", p: 0 }}>
+      {/* Campo Ultra Compacto */}
+      <TextField
+        fullWidth
+        id={field.key}
+        label={field.label}
+        placeholder={field.placeholder}
+        value={state.data[field.key] || ""}
+        onChange={(e) => updateField(field.key, e.target.value)}
+        disabled={state.isSubmitting || disabled}
+        error={!!error}
+        helperText={error || field.helpText}
+        inputProps={{ maxLength: field.maxLength }}
+        multiline
+        rows={3}
+        sx={{
+          mb: 1.5,
+          "& .MuiFormHelperText-root": {
+            fontSize: "0.75rem",
+            margin: "4px 0 0 0",
+          },
+        }}
+      />
 
-        {state.validation.errors.form && (
-          <Alert severity="warning" sx={{ mt: 2 }}>
-            {state.validation.errors.form}
-          </Alert>
-        )}
+      {/* Erro de Validação Compacto */}
+      {state.validation.errors.form && (
+        <Alert severity="warning" sx={{ mb: 1.5, py: 0.5 }}>
+          {state.validation.errors.form}
+        </Alert>
+      )}
 
-        <Stack direction="row" gap={2} justifyContent="flex-end" sx={{ mt: 3 }}>
-          {onCancel && (
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={handleReset}
-              disabled={state.isSubmitting}
-            >
-              Limpar
-            </Button>
-          )}
+      {/* Botões Compactos */}
+      <Stack direction="row" gap={1.5} justifyContent="flex-end">
+        {onCancel && (
           <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            disabled={!canSubmit || disabled}
-            size="large"
+            variant="outlined"
+            color="secondary"
+            onClick={handleReset}
+            disabled={state.isSubmitting}
+            size="medium"
+            sx={{ minWidth: 80 }}
           >
-            {state.isSubmitting ? "Analisando..." : "Analisar Material"}
+            Limpar
           </Button>
-        </Stack>
+        )}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+          disabled={!canSubmit || disabled}
+          size="medium"
+          sx={{ minWidth: 160 }}
+        >
+          {state.isSubmitting ? "Analisando..." : "Analisar Material"}
+        </Button>
       </Stack>
-    </Paper>
+    </Box>
   );
 }

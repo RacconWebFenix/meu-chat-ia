@@ -38,12 +38,3 @@ export interface EquivalenceMatch {
   readonly matchedFields: readonly string[]; // Campos que fizeram match
   readonly pdmPadronizado?: string;
 }
-
-// Response da busca de equivalência
-export interface EquivalenceSearchResponse {
-  readonly searchCriteria: EquivalenceSearchCriteria;
-  readonly matches: readonly EquivalenceMatch[];
-  readonly totalFound: number;
-  readonly searchDuration: number; // em milissegundos
-  readonly suggestions?: readonly string[]; // Sugestões se poucos resultados
-}

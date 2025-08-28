@@ -21,7 +21,7 @@ export default function TabsSwitcher({ tab, setTab }: TabsSwitcherProps) {
       sx={{
         display: "flex",
         justifyContent: "center",
-        mb: 3,
+        mb: 0.5,
       }}
     >
       <ToggleButtonGroup
@@ -31,18 +31,22 @@ export default function TabsSwitcher({ tab, setTab }: TabsSwitcherProps) {
         aria-label="tipo de pesquisa"
         sx={{
           backgroundColor: "background.paper",
-          borderRadius: 2,
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          borderRadius: 1,
+          boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
+          height: "32px",
           "& .MuiToggleButton-root": {
             border: "none",
-            borderRadius: "8px !important",
-            px: 3,
-            py: 1.5,
-            mx: 0.5,
-            fontWeight: 600,
+            borderRadius: "4px !important",
+            px: 1.5,
+            py: 0.2,
+            mx: 0.1,
+            fontWeight: 500,
             textTransform: "none",
             color: "primary.main",
             backgroundColor: "transparent",
+            fontSize: "0.7rem",
+            minHeight: "28px",
+            minWidth: "120px",
             "&:hover": {
               backgroundColor: "primary.light",
               color: "primary.dark",
@@ -61,10 +65,10 @@ export default function TabsSwitcher({ tab, setTab }: TabsSwitcherProps) {
           value="equivalencia"
           aria-label="pesquisa de equivalência"
         >
-          Pesquisa de Equivalência
+          Equivalência
         </ToggleButton>
         <ToggleButton value="pdm" aria-label="pesquisa pdm">
-          Pesquisa PDM
+          PDM
         </ToggleButton>
       </ToggleButtonGroup>
     </Box>

@@ -159,9 +159,7 @@ export class MockEnrichmentService implements EnrichmentService {
     const { productInfo } = request;
 
     // Identify product category
-    const category = this.identifyCategory(
-      productInfo.nome || ""
-    );
+    const category = this.identifyCategory(productInfo.nome || "");
 
     // Find specific product data
     const productData = this.findProductData(category, productInfo);
