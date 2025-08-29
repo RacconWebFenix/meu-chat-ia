@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useMemo } from "react";
+import Image from "next/image";
 import {
   Box,
   Typography,
@@ -53,6 +54,7 @@ import {
   N8NEquivalenceState,
 } from "../types/n8n.types";
 import { formatTechnicalKey } from "@/Utils/formatUtils";
+import { useLayout } from "@/contexts/LayoutContext";
 
 interface N8NEquivalenceResultsProps {
   readonly searchResult: N8NEquivalenceResponse;
@@ -75,6 +77,7 @@ export default function N8NEquivalenceResults({
   originalProduct,
 }: N8NEquivalenceResultsProps) {
   const { equivalencias, metadata } = searchResult;
+  const { currentLayout } = useLayout();
 
   console.log("N8NEquivalenceResults - isLoading:", isLoading);
   console.log(
@@ -442,17 +445,58 @@ Gerado em: ${new Date().toLocaleString("pt-BR")}
       </Stack>
 
       {/* Lista de Equivalências */}
-      <Grid container spacing={3}>
-        {sortedEquivalencias.map((equivalencia) => (
-          <Grid size={{ xs: 12, md: 6, lg: 4 }} key={equivalencia.id}>
-            <EquivalenceCard
+      {currentLayout === "layout1" && (
+        <Grid container spacing={3}>
+          {sortedEquivalencias.map((equivalencia) => (
+            <Grid size={{ xs: 12, md: 6, lg: 4 }} key={equivalencia.id}>
+              <EquivalenceCard
+                equivalencia={equivalencia}
+                isSelected={state.selectedIds.includes(equivalencia.id)}
+                onToggleSelection={() => handleToggleSelection(equivalencia.id)}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      )}
+
+      {currentLayout === "layout2" && (
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+          {sortedEquivalencias.map((equivalencia) => (
+            <CompactEquivalenceCard
+              key={equivalencia.id}
               equivalencia={equivalencia}
               isSelected={state.selectedIds.includes(equivalencia.id)}
               onToggleSelection={() => handleToggleSelection(equivalencia.id)}
             />
-          </Grid>
-        ))}
-      </Grid>
+          ))}
+        </Box>
+      )}
+
+      {currentLayout === "layout3" && (
+        <Box sx={{ display: "flex", gap: 3, height: "100%" }}>
+          <DashboardSidebar equivalencias={sortedEquivalencias} />
+          <Box flex={1}>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
+                gap: 2,
+              }}
+            >
+              {sortedEquivalencias.map((equivalencia) => (
+                <DashboardEquivalenceCard
+                  key={equivalencia.id}
+                  equivalencia={equivalencia}
+                  isSelected={state.selectedIds.includes(equivalencia.id)}
+                  onToggleSelection={() =>
+                    handleToggleSelection(equivalencia.id)
+                  }
+                />
+              ))}
+            </Box>
+          </Box>
+        </Box>
+      )}
 
       {/* Modal de Comparação */}
       <ComparisonModal
@@ -659,6 +703,301 @@ function EquivalenceCard({
             </AccordionDetails>
           </Accordion>
         </Stack>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Componente para card compacto de equivalência (Layout 2)
+interface CompactEquivalenceCardProps {
+  readonly equivalencia: N8NEquivalence;
+  readonly isSelected: boolean;
+  readonly onToggleSelection: () => void;
+}
+
+function CompactEquivalenceCard({
+  equivalencia,
+  isSelected,
+  onToggleSelection,
+}: CompactEquivalenceCardProps) {
+  return (
+    <Paper
+      sx={{
+        p: 2,
+        display: "flex",
+        alignItems: "center",
+        gap: 2,
+        cursor: "pointer",
+        border: isSelected ? "2px solid" : "1px solid",
+        borderColor: isSelected ? "primary.main" : "divider",
+        "&:hover": {
+          bgcolor: "action.hover",
+        },
+      }}
+      onClick={onToggleSelection}
+    >
+      {/* Imagem/Avatar */}
+      <Box
+        sx={{
+          width: 60,
+          height: 60,
+          bgcolor: "grey.200",
+          borderRadius: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {equivalencia.images && equivalencia.images.length > 0 ? (
+          <Image
+            src={equivalencia.images[0].image_url}
+            alt={equivalencia.nome}
+            width={60}
+            height={60}
+            style={{
+              objectFit: "cover",
+              borderRadius: 4,
+            }}
+          />
+        ) : (
+          <ImageIcon sx={{ color: "grey.400" }} />
+        )}
+      </Box>
+
+      {/* Informações principais */}
+      <Box flex={1}>
+        <Typography variant="h6" sx={{ mb: 0.5 }}>
+          {equivalencia.marcaFabricante}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+          {equivalencia.nome}
+        </Typography>
+
+        {/* Especificações principais */}
+        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+          {Object.entries(equivalencia.especificacoesTecnicas || {})
+            .slice(0, 3)
+            .map(([key, value]) => (
+              <Chip
+                key={key}
+                label={`${formatTechnicalKey(key)}: ${value}`}
+                size="small"
+                variant="outlined"
+              />
+            ))}
+        </Box>
+      </Box>
+
+      {/* Métricas e seleção */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 1,
+        }}
+      >
+        <Chip
+          label={`${equivalencia.grauSimilaridade}%`}
+          color="primary"
+          size="small"
+        />
+        <Checkbox checked={isSelected} />
+      </Box>
+    </Paper>
+  );
+}
+
+// Componente da sidebar do dashboard (Layout 3)
+interface DashboardSidebarProps {
+  readonly equivalencias: readonly N8NEquivalence[];
+}
+
+function DashboardSidebar({ equivalencias }: DashboardSidebarProps) {
+  const totalEquivalencias = equivalencias.length;
+  const mediaSimilaridade =
+    equivalencias.length > 0
+      ? Math.round(
+          equivalencias.reduce((sum, eq) => sum + eq.grauSimilaridade, 0) /
+            equivalencias.length
+        )
+      : 0;
+
+  const distribuicaoDisponibilidade = equivalencias.reduce((acc, eq) => {
+    acc[eq.disponibilidade] = (acc[eq.disponibilidade] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  return (
+    <Paper sx={{ width: 300, p: 2, height: "fit-content" }}>
+      <Typography variant="h6" gutterBottom>
+        Métricas Técnicas
+      </Typography>
+
+      <Stack spacing={2}>
+        <Box>
+          <Typography variant="body2" color="text.secondary">
+            Total Encontradas
+          </Typography>
+          <Typography variant="h4" color="primary">
+            {totalEquivalencias}
+          </Typography>
+        </Box>
+
+        <Box>
+          <Typography variant="body2" color="text.secondary">
+            Similaridade Média
+          </Typography>
+          <Typography variant="h4" color="secondary">
+            {mediaSimilaridade}%
+          </Typography>
+        </Box>
+
+        <Divider />
+
+        <Box>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Disponibilidade
+          </Typography>
+          {Object.entries(distribuicaoDisponibilidade).map(
+            ([status, count]) => (
+              <Box
+                key={status}
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  mb: 0.5,
+                }}
+              >
+                <Typography variant="caption">{status}</Typography>
+                <Chip label={count} size="small" />
+              </Box>
+            )
+          )}
+        </Box>
+
+        <Divider />
+
+        <Box>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Especificações Mais Comuns
+          </Typography>
+          {/* Aqui poderia adicionar lógica para mostrar as especificações mais frequentes */}
+          <Typography variant="caption" color="text.secondary">
+            Análise em desenvolvimento
+          </Typography>
+        </Box>
+      </Stack>
+    </Paper>
+  );
+}
+
+// Componente para card do dashboard (Layout 3)
+interface DashboardEquivalenceCardProps {
+  readonly equivalencia: N8NEquivalence;
+  readonly isSelected: boolean;
+  readonly onToggleSelection: () => void;
+}
+
+function DashboardEquivalenceCard({
+  equivalencia,
+  isSelected,
+  onToggleSelection,
+}: DashboardEquivalenceCardProps) {
+  return (
+    <Card
+      sx={{
+        height: "100%",
+        cursor: "pointer",
+        border: isSelected ? "2px solid" : "1px solid",
+        borderColor: isSelected ? "primary.main" : "divider",
+        "&:hover": {
+          boxShadow: 3,
+        },
+      }}
+      onClick={onToggleSelection}
+    >
+      <CardContent sx={{ p: 2 }}>
+        <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+          {/* Imagem */}
+          <Box
+            sx={{
+              width: 80,
+              height: 80,
+              bgcolor: "grey.200",
+              borderRadius: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            {equivalencia.images && equivalencia.images.length > 0 ? (
+              <Image
+                src={equivalencia.images[0].image_url}
+                alt={equivalencia.nome}
+                width={80}
+                height={80}
+                style={{
+                  objectFit: "cover",
+                  borderRadius: 4,
+                }}
+              />
+            ) : (
+              <ImageIcon sx={{ color: "grey.400" }} />
+            )}
+          </Box>
+
+          {/* Informações principais */}
+          <Box flex={1}>
+            <Typography variant="h6" sx={{ mb: 0.5 }}>
+              {equivalencia.marcaFabricante}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              {equivalencia.nome}
+            </Typography>
+
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+              <Chip
+                label={`${equivalencia.grauSimilaridade}%`}
+                color="primary"
+                size="small"
+              />
+              <Chip
+                label={equivalencia.disponibilidade}
+                variant="outlined"
+                size="small"
+              />
+            </Box>
+          </Box>
+
+          <Checkbox checked={isSelected} />
+        </Box>
+
+        {/* Especificações técnicas */}
+        <Box>
+          <Typography variant="body2" fontWeight="bold" sx={{ mb: 1 }}>
+            Especificações Técnicas:
+          </Typography>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+            {Object.entries(equivalencia.especificacoesTecnicas || {})
+              .slice(0, 4)
+              .map(([key, value]) => (
+                <Typography key={key} variant="caption" display="block">
+                  • {formatTechnicalKey(key)}: {String(value)}
+                </Typography>
+              ))}
+            {Object.keys(equivalencia.especificacoesTecnicas || {}).length >
+              4 && (
+              <Typography variant="caption" color="text.secondary">
+                ... e mais{" "}
+                {Object.keys(equivalencia.especificacoesTecnicas || {}).length -
+                  4}{" "}
+                especificações
+              </Typography>
+            )}
+          </Box>
+        </Box>
       </CardContent>
     </Card>
   );

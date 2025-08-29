@@ -16,10 +16,12 @@ import {
   FormControl,
   SelectChangeEvent,
   CircularProgress,
+  Chip,
 } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
 import { usePageTitle } from "@/contexts";
 import { useGroup } from "@/contexts/GroupContext";
+import { useLayout } from "@/contexts/LayoutContext";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -31,6 +33,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { pageTitle } = usePageTitle();
   const { groups, selectedGroupId, setSelectedGroupId, isLoading } = useGroup();
+  const { currentLayout, setCurrentLayout } = useLayout();
 
   // Verifica se estamos na página principal (com abas PDM/equivalência)
   const isMainPage = pathname === "/" || pathname === "/app";
@@ -82,6 +85,23 @@ export default function Header({ onMenuClick }: HeaderProps) {
         >
           {pageTitle}
         </Typography>
+
+        {isMainPage && (
+          <Box sx={{ display: "flex", gap: 1, mr: 2 }}>
+            {(["layout1", "layout2", "layout3"] as const).map((layout) => (
+              <Chip
+                key={layout}
+                label={`Layout ${layout.slice(-1)}`}
+                onClick={() => {
+                  setCurrentLayout(layout);
+                }}
+                color={currentLayout === layout ? "primary" : "default"}
+                variant={currentLayout === layout ? "filled" : "outlined"}
+                sx={{ cursor: "pointer" }}
+              />
+            ))}
+          </Box>
+        )}
 
         {!isMainPage && (
           <FormControl size="small" sx={{ minWidth: 280, mr: 2 }}>

@@ -18,6 +18,7 @@ import { createEnrichmentService, createN8NService } from "../services";
 import EntryForm from "./EntryForm";
 import FieldSelection from "./FieldSelection";
 import N8NEquivalenceResults from "./N8NEquivalenceResults";
+import { useLayout } from "@/contexts/LayoutContext";
 
 interface PDMFlowProps {
   readonly className?: string;
@@ -31,6 +32,7 @@ const STEPS = [
 
 export default function PDMFlow({ className }: PDMFlowProps) {
   const { state, goToStep, setStatus, setError } = usePDMFlow();
+  const { currentLayout } = useLayout();
   const [enrichmentResult, setEnrichmentResult] =
     React.useState<EnrichmentResponse | null>(null);
   const [n8nResult, setN8nResult] =
@@ -38,6 +40,9 @@ export default function PDMFlow({ className }: PDMFlowProps) {
 
   const enrichmentService = createEnrichmentService();
   const n8nService = createN8NService();
+
+  // Removido: Listener para reset de estados quando layout muda
+  // Agora os dados permanecem na mesma etapa ao trocar de layout
 
   const handleEntrySubmit = async (data: BaseProductInfo) => {
     try {

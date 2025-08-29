@@ -21,11 +21,18 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Checkbox,
+  LinearProgress,
+  Divider,
+  Card,
+  CardContent,
+  Grid,
 } from "@mui/material";
 import { Add as AddIcon, GetApp as ExportIcon } from "@mui/icons-material";
 import { v4 as uuidv4 } from "uuid";
 import { EnrichmentResponse, EnrichedProductData } from "../types";
 import { formatTechnicalKey } from "@/Utils/formatUtils";
+import { useLayout } from "@/contexts/LayoutContext";
 import CheckboxSpecCard from "./CheckboxSpecCard";
 import AddNewSpecDialog from "./AddNewSpecDialog";
 import ExpandablePDMSummary from "./ExpandablePDMSummary";
@@ -128,6 +135,8 @@ export default function FieldSelection({
   onBack,
   onContinue,
 }: FieldSelectionProps) {
+  const { currentLayout } = useLayout();
+
   // Estado para dados editáveis
   const [editableData, setEditableData] = useState<EditableData>(() => {
     // Acessar as especificações técnicas da nova estrutura
@@ -380,248 +389,289 @@ Gerado em: ${new Date().toLocaleString("pt-BR")}
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: 3, // Espaçamento entre seções
+        gap: 3,
         width: "100%",
-        // Removido padding para não criar limitações
       }}
     >
-      {/* SEÇÃO 1: Resumo PDM - Card Expansível - Largura Total */}
-      {enrichmentResult.enriched.especificacoesTecnicas?.resumoPDM && (
-        <ExpandablePDMSummary
-          summaryText={
-            enrichmentResult.enriched.especificacoesTecnicas.resumoPDM
-          }
-          maxLines={5}
-          imagens={enrichmentResult.enriched.imagens}
+      {currentLayout === "layout1" && (
+        <>
+          {/* SEÇÃO 1: Resumo PDM - Card Expansível - Largura Total */}
+          {enrichmentResult.enriched.especificacoesTecnicas?.resumoPDM && (
+            <ExpandablePDMSummary
+              summaryText={
+                enrichmentResult.enriched.especificacoesTecnicas.resumoPDM
+              }
+              maxLines={5}
+              imagens={enrichmentResult.enriched.imagens}
+            />
+          )}
+
+          {/* SEÇÃO 2: Características - Largura Total */}
+          <Paper
+            elevation={1}
+            sx={{
+              p: 2,
+              width: "100%",
+            }}
+          >
+            <Typography variant="h6" sx={{ mb: 2, fontSize: "0.9rem" }}>
+              Características (
+              {
+                editableData.especificacoesTecnicas.filter(
+                  (spec) => spec.checked
+                ).length
+              }{" "}
+              de {editableData.especificacoesTecnicas.length})
+            </Typography>
+
+            {/* Grid de Cards - Mantendo funcionamento original */}
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+                gap: 0.8,
+                mb: 2,
+              }}
+            >
+              {editableData.especificacoesTecnicas.length === 0 ? (
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontSize: "0.75rem",
+                    color: "text.secondary",
+                    gridColumn: "1 / -1",
+                    textAlign: "center",
+                    py: 4,
+                  }}
+                >
+                  Nenhuma característica encontrada. Use o botão
+                  &quot;Adicionar&quot; para criar novas características.
+                </Typography>
+              ) : (
+                editableData.especificacoesTecnicas.map((spec) => (
+                  <CheckboxSpecCard
+                    key={spec.id}
+                    id={spec.id}
+                    label={spec.key}
+                    value={spec.value}
+                    checked={spec.checked}
+                    onCheck={(id, checked) => {
+                      setEditableData((prev) => ({
+                        ...prev,
+                        especificacoesTecnicas: prev.especificacoesTecnicas.map(
+                          (s) => (s.id === id ? { ...s, checked } : s)
+                        ),
+                      }));
+                    }}
+                    onValueChange={(id, newValue) => {
+                      setEditableData((prev) => ({
+                        ...prev,
+                        especificacoesTecnicas: prev.especificacoesTecnicas.map(
+                          (s) => (s.id === id ? { ...s, value: newValue } : s)
+                        ),
+                      }));
+                    }}
+                    onLabelChange={(id, newLabel) => {
+                      setEditableData((prev) => ({
+                        ...prev,
+                        especificacoesTecnicas: prev.especificacoesTecnicas.map(
+                          (s) => (s.id === id ? { ...s, key: newLabel } : s)
+                        ),
+                      }));
+                    }}
+                    editable={true}
+                  />
+                ))
+              )}
+            </Box>
+
+            {/* Botão Add */}
+            <Button
+              variant="outlined"
+              onClick={() => setIsDialogOpen(true)}
+              startIcon={<AddIcon />}
+              sx={{
+                height: 32,
+                fontSize: "0.7rem",
+              }}
+            >
+              Adicionar
+            </Button>
+          </Paper>
+
+          {/* SEÇÃO 3: Dados do Produto - Largura Total */}
+          <Paper
+            elevation={1}
+            sx={{
+              p: 2,
+              width: "100%",
+            }}
+          >
+            <Typography variant="h6" sx={{ mb: 2, fontSize: "0.9rem" }}>
+              Dados do Produto
+            </Typography>
+
+            <Stack spacing={2} sx={{ mb: 3 }}>
+              {/* Campo Informações Originais */}
+              <TextField
+                label="Informações Originais"
+                value={editableData.informacoes}
+                onChange={(e) =>
+                  handleFieldChange("informacoes", e.target.value)
+                }
+                size="small"
+                fullWidth
+                helperText="Edite as informações originais conforme necessário"
+              />
+
+              {/* Campo Marca */}
+              <TextField
+                label="Fabricante"
+                value={editableData.marca}
+                onChange={(e) => {
+                  handleFieldChange("marca", e.target.value);
+                  if (marcaError) setMarcaError("");
+                }}
+                size="small"
+                fullWidth
+                error={!!marcaError}
+                helperText={
+                  marcaError ||
+                  "Fabricante do produto (preenchido automaticamente)"
+                }
+                required
+              />
+
+              {/* Dados Completos */}
+              <Box
+                sx={{
+                  p: 1.5,
+                  bgcolor: "grey.50",
+                  borderRadius: 1,
+                  border: "1px solid",
+                  borderColor: "grey.200",
+                }}
+              >
+                <Typography
+                  variant="subtitle2"
+                  sx={{ fontSize: "0.8rem", mb: 1, fontWeight: 600 }}
+                >
+                  Dados Completos:
+                </Typography>
+
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontSize: "0.65rem",
+                    lineHeight: 1.4,
+                    color: "text.secondary",
+                    whiteSpace: "pre-line",
+                  }}
+                >
+                  {getDadosCompletos()}
+                </Typography>
+              </Box>
+
+              {/* Resumo */}
+              <Box
+                sx={{
+                  p: 1.5,
+                  bgcolor: "grey.50",
+                  borderRadius: 1,
+                  border: "1px solid",
+                  borderColor: "grey.200",
+                }}
+              >
+                <Typography
+                  variant="subtitle2"
+                  sx={{ fontSize: "0.8rem", mb: 1, fontWeight: 600 }}
+                >
+                  Resumo:
+                </Typography>
+
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontSize: "0.65rem",
+                    lineHeight: 1.4,
+                    color: "text.secondary",
+                  }}
+                >
+                  {getResumo()}
+                </Typography>
+              </Box>
+            </Stack>
+
+            {/* Botões de Ação */}
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{
+                pt: 2,
+                borderTop: "1px solid",
+                borderColor: "grey.200",
+              }}
+            >
+              <Button
+                variant="outlined"
+                onClick={onBack}
+                sx={{ height: 32, fontSize: "0.7rem" }}
+              >
+                Voltar
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => setExportDialogOpen(true)}
+                startIcon={<ExportIcon />}
+                sx={{ height: 32, fontSize: "0.7rem" }}
+              >
+                Exportar
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleContinue}
+                sx={{ height: 32, fontSize: "0.7rem", flex: 1 }}
+              >
+                Continuar
+              </Button>
+            </Stack>
+          </Paper>
+        </>
+      )}
+
+      {currentLayout === "layout2" && (
+        <CompactFieldSelection
+          enrichmentResult={enrichmentResult}
+          editableData={editableData}
+          setEditableData={setEditableData}
+          onBack={onBack}
+          onContinue={handleContinue}
+          onExport={() => setExportDialogOpen(true)}
+          onAddSpec={() => setIsDialogOpen(true)}
+          marcaError={marcaError}
+          setMarcaError={setMarcaError}
+          handleFieldChange={handleFieldChange}
+          getDadosCompletos={getDadosCompletos}
+          getResumo={getResumo}
         />
       )}
 
-      {/* SEÇÃO 2: Características - Largura Total */}
-      <Paper
-        elevation={1}
-        sx={{
-          p: 2,
-          width: "100%",
-        }}
-      >
-        <Typography variant="h6" sx={{ mb: 2, fontSize: "0.9rem" }}>
-          Características (
-          {
-            editableData.especificacoesTecnicas.filter((spec) => spec.checked)
-              .length
-          }{" "}
-          de {editableData.especificacoesTecnicas.length})
-        </Typography>
-
-        {/* Grid de Cards - Mantendo funcionamento original */}
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
-            gap: 0.8,
-            mb: 2,
-          }}
-        >
-          {editableData.especificacoesTecnicas.length === 0 ? (
-            <Typography
-              variant="body2"
-              sx={{
-                fontSize: "0.75rem",
-                color: "text.secondary",
-                gridColumn: "1 / -1",
-                textAlign: "center",
-                py: 4,
-              }}
-            >
-              Nenhuma característica encontrada. Use o botão
-              &quot;Adicionar&quot; para criar novas características.
-            </Typography>
-          ) : (
-            editableData.especificacoesTecnicas.map((spec) => (
-              <CheckboxSpecCard
-                key={spec.id}
-                id={spec.id}
-                label={spec.key}
-                value={spec.value}
-                checked={spec.checked}
-                onCheck={(id, checked) => {
-                  setEditableData((prev) => ({
-                    ...prev,
-                    especificacoesTecnicas: prev.especificacoesTecnicas.map(
-                      (s) => (s.id === id ? { ...s, checked } : s)
-                    ),
-                  }));
-                }}
-                onValueChange={(id, newValue) => {
-                  setEditableData((prev) => ({
-                    ...prev,
-                    especificacoesTecnicas: prev.especificacoesTecnicas.map(
-                      (s) => (s.id === id ? { ...s, value: newValue } : s)
-                    ),
-                  }));
-                }}
-                onLabelChange={(id, newLabel) => {
-                  setEditableData((prev) => ({
-                    ...prev,
-                    especificacoesTecnicas: prev.especificacoesTecnicas.map(
-                      (s) => (s.id === id ? { ...s, key: newLabel } : s)
-                    ),
-                  }));
-                }}
-                editable={true}
-              />
-            ))
-          )}
-        </Box>
-
-        {/* Botão Add */}
-        <Button
-          variant="outlined"
-          onClick={() => setIsDialogOpen(true)}
-          startIcon={<AddIcon />}
-          sx={{
-            height: 32,
-            fontSize: "0.7rem",
-          }}
-        >
-          Adicionar
-        </Button>
-      </Paper>
-
-      {/* SEÇÃO 3: Dados do Produto - Largura Total */}
-      <Paper
-        elevation={1}
-        sx={{
-          p: 2,
-          width: "100%",
-        }}
-      >
-        <Typography variant="h6" sx={{ mb: 2, fontSize: "0.9rem" }}>
-          Dados do Produto
-        </Typography>
-
-        <Stack spacing={2} sx={{ mb: 3 }}>
-          {/* Campo Informações Originais */}
-          <TextField
-            label="Informações Originais"
-            value={editableData.informacoes}
-            onChange={(e) => handleFieldChange("informacoes", e.target.value)}
-            size="small"
-            fullWidth
-            helperText="Edite as informações originais conforme necessário"
-          />
-
-          {/* Campo Marca */}
-          <TextField
-            label="Fabricante"
-            value={editableData.marca}
-            onChange={(e) => {
-              handleFieldChange("marca", e.target.value);
-              if (marcaError) setMarcaError("");
-            }}
-            size="small"
-            fullWidth
-            error={!!marcaError}
-            helperText={
-              marcaError || "Fabricante do produto (preenchido automaticamente)"
-            }
-            required
-          />
-
-          {/* Dados Completos */}
-          <Box
-            sx={{
-              p: 1.5,
-              bgcolor: "grey.50",
-              borderRadius: 1,
-              border: "1px solid",
-              borderColor: "grey.200",
-            }}
-          >
-            <Typography
-              variant="subtitle2"
-              sx={{ fontSize: "0.8rem", mb: 1, fontWeight: 600 }}
-            >
-              Dados Completos:
-            </Typography>
-
-            <Typography
-              variant="body2"
-              sx={{
-                fontSize: "0.65rem",
-                lineHeight: 1.4,
-                color: "text.secondary",
-                whiteSpace: "pre-line",
-              }}
-            >
-              {getDadosCompletos()}
-            </Typography>
-          </Box>
-
-          {/* Resumo */}
-          <Box
-            sx={{
-              p: 1.5,
-              bgcolor: "grey.50",
-              borderRadius: 1,
-              border: "1px solid",
-              borderColor: "grey.200",
-            }}
-          >
-            <Typography
-              variant="subtitle2"
-              sx={{ fontSize: "0.8rem", mb: 1, fontWeight: 600 }}
-            >
-              Resumo:
-            </Typography>
-
-            <Typography
-              variant="body2"
-              sx={{
-                fontSize: "0.65rem",
-                lineHeight: 1.4,
-                color: "text.secondary",
-              }}
-            >
-              {getResumo()}
-            </Typography>
-          </Box>
-        </Stack>
-
-        {/* Botões de Ação */}
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{
-            pt: 2,
-            borderTop: "1px solid",
-            borderColor: "grey.200",
-          }}
-        >
-          <Button
-            variant="outlined"
-            onClick={onBack}
-            sx={{ height: 32, fontSize: "0.7rem" }}
-          >
-            Voltar
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => setExportDialogOpen(true)}
-            startIcon={<ExportIcon />}
-            sx={{ height: 32, fontSize: "0.7rem" }}
-          >
-            Exportar
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleContinue}
-            sx={{ height: 32, fontSize: "0.7rem", flex: 1 }}
-          >
-            Continuar
-          </Button>
-        </Stack>
-      </Paper>
+      {currentLayout === "layout3" && (
+        <DashboardFieldSelection
+          enrichmentResult={enrichmentResult}
+          editableData={editableData}
+          setEditableData={setEditableData}
+          onBack={onBack}
+          onContinue={handleContinue}
+          onExport={() => setExportDialogOpen(true)}
+          onAddSpec={() => setIsDialogOpen(true)}
+          marcaError={marcaError}
+          setMarcaError={setMarcaError}
+          handleFieldChange={handleFieldChange}
+          getDadosCompletos={getDadosCompletos}
+          getResumo={getResumo}
+        />
+      )}
 
       {/* Dialog para adicionar novas especificações */}
       <AddNewSpecDialog
@@ -660,6 +710,413 @@ Gerado em: ${new Date().toLocaleString("pt-BR")}
           </Button>
         </DialogActions>
       </Dialog>
+    </Box>
+  );
+}
+
+// Componente para Layout 2 (Compacto)
+interface CompactFieldSelectionProps {
+  enrichmentResult: EnrichmentResponse;
+  editableData: EditableData;
+  setEditableData: React.Dispatch<React.SetStateAction<EditableData>>;
+  onBack: () => void;
+  onContinue: () => void;
+  onExport: () => void;
+  onAddSpec: () => void;
+  marcaError: string;
+  setMarcaError: (error: string) => void;
+  handleFieldChange: (
+    field: keyof Omit<EditableData, "especificacoesTecnicas">,
+    value: string
+  ) => void;
+  getDadosCompletos: () => string;
+  getResumo: () => string;
+}
+
+function CompactFieldSelection({
+  enrichmentResult,
+  editableData,
+  setEditableData,
+  onBack,
+  onContinue,
+  onExport,
+  onAddSpec,
+  marcaError,
+  setMarcaError,
+  handleFieldChange,
+  getDadosCompletos,
+  getResumo,
+}: CompactFieldSelectionProps) {
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      {/* Resumo Compacto */}
+      {enrichmentResult.enriched.especificacoesTecnicas?.resumoPDM && (
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="h6" sx={{ mb: 1, fontSize: "0.9rem" }}>
+            Resumo PDM
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {enrichmentResult.enriched.especificacoesTecnicas.resumoPDM.length >
+            100
+              ? `${enrichmentResult.enriched.especificacoesTecnicas.resumoPDM.substring(
+                  0,
+                  100
+                )}...`
+              : enrichmentResult.enriched.especificacoesTecnicas.resumoPDM}
+          </Typography>
+        </Paper>
+      )}
+
+      {/* Características em Lista Vertical */}
+      <Paper sx={{ p: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+          }}
+        >
+          <Typography variant="h6" sx={{ fontSize: "0.9rem" }}>
+            Características (
+            {
+              editableData.especificacoesTecnicas.filter((s) => s.checked)
+                .length
+            }
+            /{editableData.especificacoesTecnicas.length})
+          </Typography>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={onAddSpec}
+            startIcon={<AddIcon />}
+          >
+            Adicionar
+          </Button>
+        </Box>
+
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+          {editableData.especificacoesTecnicas.map((spec) => (
+            <Paper
+              key={spec.id}
+              variant="outlined"
+              sx={{
+                p: 1.5,
+                bgcolor: spec.checked ? "action.selected" : "background.paper",
+                border: spec.checked ? "2px solid" : "1px solid",
+                borderColor: spec.checked ? "primary.main" : "divider",
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Checkbox
+                  checked={spec.checked}
+                  onChange={(e) => {
+                    setEditableData((prev) => ({
+                      ...prev,
+                      especificacoesTecnicas: prev.especificacoesTecnicas.map(
+                        (s) =>
+                          s.id === spec.id
+                            ? { ...s, checked: e.target.checked }
+                            : s
+                      ),
+                    }));
+                  }}
+                />
+                <Box flex={1}>
+                  <Typography variant="body2" fontWeight="bold">
+                    {formatTechnicalKey(spec.key)}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {spec.value}
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+          ))}
+        </Box>
+      </Paper>
+
+      {/* Dados do Produto Compacto */}
+      <Paper sx={{ p: 2 }}>
+        <Typography variant="h6" sx={{ mb: 2, fontSize: "0.9rem" }}>
+          Dados do Produto
+        </Typography>
+
+        <Stack spacing={2}>
+          <TextField
+            label="Informações Originais"
+            value={editableData.informacoes}
+            onChange={(e) => handleFieldChange("informacoes", e.target.value)}
+            size="small"
+            fullWidth
+            multiline
+            rows={2}
+          />
+
+          <TextField
+            label="Fabricante"
+            value={editableData.marca}
+            onChange={(e) => {
+              handleFieldChange("marca", e.target.value);
+              if (marcaError) setMarcaError("");
+            }}
+            size="small"
+            fullWidth
+            error={!!marcaError}
+            helperText={marcaError}
+            required
+          />
+
+          {/* Botões de Ação */}
+          <Stack direction="row" spacing={1}>
+            <Button variant="outlined" onClick={onBack} size="small">
+              Voltar
+            </Button>
+            <Button variant="outlined" onClick={onExport} size="small">
+              Exportar
+            </Button>
+            <Button
+              variant="contained"
+              onClick={onContinue}
+              size="small"
+              sx={{ flex: 1 }}
+            >
+              Continuar
+            </Button>
+          </Stack>
+        </Stack>
+      </Paper>
+    </Box>
+  );
+}
+
+// Componente para Layout 3 (Dashboard)
+interface DashboardFieldSelectionProps {
+  enrichmentResult: EnrichmentResponse;
+  editableData: EditableData;
+  setEditableData: React.Dispatch<React.SetStateAction<EditableData>>;
+  onBack: () => void;
+  onContinue: () => void;
+  onExport: () => void;
+  onAddSpec: () => void;
+  marcaError: string;
+  setMarcaError: (error: string) => void;
+  handleFieldChange: (
+    field: keyof Omit<EditableData, "especificacoesTecnicas">,
+    value: string
+  ) => void;
+  getDadosCompletos: () => string;
+  getResumo: () => string;
+}
+
+function DashboardFieldSelection({
+  enrichmentResult,
+  editableData,
+  setEditableData,
+  onBack,
+  onContinue,
+  onExport,
+  onAddSpec,
+  marcaError,
+  setMarcaError,
+  handleFieldChange,
+  getDadosCompletos,
+  getResumo,
+}: DashboardFieldSelectionProps) {
+  const specsSelecionadas = editableData.especificacoesTecnicas.filter(
+    (s) => s.checked
+  );
+  const totalSpecs = editableData.especificacoesTecnicas.length;
+
+  return (
+    <Box sx={{ display: "flex", gap: 3, height: "100%" }}>
+      {/* Sidebar com métricas */}
+      <Paper sx={{ width: 300, p: 2, height: "fit-content" }}>
+        <Typography variant="h6" gutterBottom>
+          Métricas
+        </Typography>
+
+        <Stack spacing={2}>
+          <Box>
+            <Typography variant="body2" color="text.secondary">
+              Características Selecionadas
+            </Typography>
+            <Typography variant="h4" color="primary">
+              {specsSelecionadas.length}/{totalSpecs}
+            </Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="body2" color="text.secondary">
+              Progresso
+            </Typography>
+            <LinearProgress
+              variant="determinate"
+              value={(specsSelecionadas.length / totalSpecs) * 100}
+              sx={{ height: 8, borderRadius: 4 }}
+            />
+          </Box>
+
+          <Divider />
+
+          <Box>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              Resumo
+            </Typography>
+            <Typography variant="caption" sx={{ lineHeight: 1.4 }}>
+              {getResumo()}
+            </Typography>
+          </Box>
+        </Stack>
+      </Paper>
+
+      {/* Conteúdo principal */}
+      <Box flex={1} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        {/* Resumo PDM */}
+        {enrichmentResult.enriched.especificacoesTecnicas?.resumoPDM && (
+          <Paper sx={{ p: 2 }}>
+            <Typography variant="h6" sx={{ mb: 1, fontSize: "0.9rem" }}>
+              Resumo PDM
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {enrichmentResult.enriched.especificacoesTecnicas.resumoPDM}
+            </Typography>
+          </Paper>
+        )}
+
+        {/* Características em Grid */}
+        <Paper sx={{ p: 2, flex: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2,
+            }}
+          >
+            <Typography variant="h6" sx={{ fontSize: "0.9rem" }}>
+              Características Técnicas
+            </Typography>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={onAddSpec}
+              startIcon={<AddIcon />}
+            >
+              Adicionar
+            </Button>
+          </Box>
+
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+              gap: 1.5,
+            }}
+          >
+            {editableData.especificacoesTecnicas.map((spec) => (
+              <Card
+                key={spec.id}
+                sx={{
+                  cursor: "pointer",
+                  border: spec.checked ? "2px solid" : "1px solid",
+                  borderColor: spec.checked ? "primary.main" : "divider",
+                  bgcolor: spec.checked
+                    ? "action.selected"
+                    : "background.paper",
+                  "&:hover": { boxShadow: 2 },
+                }}
+                onClick={() => {
+                  setEditableData((prev) => ({
+                    ...prev,
+                    especificacoesTecnicas: prev.especificacoesTecnicas.map(
+                      (s) =>
+                        s.id === spec.id ? { ...s, checked: !s.checked } : s
+                    ),
+                  }));
+                }}
+              >
+                <CardContent sx={{ p: 2 }}>
+                  <Box
+                    sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}
+                  >
+                    <Checkbox checked={spec.checked} />
+                    <Box flex={1}>
+                      <Typography
+                        variant="body2"
+                        fontWeight="bold"
+                        sx={{ mb: 0.5 }}
+                      >
+                        {formatTechnicalKey(spec.key)}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {spec.value}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            ))}
+          </Box>
+        </Paper>
+
+        {/* Formulário de dados */}
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="h6" sx={{ mb: 2, fontSize: "0.9rem" }}>
+            Dados do Produto
+          </Typography>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
+              gap: 2,
+            }}
+          >
+            <Box sx={{ flex: 1 }}>
+              <TextField
+                label="Informações Originais"
+                value={editableData.informacoes}
+                onChange={(e) =>
+                  handleFieldChange("informacoes", e.target.value)
+                }
+                size="small"
+                fullWidth
+                multiline
+                rows={3}
+              />
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <TextField
+                label="Fabricante"
+                value={editableData.marca}
+                onChange={(e) => {
+                  handleFieldChange("marca", e.target.value);
+                  if (marcaError) setMarcaError("");
+                }}
+                size="small"
+                fullWidth
+                error={!!marcaError}
+                helperText={marcaError}
+                required
+              />
+            </Box>
+          </Box>
+
+          {/* Botões de Ação */}
+          <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+            <Button variant="outlined" onClick={onBack}>
+              Voltar
+            </Button>
+            <Button variant="outlined" onClick={onExport}>
+              Exportar
+            </Button>
+            <Button variant="contained" onClick={onContinue} sx={{ flex: 1 }}>
+              Continuar
+            </Button>
+          </Stack>
+        </Paper>
+      </Box>
     </Box>
   );
 }
