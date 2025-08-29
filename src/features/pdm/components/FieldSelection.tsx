@@ -223,6 +223,7 @@ export default function FieldSelection({
         <ExpandablePDMSummary
           summaryText={enrichmentResult.enriched.especificacoesTecnicas.resumoPDM}
           maxLines={5}
+          imagens={enrichmentResult.enriched.imagens}
         />
       )}
 

@@ -33,6 +33,12 @@ export interface EnrichedProductData {
   readonly normas?: string[];
   readonly pdmPadronizado?: string;
   readonly observacoes?: string[];
+  readonly imagens?: readonly {
+    readonly image_url: string;
+    readonly origin_url?: string;
+    readonly height?: number;
+    readonly width?: number;
+  }[];
 }
 
 export interface EnrichmentResponse {

@@ -10,23 +10,36 @@ import {
   Box,
   IconButton,
   Collapse,
+  ImageList,
+  ImageListItem,
+  ImageListItemBar,
 } from "@mui/material";
 import {
   KeyboardArrowDown as ExpandIcon,
   KeyboardArrowUp as CollapseIcon,
   KeyboardArrowDown,
 } from "@mui/icons-material";
+import Image from "next/image";
+
+interface ProductImage {
+  readonly image_url: string;
+  readonly origin_url?: string;
+  readonly height?: number;
+  readonly width?: number;
+}
 
 interface ExpandablePDMSummaryProps {
   readonly summaryText: string;
   readonly maxLines?: number;
   readonly title?: string;
+  readonly imagens?: readonly ProductImage[];
 }
 
 export default function ExpandablePDMSummary({
   summaryText,
   maxLines = 5,
   title = "Resumo PDM",
+  imagens = [],
 }: ExpandablePDMSummaryProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -46,6 +59,100 @@ export default function ExpandablePDMSummary({
 
   const handleToggle = () => {
     setIsExpanded((prev) => !prev);
+  };
+
+  // Componente para renderizar imagens
+  const renderImages = () => {
+    if (!imagens || imagens.length === 0) return null;
+
+    return (
+      <Box sx={{ mt: 2 }}>
+        <Typography
+          variant="subtitle2"
+          sx={{
+            fontSize: "0.75rem",
+            color: "text.secondary",
+            mb: 1,
+            fontWeight: 600,
+          }}
+        >
+          Imagens do Produto ({imagens.length})
+        </Typography>
+        <ImageList
+          sx={{
+            width: "100%",
+            height: "auto",
+            gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr)) !important",
+          }}
+          cols={Math.min(imagens.length, 4)}
+          rowHeight={120}
+        >
+          {imagens.slice(0, 4).map((image, index) => (
+            <ImageListItem
+              key={index}
+              sx={{
+                borderRadius: 1,
+                overflow: "hidden",
+                border: "1px solid",
+                borderColor: "divider",
+              }}
+            >
+                            <Box sx={{ position: "relative", width: "100%", height: "120px" }}>
+                <Image
+                  src={image.image_url}
+                  alt={`Produto ${index + 1}`}
+                  width={120}
+                  height={120}
+                  style={{
+                    objectFit: "cover",
+                    borderRadius: "4px",
+                  }}
+                  onError={(e) => {
+                    // Fallback para imagem quebrada
+                    const target = e.target as HTMLImageElement;
+                    if (target.src !== "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0yIDEyTDE1IDJ2MjBNMiAxMnoiIHN0cm9rZT0iIzk5OTk5OSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+") {
+                      target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0yIDEyTDE1IDJ2MjBNMiAxMnoiIHN0cm9rZT0iIzk5OTk5OSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+";
+                    }
+                  }}
+                />
+              </Box>
+              {image.origin_url && (
+                <ImageListItemBar
+                  title=""
+                  subtitle={`Fonte: ${image.origin_url ? (() => {
+                    try {
+                      return new URL(image.origin_url!).hostname;
+                    } catch {
+                      return 'Fonte externa';
+                    }
+                  })() : 'Fonte externa'}`}
+                  sx={{
+                    "& .MuiImageListItemBar-subtitle": {
+                      fontSize: "0.6rem",
+                      lineHeight: 1.2,
+                    },
+                    background: "rgba(0, 0, 0, 0.7)",
+                  }}
+                />
+              )}
+            </ImageListItem>
+          ))}
+        </ImageList>
+        {imagens.length > 4 && (
+          <Typography
+            variant="caption"
+            sx={{
+              display: "block",
+              mt: 1,
+              color: "text.secondary",
+              fontSize: "0.65rem",
+            }}
+          >
+            +{imagens.length - 4} imagens adicionais
+          </Typography>
+        )}
+      </Box>
+    );
   };
 
   return (
@@ -112,6 +219,9 @@ export default function ExpandablePDMSummary({
           {isExpanded ? summaryText : truncatedText}
         </Typography>
       </Collapse>
+
+      {/* Renderizar imagens se existirem */}
+      {renderImages()}
 
       {shouldTruncate && !isExpanded && (
         <Box

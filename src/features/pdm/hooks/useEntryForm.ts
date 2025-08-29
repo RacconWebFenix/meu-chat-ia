@@ -38,13 +38,17 @@ export function useEntryForm(
   const [data, setData] = useState<BaseProductInfo>(INITIAL_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // A lógica de validação que implementamos antes continua a mesma e funcional.
+  // Validação atualizada: requer conteúdo no campo informacoes
   const validation = useMemo((): EntryFormValidation => {
     const errors: Record<string, string> = {};
 
-    // Sem validação obrigatória - permite submit com qualquer conteúdo
+    // Validação: campo informacoes deve ter conteúdo
+    if (!data.informacoes || data.informacoes.trim().length === 0) {
+      errors.informacoes = "Campo obrigatório";
+    }
+
     return {
-      isValid: true,
+      isValid: Object.keys(errors).length === 0,
       errors,
     };
   }, [data]);
