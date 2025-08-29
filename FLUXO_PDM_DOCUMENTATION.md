@@ -2,7 +2,7 @@
 
 ## 🎯 Visão Geral
 
-O Sistema PDM (Product Data Management) é um fluxo completo para padronização e busca de equivalências de produtos. Este documento apresenta todas as implementações e evoluções do sistema até 29 de agosto de 2025.
+O Sistema PDM (Product Data Management) é um fluxo completo para padronização e busca de equivalências de produtos. Este documento apresenta todas as implementações e evoluções do sistema até **29 de agosto de 2025**.
 
 ## 🏗️ Arquitetura do Sistema
 
@@ -12,12 +12,13 @@ src/features/pdm/
 ├── components/
 │   ├── PDMFlow.tsx          # Orquestrador principal do fluxo
 │   ├── FieldSelection.tsx   # Interface de revisão e seleção de campos
-│   ├── EntryForm.tsx        # Formulário de entrada de dados
+│   ├── EntryForm.tsx        # Formulário de entrada com validação inteligente
+│   ├── ExpandablePDMSummary.tsx # Resumo PDM com integração de imagens
 │   ├── CheckboxSpecCard.tsx # Cards de especificações técnicas
 │   └── N8NEquivalenceResults.tsx # Resultados da busca de equivalências
 ├── types/
 │   ├── base.types.ts        # Tipos base do sistema
-│   ├── enrichment.types.ts  # Tipos para enriquecimento de dados
+│   ├── enrichment.types.ts  # Tipos para enriquecimento (inclui imagens)
 │   └── index.ts             # Exportações centralizadas
 ├── services/
 │   ├── enrichmentService.ts # Serviço de enriquecimento via IA (n8n)
@@ -25,7 +26,7 @@ src/features/pdm/
 │   └── exportService.ts     # Serviço de exportação de dados
 └── hooks/
     ├── usePDMFlow.ts        # Hook de gerenciamento de estado do fluxo
-    └── useEntryForm.ts      # Hook de gerenciamento do formulário
+    └── useEntryForm.ts      # Hook de gerenciamento do formulário com validação
 ```
 
 ## 🔄 Fluxo de Funcionamento
@@ -192,6 +193,15 @@ interface PDMFlowState {
 - ✅ Melhorias nos tipos TypeScript
 - ✅ Documentação completa
 
+### Fase 4: Validação Inteligente + Imagens (29 Agosto 2025)
+- ✅ **Validação Inteligente do Botão**: Só ativa com dados no campo
+- ✅ **Integração de Imagens**: Até 5 imagens por produto no resumo PDM
+- ✅ **Grid Responsivo**: Layout otimizado para diferentes telas
+- ✅ **Tratamento de Erro**: Fallback para imagens quebradas
+- ✅ **Fonte das Imagens**: Indicação do hostname de origem
+- ✅ **Next.js Image**: Otimização automática com lazy loading
+- ✅ **Configuração External**: remotePatterns para domínios externos
+
 ## 🐛 Problemas Resolvidos
 
 ### ⚠️ Problema: Corrupção de Componentes
@@ -208,6 +218,21 @@ interface PDMFlowState {
 - **Causa**: Mudanças na estrutura BaseProductInfo
 - **Solução**: Atualização dos mocks e simplificação da interface
 - **Resultado**: Compilação limpa
+
+### ⚠️ Problema: Imagens não Apareciam no Resumo PDM
+- **Causa**: Campo `images` em vez de `imagens` + função renderImages não chamada
+- **Solução**: Correção da nomenclatura + chamada da função no JSX
+- **Resultado**: Imagens aparecem corretamente no grid responsivo
+
+### ⚠️ Problema: Botão "Analisar Material" Sempre Ativo
+- **Causa**: Falta de validação no campo de entrada
+- **Solução**: Validação obrigatória de conteúdo no campo "Informações do Material"
+- **Resultado**: Botão só ativa quando há dados válidos
+
+### ⚠️ Problema: Imagens Externas Bloqueadas
+- **Causa**: Next.js sem configuração para domínios externos
+- **Solução**: Adição de `remotePatterns` no next.config.mjs
+- **Resultado**: Imagens de qualquer domínio carregam corretamente
 
 ## 📋 Protocolos de Desenvolvimento
 
@@ -234,6 +259,11 @@ interface PDMFlowState {
 - [x] Validação de dados
 - [x] Scroll único otimizado
 - [x] Gerenciamento de estado robusto
+- [x] **Validação inteligente do botão "Analisar Material"**
+- [x] **Integração de imagens no resumo PDM**
+- [x] **Grid responsivo de imagens com fonte indicada**
+- [x] **Tratamento de erro para URLs inválidas**
+- [x] **Configuração Next.js para imagens externas**
 
 ### 🚀 Próximos Passos Sugeridos
 - [ ] Testes automatizados completos
@@ -275,5 +305,5 @@ grep -r "PDM" src/ --include="*.tsx" --include="*.ts"
 
 **🏁 Última Atualização**: 29 de Agosto de 2025  
 **📝 Autor**: GitHub Copilot AI Assistant  
-**🎯 Status**: Sistema Funcional e Otimizado  
-**📞 Próxima Ação**: Aguardando instruções específicas para melhorias ou novas funcionalidades
+**🎯 Status**: Sistema 100% Funcional com Validação + Imagens  
+**📞 Próxima Ação**: Sistema pronto para produção

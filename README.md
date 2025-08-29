@@ -10,6 +10,43 @@
 - ✅ **AI Integration**: OpenAI + Perplexity APIs
 - ✅ **Dashboard**: Sistema de tabelas com dados reais
 - ✅ **Clean Code**: Implementado padrão de componentização
+- ✅ **PDM System**: Sistema completo de Product Data Management
+
+---
+
+## 🏗️ **Sistema PDM (Product Data Management)**
+
+### **Funcionalidades do PDM**
+- ✅ **Fluxo Completo**: Entrada → Enriquecimento → Revisão → Equivalências
+- ✅ **Validação Inteligente**: Botão só ativa com dados válidos
+- ✅ **Integração de Imagens**: Até 5 imagens por produto no resumo
+- ✅ **Interface Editável**: Cards interativos para especificações técnicas
+- ✅ **Busca de Equivalências**: Sistema N8N para produtos similares
+- ✅ **Layout Responsivo**: Design otimizado para todas as telas
+- ✅ **Scroll Único**: Navegação fluida sem quebras
+
+### **Arquitetura PDM**
+```
+src/features/pdm/
+├── components/
+│   ├── PDMFlow.tsx          # Orquestrador principal
+│   ├── FieldSelection.tsx   # Interface de edição
+│   ├── EntryForm.tsx        # Formulário com validação
+│   ├── ExpandablePDMSummary.tsx # Resumo com imagens
+│   └── CheckboxSpecCard.tsx # Cards editáveis
+├── services/
+│   ├── enrichmentService.ts # IA + n8n integration
+│   └── n8nService.ts        # Busca de equivalências
+└── types/
+    └── enrichment.types.ts  # Tipos com imagens
+```
+
+### **Como Usar o Sistema PDM**
+1. **Acesse**: `http://localhost:3000/search`
+2. **Digite**: Informações do produto (ex: "Motor Yanmar 4TNE98")
+3. **Analise**: Sistema valida e habilita o botão automaticamente
+4. **Revise**: Edite especificações e veja imagens do produto
+5. **Busque**: Encontre produtos equivalentes
 
 ---
 

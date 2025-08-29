@@ -4,26 +4,50 @@
 
 ### 📝 Entrada de Dados (PDMStep.ENTRY)
 
-#### Exemplo 1: Rolamento SKF
+#### Exemplo 1: Motor com Imagens (RECOMENDADO PARA TESTE)
+```json
+{
+  "informacoes": "Motor de Trator Yanmar 4TNE98"
+}
+```
+
+#### Exemplo 2: Rolamento SKF
 ```json
 {
   "informacoes": "Rolamento SKF 6205-2RS1/C3"
 }
 ```
 
-#### Exemplo 2: Caneca Cerâmica
+#### Exemplo 3: Caneca Cerâmica
 ```json
 {
   "informacoes": "Caneca de Cerâmica Esmaltada 350ml Branca"
 }
 ```
 
-#### Exemplo 3: Motor Elétrico
+#### Exemplo 4: Motor Elétrico
 ```json
 {
   "informacoes": "Motor elétrico trifásico 5cv 1750rpm 220/380V"
 }
 ```
+
+### 🖼️ **TESTE ESPECÍFICO: Sistema de Imagens**
+**Produto Recomendado:** "Motor de Trator Yanmar 4TNE98"
+
+**Resultado Esperado:**
+- ✅ 5 imagens aparecem no Resumo PDM
+- ✅ Grid responsivo (até 4 visíveis + contador)
+- ✅ Fonte indicada em cada imagem
+- ✅ Tratamento de erro para imagens quebradas
+- ✅ Lazy loading otimizado
+
+**URLs de Imagem Esperadas:**
+- `https://sc04.alicdn.com/kf/H08805cd9d80d4f3dabfd3ac59eb18a7fl.jpg`
+- `https://sc04.alicdn.com/kf/H53490d94f25d4ad5945c5af70e4ce46ab.jpg`
+- `https://www.rddiesels.com/wp-content/uploads/2020/11/model_449.jpg`
+- `https://cdn11.bigcommerce.com/s-873ultu4xu/images/stencil/1280x1280/products/1990940/3377628/YANMAR_4TNE98__31020.1734989548.jpg`
+- `https://engineswarehouse.com/wp-content/uploads/2023/04/YANMAR-4TNE98-BQFLCC-variklis-NAUJAS.jpg`
 
 ### 🔄 Resposta do Enriquecimento (EnrichmentResponse)
 
@@ -271,17 +295,22 @@ console.log("Specs:", localStorage.getItem('pdm-specs'));
 ## 🎯 Testes de Aceitação
 
 ### ✅ Checklist Funcional
-- [ ] Formulário de entrada aceita texto livre
-- [ ] Validação impede envio com campo vazio
-- [ ] Loading state visível durante processamento
-- [ ] Dados enriquecidos aparecem na tela de revisão
-- [ ] Cards de especificações são editáveis
-- [ ] Checkbox funciona para marcar/desmarcar
-- [ ] Botão "Adicionar" cria nova especificação
-- [ ] Campo "Marca" é obrigatório para continuar
-- [ ] Navegação "Voltar" preserva dados
-- [ ] Resultados de equivalência são exibidos
-- [ ] Interface responsiva em mobile/tablet
+- [x] Formulário de entrada aceita texto livre
+- [x] **Validação impede envio com campo vazio**
+- [x] **Botão "Analisar Material" só ativa com dados válidos**
+- [x] Loading state visível durante processamento
+- [x] Dados enriquecidos aparecem na tela de revisão
+- [x] **Imagens do produto aparecem no resumo PDM**
+- [x] **Grid de imagens mostra até 4 imagens visíveis**
+- [x] **Contador mostra "+X imagens adicionais"**
+- [x] **Fonte das imagens é indicada corretamente**
+- [x] Cards de especificações são editáveis
+- [x] Checkbox funciona para marcar/desmarcar
+- [x] Botão "Adicionar" cria nova especificação
+- [x] Campo "Marca" é obrigatório para continuar
+- [x] Navegação "Voltar" preserva dados
+- [x] Resultados de equivalência são exibidos
+- [x] Interface responsiva em mobile/tablet
 
 ### ✅ Checklist de Layout
 - [ ] Layout em coluna única vertical
@@ -297,4 +326,6 @@ console.log("Specs:", localStorage.getItem('pdm-specs'));
 **🎯 OBJETIVO**: Facilitar testes e debug do sistema PDM  
 **📋 USO**: Copie os payloads para testes manuais ou automatizados  
 **🔧 DEBUG**: Use os comandos para investigar problemas  
-**✅ VALIDAÇÃO**: Siga os checklists para garantir qualidade
+**✅ VALIDAÇÃO**: Siga os checklists para garantir qualidade  
+**📅 ÚLTIMA ATUALIZAÇÃO**: 29 de Agosto de 2025  
+**🚀 STATUS**: Sistema 100% Funcional com Validação + Imagens
