@@ -49,6 +49,49 @@
 - `https://cdn11.bigcommerce.com/s-873ultu4xu/images/stencil/1280x1280/products/1990940/3377628/YANMAR_4TNE98__31020.1734989548.jpg`
 - `https://engineswarehouse.com/wp-content/uploads/2023/04/YANMAR-4TNE98-BQFLCC-variklis-NAUJAS.jpg`
 
+### 📤 **TESTE ESPECÍFICO: Sistema de Exportação**
+
+#### Teste 1: Exportação de Dados do Produto
+**Produto:** "Parafuso Sextavado DIN 912 M8x30"
+
+**Passos:**
+1. ✅ Digite o produto e gere o PDM
+2. ✅ Vá para a tela de dados do produto
+3. ✅ Clique no botão "Exportar" (entre Voltar e Continuar)
+4. ✅ Selecione formato: XLSX, CSV, PDF ou ODT
+5. ✅ Clique em "Exportar"
+
+**Resultado Esperado:**
+- ✅ Arquivo baixado com nome: `dados_produto_[timestamp].[extensão]`
+- ✅ Conteúdo inclui: Nome Original, Fabricante, Características Selecionadas, Resumo
+- ✅ Formatação adequada para cada formato
+
+#### Teste 2: Exportação de Equivalências Selecionadas
+**Produto:** "Parafuso Sextavado DIN 912 M8x30"
+
+**Passos:**
+1. ✅ Digite o produto e gere o PDM
+2. ✅ Vá para a tela de equivalências
+3. ✅ Marque algumas equivalências com os checkboxes
+4. ✅ Clique no botão "Exportar (X)" ao lado de "Selecionar todos"
+5. ✅ Selecione formato: XLSX, CSV, PDF ou ODT
+6. ✅ Clique em "Exportar"
+
+**Resultado Esperado:**
+- ✅ Arquivo baixado com nome: `equivalencias_selecionadas_[timestamp].[extensão]`
+- ✅ Apenas equivalências selecionadas são exportadas
+- ✅ Conteúdo inclui: Nome, Fabricante, Similaridade, Preço, Disponibilidade, Aplicação, Especificações
+- ✅ Cada equivalência mostra imagem diferente (correção implementada)
+
+#### Teste 3: Correção de Imagens entre Equivalências
+**Produto:** Qualquer produto com equivalências
+
+**Verificação:**
+- ✅ Cada equivalência mostra uma imagem diferente
+- ✅ Não há duplicação de imagens entre equivalências
+- ✅ Se há mais equivalências que imagens, imagens são reutilizadas ciclicamente
+- ✅ Imagens carregam corretamente sem erros
+
 ### 🔄 Resposta do Enriquecimento (EnrichmentResponse)
 
 #### Exemplo: Rolamento SKF
@@ -321,6 +364,35 @@ console.log("Specs:", localStorage.getItem('pdm-specs'));
 - [ ] Typography consistente e legível
 - [ ] Espaçamentos uniformes entre elementos
 
+### 🔍 **VALIDAÇÃO DE FUNCIONALIDADES IMPLEMENTADAS**
+
+#### Sistema de Exportação
+- [x] Botão "Exportar" na tela de dados do produto (entre Voltar/Continuar)
+- [x] Botão "Exportar (X)" na tela de equivalências (ao lado de "Selecionar todos")
+- [x] Diálogo de seleção de formato (XLSX, CSV, PDF, ODT)
+- [x] Exportação funciona para dados do produto
+- [x] Exportação funciona apenas para equivalências selecionadas
+- [x] Arquivos são baixados com nomes corretos e timestamps
+- [x] Formatação adequada para cada tipo de arquivo
+- [x] Conteúdo completo é exportado (todas as colunas visíveis)
+
+#### Correção de Imagens
+- [x] Cada equivalência mostra imagem diferente
+- [x] Não há duplicação de imagens entre equivalências
+- [x] Distribuição cíclica quando há mais equivalências que imagens
+- [x] Imagens carregam corretamente sem erros 404
+- [x] Lazy loading otimizado para performance
+- [x] Tratamento de erro para imagens quebradas
+
+#### Validação Geral do Sistema
+- [x] PDM completo gerado corretamente
+- [x] Navegação fluida entre telas
+- [x] Dados preservados durante navegação
+- [x] Interface responsiva em todos os dispositivos
+- [x] Performance otimizada (sem lags)
+- [x] Tratamento adequado de erros
+- [x] TypeScript sem erros de compilação
+
 ---
 
 **🎯 OBJETIVO**: Facilitar testes e debug do sistema PDM  
@@ -328,4 +400,4 @@ console.log("Specs:", localStorage.getItem('pdm-specs'));
 **🔧 DEBUG**: Use os comandos para investigar problemas  
 **✅ VALIDAÇÃO**: Siga os checklists para garantir qualidade  
 **📅 ÚLTIMA ATUALIZAÇÃO**: 29 de Agosto de 2025  
-**🚀 STATUS**: Sistema 100% Funcional com Validação + Imagens
+**🚀 STATUS**: Sistema 100% Funcional com Validação + Imagens + Exportação

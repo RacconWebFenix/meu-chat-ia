@@ -24,8 +24,26 @@
 - ✅ **Busca de Equivalências**: Sistema N8N para produtos similares
 - ✅ **Layout Responsivo**: Design otimizado para todas as telas
 - ✅ **Scroll Único**: Navegação fluida sem quebras
+- ✅ **Exportação de Dados**: XLSX, CSV, PDF, ODT para produtos e equivalências
+- ✅ **Correção de Imagens**: Distribuição correta de imagens entre equivalências
 
 ### **Arquitetura PDM**
+```
+src/features/pdm/
+├── components/
+│   ├── PDMFlow.tsx          # Orquestrador principal
+│   ├── FieldSelection.tsx   # Interface de edição + Exportação
+│   ├── EntryForm.tsx        # Formulário com validação
+│   ├── ExpandablePDMSummary.tsx # Resumo com imagens
+│   ├── CheckboxSpecCard.tsx # Cards editáveis
+│   └── N8NEquivalenceResults.tsx # Resultados + Exportação
+├── services/
+│   ├── enrichmentService.ts # IA + n8n integration
+│   ├── n8nService.ts        # Busca de equivalências + Correção imagens
+│   └── exportService.ts     # Serviço de exportação
+└── types/
+    └── enrichment.types.ts  # Tipos com imagens
+```
 ```
 src/features/pdm/
 ├── components/
@@ -47,6 +65,13 @@ src/features/pdm/
 3. **Analise**: Sistema valida e habilita o botão automaticamente
 4. **Revise**: Edite especificações e veja imagens do produto
 5. **Busque**: Encontre produtos equivalentes
+6. **Exporte**: Baixe dados em XLSX, CSV, PDF ou ODT
+
+### **Funcionalidades de Exportação**
+- 📊 **Exportar Produto**: Dados completos do produto analisado
+- 📋 **Exportar Equivalências**: Apenas produtos selecionados
+- 📁 **Formatos Suportados**: Excel (XLSX), CSV, PDF, Texto (ODT)
+- 🎯 **Conteúdo Completo**: Especificações, preços, aplicações, etc.
 
 ---
 

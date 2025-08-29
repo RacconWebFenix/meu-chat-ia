@@ -193,14 +193,12 @@ interface PDMFlowState {
 - ✅ Melhorias nos tipos TypeScript
 - ✅ Documentação completa
 
-### Fase 4: Validação Inteligente + Imagens (29 Agosto 2025)
-- ✅ **Validação Inteligente do Botão**: Só ativa com dados no campo
-- ✅ **Integração de Imagens**: Até 5 imagens por produto no resumo PDM
-- ✅ **Grid Responsivo**: Layout otimizado para diferentes telas
-- ✅ **Tratamento de Erro**: Fallback para imagens quebradas
-- ✅ **Fonte das Imagens**: Indicação do hostname de origem
-- ✅ **Next.js Image**: Otimização automática com lazy loading
-- ✅ **Configuração External**: remotePatterns para domínios externos
+### Fase 5: Funcionalidades de Exportação (29 Agosto 2025)
+- ✅ **Exportação de Dados do Produto**: XLSX, CSV, PDF, ODT
+- ✅ **Exportação de Equivalências Selecionadas**: Apenas produtos marcados
+- ✅ **Correção de Distribuição de Imagens**: Cada equivalência mostra imagem única
+- ✅ **Interface de Exportação**: Dialog modal com seleção de formato
+- ✅ **Conteúdo Estruturado**: Dados completos em todos os formatos
 
 ## 🐛 Problemas Resolvidos
 
@@ -249,6 +247,46 @@ interface PDMFlowState {
 - **React Hooks**: Gerenciamento de estado
 - **VS Code**: Editor com extensões específicas
 
+## 📤 Funcionalidades de Exportação
+
+### 🎯 Sistema de Exportação Implementado
+
+#### Exportação de Dados do Produto
+- **Localização**: Botão "Exportar" entre "Voltar" e "Continuar" na tela de dados
+- **Conteúdo**: Nome original, fabricante, características selecionadas, resumo
+- **Formatos**: XLSX (Excel), CSV, PDF, ODT (Texto)
+
+#### Exportação de Equivalências Selecionadas
+- **Localização**: Botão "Exportar" ao lado de "Selecionar todos" na tela de equivalências
+- **Conteúdo**: Nome, fabricante, grau similaridade, preço, disponibilidade, aplicação, especificações
+- **Seleção**: Apenas equivalências marcadas nos checkboxes
+- **Formatos**: XLSX (Excel), CSV, PDF, ODT (Texto)
+
+### 🔧 Implementação Técnica
+
+#### Componentes Modificados
+- `FieldSelection.tsx`: Adicionado botão e funções de exportação
+- `N8NEquivalenceResults.tsx`: Adicionado botão e funções de exportação
+- `n8nService.ts`: Correção da distribuição de imagens entre equivalências
+
+#### Funções de Exportação
+```typescript
+// Exportação para diferentes formatos
+exportToCSV(data: string)    // Valores separados por vírgula
+exportToXLSX(data: string)   // Tabela HTML compatível com Excel
+exportToPDF(data: string)    // Documento formatado para impressão
+exportToODT(data: string)    // Arquivo de texto estruturado
+```
+
+#### Correção de Imagens
+```typescript
+// Correção aplicada no n8nService.ts
+data.equivalencias = data.equivalencias.map((equiv, index) => ({
+  ...equiv,
+  images: [allImages[index % allImages.length]] // Distribuição cíclica
+}));
+```
+
 ## 🎯 Status Atual do Projeto
 
 ### ✅ Funcionalidades Implementadas
@@ -264,6 +302,9 @@ interface PDMFlowState {
 - [x] **Grid responsivo de imagens com fonte indicada**
 - [x] **Tratamento de erro para URLs inválidas**
 - [x] **Configuração Next.js para imagens externas**
+- [x] **Sistema de exportação de dados (XLSX, CSV, PDF, ODT)**
+- [x] **Exportação de equivalências selecionadas**
+- [x] **Correção de distribuição de imagens entre equivalências**
 
 ### 🚀 Próximos Passos Sugeridos
 - [ ] Testes automatizados completos

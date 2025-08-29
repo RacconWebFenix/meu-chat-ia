@@ -166,9 +166,19 @@ grep -r "AddNewSpecDialog" src/ --include="*.tsx"
 - [ ] **Cache**: Sistema de cache para dados enriquecidos
 - [ ] **Acessibilidade**: Melhorar ARIA labels
 
+### � PRIORIDADE ALTA
+- [ ] **Performance**: Otimizar re-renders dos cards
+- [ ] **UX**: Feedback visual durante processamento
+- [ ] **Validação**: Melhorar validação de campos obrigatórios
+
+### 🔧 PRIORIDADE MÉDIA
+- [ ] **Testes**: Implementar testes automatizados
+- [ ] **Cache**: Sistema de cache para dados enriquecidos
+- [ ] **Acessibilidade**: Melhorar ARIA labels
+
 ### 💡 PRIORIDADE BAIXA
+- [x] **Export**: Funcionalidade de exportar dados (IMPLEMENTADO)
 - [ ] **Temas**: Sistema de temas customizáveis
-- [ ] **Export**: Funcionalidade de exportar dados
 - [ ] **Analytics**: Métricas de uso do sistema
 
 ## 📞 COMUNICAÇÃO E HANDOFF
@@ -191,6 +201,8 @@ Se precisar de esclarecimentos:
 - ✅ **Performance**: Sem travamentos ou lentidão
 - ✅ **UX**: Interface responsiva e intuitiva
 - ✅ **Code Quality**: Zero erros TypeScript
+- ✅ **Export**: Sistema de exportação XLSX/CSV/PDF/ODT funcionando
+- ✅ **Images**: Correção de distribuição de imagens entre equivalências
 
 ## 🏁 CHECKLIST DE HANDOFF
 
@@ -212,6 +224,6 @@ Antes de reportar trabalho concluído:
 **📚 RECURSO**: Use `FLUXO_PDM_DOCUMENTATION.md` como referência técnica completa  
 **🚨 LEMBRETE**: NEVER CLICK "KEEP" - SEMPRE faça commit antes de mudanças grandes  
 **📅 ÚLTIMA ATUALIZAÇÃO**: 29 de Agosto de 2025  
-**🚀 STATUS ATUAL**: Sistema PDM 100% Funcional com Validação + Imagens  
+**🚀 STATUS ATUAL**: Sistema PDM 100% Funcional com Validação + Imagens + Exportação + Correção de Imagens  
 
 **🤖 BOA SORTE! O sistema está bem estruturado e documentado. Você tem tudo para ter sucesso!**
