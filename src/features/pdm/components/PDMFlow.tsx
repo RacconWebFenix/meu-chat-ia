@@ -12,6 +12,7 @@ import {
   EnrichmentResponse,
   EnrichedProductData,
   N8NEquivalenceResponse,
+  EquivalenceSearchPayload,
 } from "../types";
 import { createEnrichmentService, createN8NService } from "../services";
 import EntryForm from "./EntryForm";
@@ -74,18 +75,32 @@ export default function PDMFlow({ className }: PDMFlowProps) {
     setEnrichmentResult(finalEnrichmentResult);
 
     try {
+      console.log("PDMFlow - handleFieldSelectionContinue - INICIANDO BUSCA");
       setStatus(ProcessingStatus.PROCESSING);
+      console.log("PDMFlow - handleFieldSelectionContinue - STATUS SETADO PARA PROCESSING");
       goToStep(PDMStep.EQUIVALENCE_SEARCH);
+      console.log("PDMFlow - handleFieldSelectionContinue - STEP MUDADO PARA EQUIVALENCE_SEARCH");
 
-      // Cria o objeto BaseProductInfo simplificado
-      const productInfo: BaseProductInfo = {
-        informacoes:
-          enrichmentResult.original.informacoes ||
-          modifiedEnrichedData.informacoes ||
-          "Produto sem informações",
+      // Cria o objeto com dados estruturados completos para equivalências
+      const productInfo: EquivalenceSearchPayload = {
+        nome: modifiedEnrichedData.informacoes || "Produto sem nome",
+        marcaFabricante: modifiedEnrichedData.marcaFabricante || "Não especificada",
+        categoria: modifiedEnrichedData.categoria || "Não categorizada",
+        subcategoria: modifiedEnrichedData.subcategoria || "",
+        especificacoesTecnicas: modifiedEnrichedData.especificacoesTecnicas?.especificacoesTecnicas || {},
+        aplicacao: modifiedEnrichedData.aplicacao || "Aplicação não especificada",
+        unidadeMedida: "unidade",
+        breveDescricao: modifiedEnrichedData.informacoes || "Sem descrição",
+        normas: modifiedEnrichedData.normas || [],
+        imagens: (modifiedEnrichedData.imagens || []).map(img => ({
+          image_url: img.image_url,
+          origin_url: img.origin_url || "",
+          height: img.height || 0,
+          width: img.width || 0
+        }))
       };
 
-      console.log("Enviando para N8N:", productInfo);
+      console.log("Enviando dados estruturados para N8N:", productInfo);
       console.log("Dados originais:", enrichmentResult.original);
       console.log("Dados modificados:", modifiedEnrichedData);
 
@@ -120,9 +135,12 @@ export default function PDMFlow({ className }: PDMFlowProps) {
           />
         ) : null;
       case PDMStep.EQUIVALENCE_SEARCH:
-        return n8nResult ? (
+        console.log("PDMFlow - EQUIVALENCE_SEARCH - n8nResult:", !!n8nResult);
+        console.log("PDMFlow - EQUIVALENCE_SEARCH - status:", state.status);
+        console.log("PDMFlow - EQUIVALENCE_SEARCH - isLoading:", state.status === ProcessingStatus.PROCESSING);
+        return (
           <N8NEquivalenceResults
-            searchResult={n8nResult}
+            searchResult={n8nResult || { equivalencias: [], metadata: { tempoProcessamento: 0, modeloIAUsado: '', criteriosBuscaAplicados: [], observacoesGerais: '', totalEquivalencias: 0, fonteDados: '', timestamp: new Date().toISOString(), debug: { totalCitations: 0, totalSearchResults: 0, totalImages: 0 } }, rawData: { citations: [], searchResults: [], images: [] } }}
             onBack={() => goToStep(PDMStep.FIELD_SELECTION)}
             isLoading={state.status === ProcessingStatus.PROCESSING}
             originalProduct={{
@@ -133,7 +151,7 @@ export default function PDMFlow({ className }: PDMFlowProps) {
               precoEstimado: undefined, // O produto original pode não ter preço definido
             }}
           />
-        ) : null;
+        );
       default:
         return null;
     }

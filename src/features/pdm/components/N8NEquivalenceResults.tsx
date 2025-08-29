@@ -70,6 +70,9 @@ export default function N8NEquivalenceResults({
 }: N8NEquivalenceResultsProps) {
   const { equivalencias, metadata } = searchResult;
 
+  console.log("N8NEquivalenceResults - isLoading:", isLoading);
+  console.log("N8NEquivalenceResults - equivalencias:", equivalencias?.length || 0);
+
   const [state, setState] = useState<N8NEquivalenceState>({
     selectedIds: [],
     comparisonMode: false,
@@ -152,6 +155,7 @@ export default function N8NEquivalenceResults({
   };
 
   if (isLoading) {
+    console.log("N8NEquivalenceResults - RENDERIZANDO LOADING");
     return (
       <Box sx={{ p: 3 }}>
         <Typography variant="h6" gutterBottom>
@@ -318,9 +322,6 @@ function EquivalenceCard({
       <CardContent sx={{ flex: 1, pt: 1 }}>
         <Stack spacing={1}>
           <Box>
-            <Typography variant="h6" color="primary">
-              {equivalencia.precoFormatado}
-            </Typography>
             <Chip
               label={`${equivalencia.grauSimilaridade}% similar`}
               color={
@@ -338,32 +339,6 @@ function EquivalenceCard({
           <Typography variant="body2" color="text.secondary">
             {equivalencia.aplicacao}
           </Typography>
-
-          <Box>
-            <Typography variant="body2" fontWeight="bold">
-              Fornecedores:
-            </Typography>
-            <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
-              {equivalencia.fornecedoresSugeridos
-                .slice(0, 2)
-                .map((fornecedor) => (
-                  <Chip
-                    key={fornecedor}
-                    label={fornecedor}
-                    size="small"
-                    variant="outlined"
-                    icon={<ShoppingCartIcon />}
-                  />
-                ))}
-              {equivalencia.fornecedoresSugeridos.length > 2 && (
-                <Chip
-                  label={`+${equivalencia.fornecedoresSugeridos.length - 2}`}
-                  size="small"
-                  variant="outlined"
-                />
-              )}
-            </Stack>
-          </Box>
 
           <Accordion
             expanded={expanded}
@@ -482,10 +457,7 @@ function ComparisonModal({
               <TableRow>
                 <TableCell>Produto</TableCell>
                 <TableCell>Marca</TableCell>
-                <TableCell>Preço</TableCell>
                 <TableCell>Similaridade</TableCell>
-                <TableCell>Disponibilidade</TableCell>
-                <TableCell>Fornecedores</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -495,26 +467,14 @@ function ComparisonModal({
                     <strong>{originalProduct.nome}</strong>
                   </TableCell>
                   <TableCell>-</TableCell>
-                  <TableCell>
-                    {originalProduct.precoEstimado
-                      ? `${
-                          originalProduct.precoEstimado.moeda
-                        } ${originalProduct.precoEstimado.valor.toFixed(2)}`
-                      : "N/A"}
-                  </TableCell>
                   <TableCell>100%</TableCell>
-                  <TableCell>-</TableCell>
-                  <TableCell>-</TableCell>
                 </TableRow>
               )}
               {selectedEquivalencias.map((eq) => (
                 <TableRow key={eq.id}>
                   <TableCell>{eq.nome}</TableCell>
                   <TableCell>{eq.marcaFabricante}</TableCell>
-                  <TableCell>{eq.precoFormatado}</TableCell>
                   <TableCell>{eq.grauSimilaridade}%</TableCell>
-                  <TableCell>{eq.disponibilidadeTexto}</TableCell>
-                  <TableCell>{eq.fornecedoresSugeridos.join(", ")}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

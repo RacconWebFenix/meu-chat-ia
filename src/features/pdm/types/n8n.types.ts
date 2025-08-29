@@ -4,6 +4,20 @@
 
 import { BaseProductInfo } from "./base.types";
 
+// Payload estruturado para busca de equivalências
+export interface EquivalenceSearchPayload {
+  readonly nome: string;
+  readonly marcaFabricante: string;
+  readonly categoria: string;
+  readonly subcategoria: string;
+  readonly especificacoesTecnicas: Record<string, unknown>;
+  readonly aplicacao: string;
+  readonly unidadeMedida: string;
+  readonly breveDescricao: string;
+  readonly normas: readonly string[];
+  readonly imagens: readonly ImageData[];
+}
+
 // Tipos auxiliares para dados do N8N
 export interface Citation {
   readonly title: string;
@@ -85,7 +99,7 @@ export interface N8NEquivalenceResponse {
 // Serviço para integração com N8N
 export interface N8NEquivalenceService {
   searchEquivalents(
-    productInfo: BaseProductInfo
+    productInfo: BaseProductInfo | EquivalenceSearchPayload
   ): Promise<N8NEquivalenceResponse>;
   isServiceAvailable(): boolean;
 }
