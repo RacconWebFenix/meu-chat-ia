@@ -78,8 +78,6 @@ export default function EntryForm({
           error={!!error}
           helperText={error || field.helpText}
           inputProps={{ maxLength: field.maxLength }}
-          multiline
-          rows={4}
           variant="outlined"
           sx={{
             "& .MuiFormHelperText-root": {
