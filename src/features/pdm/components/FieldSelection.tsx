@@ -13,8 +13,16 @@ import {
   Stack,
   TextField,
   Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
-import { Add as AddIcon } from "@mui/icons-material";
+import { Add as AddIcon, GetApp as ExportIcon } from "@mui/icons-material";
 import { v4 as uuidv4 } from "uuid";
 import { EnrichmentResponse, EnrichedProductData } from "../types";
 import { formatTechnicalKey } from "@/Utils/formatUtils";
@@ -137,6 +145,8 @@ export default function FieldSelection({
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [marcaError, setMarcaError] = useState("");
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [exportFormat, setExportFormat] = useState("xlsx");
 
   // Função para gerar dados completos
   const getDadosCompletos = () => {
@@ -157,6 +167,140 @@ export default function FieldSelection({
     const nomeOriginal = editableData.informacoes || "Produto";
     const marca = editableData.marca || "Marca não informada";
     return `${nomeOriginal} - ${marca}`;
+  };
+
+  // Funções de exportação
+  const exportToCSV = (data: string) => {
+    const csvContent = `Nome Original,Fabricante,Características Selecionadas,Resumo\n"${editableData.informacoes}","${editableData.marca}","${data.replace(/\n/g, ' ').replace(/"/g, '""')}","${getResumo()}"`;
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `dados_produto_${Date.now()}.csv`;
+    link.click();
+  };
+
+  const exportToXLSX = (data: string) => {
+    // Para XLSX, vamos criar um HTML table que pode ser aberto no Excel
+    const htmlContent = `
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Dados do Produto</title>
+        </head>
+        <body>
+          <table border="1">
+            <tr>
+              <th>Nome Original</th>
+              <th>Fabricante</th>
+              <th>Características Selecionadas</th>
+              <th>Resumo</th>
+            </tr>
+            <tr>
+              <td>${editableData.informacoes}</td>
+              <td>${editableData.marca}</td>
+              <td>${data.replace(/\n/g, '<br>')}</td>
+              <td>${getResumo()}</td>
+            </tr>
+          </table>
+        </body>
+      </html>
+    `;
+    const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `dados_produto_${Date.now()}.xlsx`;
+    link.click();
+  };
+
+  const exportToPDF = (data: string) => {
+    // Para PDF, vamos criar um HTML simples que pode ser impresso
+    const htmlContent = `
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Dados do Produto - ${getResumo()}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #333; }
+            .section { margin-bottom: 20px; }
+            .label { font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <h1>Dados Completos do Produto</h1>
+          <div class="section">
+            <div class="label">Nome Original:</div>
+            <div>${editableData.informacoes}</div>
+          </div>
+          <div class="section">
+            <div class="label">Fabricante:</div>
+            <div>${editableData.marca}</div>
+          </div>
+          <div class="section">
+            <div class="label">Características Selecionadas:</div>
+            <div>${data.replace(/\n/g, '<br>')}</div>
+          </div>
+          <div class="section">
+            <div class="label">Resumo:</div>
+            <div>${getResumo()}</div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
+
+  const exportToODT = (data: string) => {
+    // Para ODT, vamos criar um arquivo de texto formatado
+    const odtContent = `Dados Completos do Produto
+========================
+
+Nome Original: ${editableData.informacoes}
+
+Fabricante: ${editableData.marca}
+
+Características Selecionadas:
+${data}
+
+Resumo:
+${getResumo()}
+
+Gerado em: ${new Date().toLocaleString('pt-BR')}
+`;
+    const blob = new Blob([odtContent], { type: 'text/plain;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `dados_produto_${Date.now()}.txt`;
+    link.click();
+  };
+
+  const handleExport = () => {
+    const dadosCompletos = getDadosCompletos();
+
+    switch (exportFormat) {
+      case 'csv':
+        exportToCSV(dadosCompletos);
+        break;
+      case 'xlsx':
+        exportToXLSX(dadosCompletos);
+        break;
+      case 'pdf':
+        exportToPDF(dadosCompletos);
+        break;
+      case 'odt':
+        exportToODT(dadosCompletos);
+        break;
+      default:
+        console.error('Formato não suportado:', exportFormat);
+    }
+
+    setExportDialogOpen(false);
   };
 
   // Handlers para atualizar campos básicos
@@ -430,6 +574,14 @@ export default function FieldSelection({
             Voltar
           </Button>
           <Button
+            variant="outlined"
+            onClick={() => setExportDialogOpen(true)}
+            startIcon={<ExportIcon />}
+            sx={{ height: 32, fontSize: "0.7rem" }}
+          >
+            Exportar
+          </Button>
+          <Button
             variant="contained"
             onClick={handleContinue}
             sx={{ height: 32, fontSize: "0.7rem", flex: 1 }}
@@ -445,6 +597,37 @@ export default function FieldSelection({
         onClose={() => setIsDialogOpen(false)}
         onAdd={handleSpecAdd}
       />
+
+      {/* Dialog para seleção de formato de exportação */}
+      <Dialog
+        open={exportDialogOpen}
+        onClose={() => setExportDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Exportar Dados do Produto</DialogTitle>
+        <DialogContent>
+          <FormControl fullWidth sx={{ mt: 1 }}>
+            <InputLabel>Formato do Arquivo</InputLabel>
+            <Select
+              value={exportFormat}
+              onChange={(e) => setExportFormat(e.target.value)}
+              label="Formato do Arquivo"
+            >
+              <MenuItem value="xlsx">Excel (XLSX)</MenuItem>
+              <MenuItem value="csv">CSV</MenuItem>
+              <MenuItem value="pdf">PDF</MenuItem>
+              <MenuItem value="odt">Texto (ODT)</MenuItem>
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setExportDialogOpen(false)}>Cancelar</Button>
+          <Button onClick={handleExport} variant="contained">
+            Exportar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

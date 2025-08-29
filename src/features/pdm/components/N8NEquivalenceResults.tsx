@@ -34,6 +34,10 @@ import {
   TableHead,
   TableRow,
   Paper,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import {
   ExpandMore as ExpandMoreIcon,
@@ -41,6 +45,7 @@ import {
   Compare as CompareIcon,
   Image as ImageIcon,
   Launch as LaunchIcon,
+  GetApp as ExportIcon,
 } from "@mui/icons-material";
 import {
   N8NEquivalenceResponse,
@@ -82,6 +87,8 @@ export default function N8NEquivalenceResults({
   });
 
   const [comparisonOpen, setComparisonOpen] = useState(false);
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [exportFormat, setExportFormat] = useState("xlsx");
 
   // Filtra e ordena equivalências
   const sortedEquivalencias = useMemo(() => {
@@ -154,6 +161,180 @@ export default function N8NEquivalenceResults({
     }
   };
 
+  // Funções de exportação das equivalências selecionadas
+  const exportToCSV = (equivalencias: N8NEquivalence[]) => {
+    const headers = [
+      "Nome",
+      "Fabricante",
+      "Grau de Similaridade",
+      "Preço Estimado",
+      "Disponibilidade",
+      "Aplicação",
+      "Especificações Técnicas"
+    ];
+
+    const csvContent = [
+      headers.join(","),
+      ...equivalencias.map(eq => [
+        `"${eq.nome}"`,
+        `"${eq.marcaFabricante}"`,
+        `"${eq.grauSimilaridade}%"`,
+        `"${eq.precoEstimado?.valor || 'N/A'} ${eq.precoEstimado?.moeda || ''}"`,
+        `"${eq.disponibilidade}"`,
+        `"${eq.aplicacao}"`,
+        `"${Object.entries(eq.especificacoesTecnicas || {}).map(([k, v]) => `${k}: ${v}`).join('; ')}"`
+      ].join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `equivalencias_selecionadas_${Date.now()}.csv`;
+    link.click();
+  };
+
+  const exportToXLSX = (equivalencias: N8NEquivalence[]) => {
+    const htmlContent = `
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Equivalências Selecionadas</title>
+        </head>
+        <body>
+          <table border="1">
+            <tr>
+              <th>Nome</th>
+              <th>Fabricante</th>
+              <th>Grau de Similaridade</th>
+              <th>Preço Estimado</th>
+              <th>Disponibilidade</th>
+              <th>Aplicação</th>
+              <th>Especificações Técnicas</th>
+            </tr>
+            ${equivalencias.map(eq => `
+              <tr>
+                <td>${eq.nome}</td>
+                <td>${eq.marcaFabricante}</td>
+                <td>${eq.grauSimilaridade}%</td>
+                <td>${eq.precoEstimado?.valor || 'N/A'} ${eq.precoEstimado?.moeda || ''}</td>
+                <td>${eq.disponibilidade}</td>
+                <td>${eq.aplicacao}</td>
+                <td>${Object.entries(eq.especificacoesTecnicas || {}).map(([k, v]) => `${k}: ${v}`).join('<br>')}</td>
+              </tr>
+            `).join('')}
+          </table>
+        </body>
+      </html>
+    `;
+    const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `equivalencias_selecionadas_${Date.now()}.xlsx`;
+    link.click();
+  };
+
+  const exportToPDF = (equivalencias: N8NEquivalence[]) => {
+    const htmlContent = `
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Equivalências Selecionadas</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #333; text-align: center; }
+            .equivalencia { margin-bottom: 30px; border: 1px solid #ddd; padding: 15px; border-radius: 5px; }
+            .header { background-color: #f5f5f5; padding: 10px; margin: -15px -15px 15px -15px; border-radius: 5px 5px 0 0; }
+            .specs { margin-top: 10px; }
+            .spec-item { margin-bottom: 5px; }
+            .label { font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <h1>Equivalências Selecionadas (${equivalencias.length})</h1>
+          ${equivalencias.map((eq, index) => `
+            <div class="equivalencia">
+              <div class="header">
+                <h3>${index + 1}. ${eq.nome}</h3>
+                <p><strong>Fabricante:</strong> ${eq.marcaFabricante}</p>
+                <p><strong>Grau de Similaridade:</strong> ${eq.grauSimilaridade}%</p>
+              </div>
+              <p><strong>Preço Estimado:</strong> ${eq.precoEstimado?.valor || 'N/A'} ${eq.precoEstimado?.moeda || ''}</p>
+              <p><strong>Disponibilidade:</strong> ${eq.disponibilidade}</p>
+              <p><strong>Aplicação:</strong> ${eq.aplicacao}</p>
+              <div class="specs">
+                <strong>Especificações Técnicas:</strong>
+                ${Object.entries(eq.especificacoesTecnicas || {}).map(([k, v]) => 
+                  `<div class="spec-item">• ${k}: ${v}</div>`
+                ).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
+
+  const exportToODT = (equivalencias: N8NEquivalence[]) => {
+    const odtContent = `Equivalências Selecionadas
+==========================
+Total: ${equivalencias.length} equivalências
+
+${equivalencias.map((eq, index) => `
+${index + 1}. ${eq.nome}
+Fabricante: ${eq.marcaFabricante}
+Grau de Similaridade: ${eq.grauSimilaridade}%
+Preço Estimado: ${eq.precoEstimado?.valor || 'N/A'} ${eq.precoEstimado?.moeda || ''}
+Disponibilidade: ${eq.disponibilidade}
+Aplicação: ${eq.aplicacao}
+
+Especificações Técnicas:
+${Object.entries(eq.especificacoesTecnicas || {}).map(([k, v]) => `  • ${k}: ${v}`).join('\n')}
+
+---
+`).join('\n')}
+
+Gerado em: ${new Date().toLocaleString('pt-BR')}
+`;
+    const blob = new Blob([odtContent], { type: 'text/plain;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `equivalencias_selecionadas_${Date.now()}.txt`;
+    link.click();
+  };
+
+  const handleExport = () => {
+    if (selectedEquivalencias.length === 0) {
+      alert('Selecione pelo menos uma equivalência para exportar.');
+      return;
+    }
+
+    switch (exportFormat) {
+      case 'csv':
+        exportToCSV(selectedEquivalencias);
+        break;
+      case 'xlsx':
+        exportToXLSX(selectedEquivalencias);
+        break;
+      case 'pdf':
+        exportToPDF(selectedEquivalencias);
+        break;
+      case 'odt':
+        exportToODT(selectedEquivalencias);
+        break;
+      default:
+        console.error('Formato não suportado:', exportFormat);
+    }
+
+    setExportDialogOpen(false);
+  };
+
   if (isLoading) {
     console.log("N8NEquivalenceResults - RENDERIZANDO LOADING");
     return (
@@ -217,13 +398,23 @@ export default function N8NEquivalenceResults({
         />
 
         {selectedEquivalencias.length > 0 && (
-          <Button
-            variant="contained"
-            startIcon={<CompareIcon />}
-            onClick={handleCompare}
-          >
-            Comparar ({selectedEquivalencias.length})
-          </Button>
+          <>
+            <Button
+              variant="outlined"
+              onClick={() => setExportDialogOpen(true)}
+              startIcon={<ExportIcon />}
+              sx={{ height: 36 }}
+            >
+              Exportar ({selectedEquivalencias.length})
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<CompareIcon />}
+              onClick={handleCompare}
+            >
+              Comparar ({selectedEquivalencias.length})
+            </Button>
+          </>
         )}
       </Stack>
 
@@ -259,6 +450,37 @@ export default function N8NEquivalenceResults({
           Voltar para Revisão
         </Button>
       </Box>
+
+      {/* Dialog para seleção de formato de exportação */}
+      <Dialog
+        open={exportDialogOpen}
+        onClose={() => setExportDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Exportar Equivalências Selecionadas</DialogTitle>
+        <DialogContent>
+          <FormControl fullWidth sx={{ mt: 1 }}>
+            <InputLabel>Formato do Arquivo</InputLabel>
+            <Select
+              value={exportFormat}
+              onChange={(e) => setExportFormat(e.target.value)}
+              label="Formato do Arquivo"
+            >
+              <MenuItem value="xlsx">Excel (XLSX)</MenuItem>
+              <MenuItem value="csv">CSV</MenuItem>
+              <MenuItem value="pdf">PDF</MenuItem>
+              <MenuItem value="odt">Texto (ODT)</MenuItem>
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setExportDialogOpen(false)}>Cancelar</Button>
+          <Button onClick={handleExport} variant="contained">
+            Exportar ({selectedEquivalencias.length})
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
