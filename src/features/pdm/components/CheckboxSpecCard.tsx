@@ -63,12 +63,14 @@ export default function CheckboxSpecCard({
           display: "flex",
           alignItems: "center",
           cursor: "pointer",
-          bgcolor: checked ? "primary.50" : "background.paper",
+          bgcolor: checked ? "primary.50" : "grey.50",
           border: checked ? "1px solid" : "1px solid",
           borderColor: checked ? "primary.main" : "grey.300",
+          opacity: checked ? 1 : 0.7,
           "&:hover": {
-            bgcolor: checked ? "primary.100" : "grey.50",
+            bgcolor: checked ? "primary.100" : "grey.100",
             borderColor: checked ? "primary.dark" : "grey.400",
+            opacity: 1,
           },
           transition: "all 0.2s ease-in-out",
         }}

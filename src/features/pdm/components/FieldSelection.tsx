@@ -20,6 +20,7 @@ import { EnrichmentResponse, EnrichedProductData } from "../types";
 import { formatTechnicalKey } from "@/Utils/formatUtils";
 import CheckboxSpecCard from "./CheckboxSpecCard";
 import AddNewSpecDialog from "./AddNewSpecDialog";
+import ExpandablePDMSummary from "./ExpandablePDMSummary";
 
 // Interface para especificações com checkbox
 interface SpecItem {
@@ -37,6 +38,41 @@ interface EditableData {
   readonly marca: string;
   readonly especificacoesTecnicas: SpecItem[];
 }
+
+// Utilitário para extrair fabricante de forma robusta
+const extractFabricante = (enriched: unknown, specs: Record<string, unknown>): string => {
+  // 1. Primeiro: campo dedicado marcaFabricante
+  if (enriched && typeof enriched === 'object' && 'marcaFabricante' in enriched) {
+    const enrichedObj = enriched as Record<string, unknown>;
+    const marcaFabricante = enrichedObj.marcaFabricante;
+    if (marcaFabricante) return String(marcaFabricante);
+  }
+
+  // 2. Segundo: procurar em especificações técnicas
+  const fabricanteKeys = ['fabricante', 'marca', 'manufacturer', 'brand'];
+  for (const [key, value] of Object.entries(specs)) {
+    if (fabricanteKeys.some(fab => key.toLowerCase().includes(fab.toLowerCase()))) {
+      return String(value);
+    }
+  }
+
+  // 3. Terceiro: valor padrão
+  return "";
+};
+
+// Utilitário para filtrar especificações removendo fabricante
+const filterFabricanteFromSpecs = (specs: Record<string, unknown>): Record<string, unknown> => {
+  const fabricanteKeys = ['fabricante', 'marca', 'manufacturer', 'brand'];
+  const filtered: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(specs)) {
+    if (!fabricanteKeys.some(fab => key.toLowerCase().includes(fab.toLowerCase()))) {
+      filtered[key] = value;
+    }
+  }
+
+  return filtered;
+};
 
 // Utilitário para converter specs para array
 const specsToArray = (
@@ -70,9 +106,13 @@ export default function FieldSelection({
   // Estado para dados editáveis
   const [editableData, setEditableData] = useState<EditableData>(() => {
     // Acessar as especificações técnicas da nova estrutura
-    const specs =
+    const rawSpecs =
       enrichmentResult.enriched.especificacoesTecnicas
         ?.especificacoesTecnicas || {};
+
+    // Filtrar fabricante das especificações
+    const specs = filterFabricanteFromSpecs(rawSpecs);
+
     const formattedSpecs = specsToArray(specs).map((spec) => ({
       id: uuidv4(),
       key: formatTechnicalKey(spec.key),
@@ -81,7 +121,8 @@ export default function FieldSelection({
     }));
 
     // Debug para verificar as especificações
-    console.log("🔍 Especificações encontradas:", specs);
+    console.log("🔍 Especificações brutas:", rawSpecs);
+    console.log("🔍 Especificações filtradas:", specs);
     console.log("📋 Especificações formatadas:", formattedSpecs);
     console.log("📄 Estrutura completa do enrichmentResult:", enrichmentResult);
 
@@ -89,7 +130,7 @@ export default function FieldSelection({
       categoria: enrichmentResult.enriched.categoria || "",
       aplicacao: enrichmentResult.enriched.aplicacao || "",
       informacoes: enrichmentResult.original.informacoes || "",
-      marca: enrichmentResult.enriched.marcaFabricante || "",
+      marca: extractFabricante(enrichmentResult.enriched, rawSpecs),
       especificacoesTecnicas: formattedSpecs,
     };
   });
@@ -100,13 +141,14 @@ export default function FieldSelection({
   // Função para gerar dados completos
   const getDadosCompletos = () => {
     const nomeOriginal = editableData.informacoes || "Não informado";
-    const marca = editableData.marca || "Não informada";
-    const caracteristicas = editableData.especificacoesTecnicas
+    const fabricante = editableData.marca || "Não informado";
+    const caracteristicasSelecionadas = editableData.especificacoesTecnicas
+      .filter(spec => spec.checked)
       .map((spec) => `${spec.key}: ${spec.value}`)
       .join(", ");
 
-    return `Nome Original: ${nomeOriginal}\n\nMarca: ${marca}\n\nCaracterísticas Selecionadas:\n${
-      caracteristicas || "Nenhuma característica selecionada"
+    return `Nome Original: ${nomeOriginal}\n\nFabricante: ${fabricante}\n\nCaracterísticas Selecionadas:\n${
+      caracteristicasSelecionadas || "Nenhuma característica selecionada"
     }`;
   };
 
@@ -176,41 +218,12 @@ export default function FieldSelection({
         // Removido padding para não criar limitações
       }}
     >
-      {/* SEÇÃO 1: Resumo PDM - Conteúdo Fixo - Largura Total */}
+      {/* SEÇÃO 1: Resumo PDM - Card Expansível - Largura Total */}
       {enrichmentResult.enriched.especificacoesTecnicas?.resumoPDM && (
-        <Paper
-          elevation={1}
-          sx={{
-            p: 2,
-            bgcolor: "info.50",
-            border: "1px solid",
-            borderColor: "info.200",
-            width: "100%",
-          }}
-        >
-          <Typography
-            variant="h6"
-            sx={{
-              mb: 2,
-              fontSize: "0.9rem",
-              color: "info.main",
-              fontWeight: 600,
-            }}
-          >
-            Resumo PDM
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{
-              fontSize: "0.75rem",
-              lineHeight: 1.4,
-              color: "text.primary",
-              whiteSpace: "pre-line",
-            }}
-          >
-            {enrichmentResult.enriched.especificacoesTecnicas.resumoPDM}
-          </Typography>
-        </Paper>
+        <ExpandablePDMSummary
+          summaryText={enrichmentResult.enriched.especificacoesTecnicas.resumoPDM}
+          maxLines={5}
+        />
       )}
 
       {/* SEÇÃO 2: Características - Largura Total */}
@@ -222,7 +235,7 @@ export default function FieldSelection({
         }}
       >
         <Typography variant="h6" sx={{ mb: 2, fontSize: "0.9rem" }}>
-          Características ({editableData.especificacoesTecnicas.length})
+          Características ({editableData.especificacoesTecnicas.filter(spec => spec.checked).length} de {editableData.especificacoesTecnicas.length})
         </Typography>
 
         {/* Grid de Cards - Mantendo funcionamento original */}
@@ -259,11 +272,9 @@ export default function FieldSelection({
                 onCheck={(id, checked) => {
                   setEditableData((prev) => ({
                     ...prev,
-                    especificacoesTecnicas: checked
-                      ? prev.especificacoesTecnicas.map((s) =>
-                          s.id === id ? { ...s, checked } : s
-                        )
-                      : prev.especificacoesTecnicas.filter((s) => s.id !== id),
+                    especificacoesTecnicas: prev.especificacoesTecnicas.map((s) =>
+                      s.id === id ? { ...s, checked } : s
+                    ),
                   }));
                 }}
                 onValueChange={(id, newValue) => {
@@ -327,7 +338,7 @@ export default function FieldSelection({
 
           {/* Campo Marca */}
           <TextField
-            label="Marca"
+            label="Fabricante"
             value={editableData.marca}
             onChange={(e) => {
               handleFieldChange("marca", e.target.value);
@@ -336,7 +347,7 @@ export default function FieldSelection({
             size="small"
             fullWidth
             error={!!marcaError}
-            helperText={marcaError || "Informe a marca do produto"}
+            helperText={marcaError || "Fabricante do produto (preenchido automaticamente)"}
             required
           />
 

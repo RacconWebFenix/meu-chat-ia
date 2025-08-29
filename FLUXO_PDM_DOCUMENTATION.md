@@ -20,9 +20,9 @@ src/features/pdm/
 │   ├── enrichment.types.ts  # Tipos para enriquecimento de dados
 │   └── index.ts             # Exportações centralizadas
 ├── services/
-│   ├── enrichmentService.ts # Serviço de enriquecimento via IA
+│   ├── enrichmentService.ts # Serviço de enriquecimento via IA (n8n)
 │   ├── n8nService.ts        # Serviço de busca de equivalências
-│   └── mockEnrichmentService.minimal.ts # Mock para desenvolvimento
+│   └── exportService.ts     # Serviço de exportação de dados
 └── hooks/
     ├── usePDMFlow.ts        # Hook de gerenciamento de estado do fluxo
     └── useEntryForm.ts      # Hook de gerenciamento do formulário

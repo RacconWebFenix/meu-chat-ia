@@ -91,8 +91,9 @@ src/features/pdm/types/
 ### **Serviços:**
 ```
 src/features/pdm/services/
-├── mockEquivalenceService.ts ✅ (Busca com fabricante)
-├── mockEnrichmentService.ts ✅
+├── enrichmentService.ts ✅ (Serviço real - n8n)
+├── n8nService.ts ✅ (Busca de equivalências)
+├── exportService.ts ✅ (Exportação de dados)
 └── index.ts ✅
 ```
 
