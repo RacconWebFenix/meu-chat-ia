@@ -1,30 +1,26 @@
 "use client";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 
-import { useState } from "react";
-import { Box, Container } from "@mui/material";
-import { TabsSwitcher, FadeSwitch } from "@/components/shared";
-import ChatBoot from "@/components/ChatBoot/ChatBoot";
-import ChatPDM from "@/components/ChatPDM/ChatPDM";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function Search() {
-  const [tab, setTab] = useState<"pdm" | "equivalencia">("equivalencia");
+export default function SearchRedirect() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirecionar automaticamente para a página inicial
+    router.replace("/");
+  }, [router]);
 
   return (
-    <Container maxWidth="xl" disableGutters>
-      <Box sx={{ width: "100%" }}>
-        <TabsSwitcher tab={tab} setTab={setTab} />
-
-        <FadeSwitch activeKey={tab} duration={400}>
-          <div key="equivalencia">
-            <ChatBoot />
-          </div>
-          <div key="pdm">
-            <ChatPDM />
-          </div>
-        </FadeSwitch>
-      </Box>
-    </Container>
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100vh',
+      fontSize: '18px',
+      color: '#666'
+    }}>
+      Redirecionando para Pesquisa de Materiais...
+    </div>
   );
 }

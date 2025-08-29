@@ -16,8 +16,7 @@ export const usePageTitle = () => useContext(PageTitleContext);
 
 // Mapeamento de rotas para títulos
 const routeTitleMap: Record<string, string> = {
-  "/": "Início - Página Inicial",
-  "/search": "Pesquisa de Materiais",
+  "/": "Pesquisa de Materiais",
   "/feedbacks": "Feedbacks - Gerenciar Feedbacks",
   "/validar-informacoes": "Validar Informações",
   "/login": "Login - Acesse sua Conta",
@@ -25,7 +24,7 @@ const routeTitleMap: Record<string, string> = {
 };
 
 export function PageTitleProvider({ children }: { children: React.ReactNode }) {
-  const [pageTitle, setPageTitle] = useState("Início - Página Inicial");
+  const [pageTitle, setPageTitle] = useState("Pesquisa de Materiais");
   const pathname = usePathname();
 
   // Atualiza o título automaticamente baseado na rota

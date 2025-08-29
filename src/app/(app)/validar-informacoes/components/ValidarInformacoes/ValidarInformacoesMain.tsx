@@ -178,7 +178,7 @@ export default function ValidarInformacoesMain({}) {
 
           <CustomButton
             onClick={() => {
-              navigateTo("/search");
+              navigateTo("/");
             }}
             color="primary"
             sx={{

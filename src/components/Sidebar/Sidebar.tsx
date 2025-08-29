@@ -17,7 +17,6 @@ import {
   CSSObject,
 } from "@mui/material";
 import {
-  Home as HomeIcon,
   Search as SearchIcon,
   Assessment as AssessmentIcon,
 } from "@mui/icons-material";
@@ -53,15 +52,9 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   {
-    text: "Início",
-    icon: <HomeIcon />,
-    path: "/",
-    description: "Página inicial",
-  },
-  {
     text: "Pesquisa de Materiais",
     icon: <SearchIcon />,
-    path: "/search",
+    path: "/",
     description: "Chat para pesquisa de materiais",
   },
   {
