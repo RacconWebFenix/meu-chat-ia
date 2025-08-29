@@ -45,7 +45,7 @@ export default function ExpandablePDMSummary({
 
   // Calcular se o texto precisa ser truncado
   const shouldTruncate = useMemo(() => {
-    const lines = summaryText.split('\n');
+    const lines = summaryText.split("\n");
     return lines.length > maxLines;
   }, [summaryText, maxLines]);
 
@@ -53,8 +53,8 @@ export default function ExpandablePDMSummary({
   const truncatedText = useMemo(() => {
     if (!shouldTruncate) return summaryText;
 
-    const lines = summaryText.split('\n');
-    return lines.slice(0, maxLines).join('\n') + '\n...';
+    const lines = summaryText.split("\n");
+    return lines.slice(0, maxLines).join("\n") + "\n...";
   }, [summaryText, shouldTruncate, maxLines]);
 
   const handleToggle = () => {
@@ -82,7 +82,8 @@ export default function ExpandablePDMSummary({
           sx={{
             width: "100%",
             height: "auto",
-            gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr)) !important",
+            gridTemplateColumns:
+              "repeat(auto-fill, minmax(120px, 1fr)) !important",
           }}
           cols={Math.min(imagens.length, 4)}
           rowHeight={120}
@@ -97,7 +98,9 @@ export default function ExpandablePDMSummary({
                 borderColor: "divider",
               }}
             >
-                            <Box sx={{ position: "relative", width: "100%", height: "120px" }}>
+              <Box
+                sx={{ position: "relative", width: "100%", height: "120px" }}
+              >
                 <Image
                   src={image.image_url}
                   alt={`Produto ${index + 1}`}
@@ -110,8 +113,12 @@ export default function ExpandablePDMSummary({
                   onError={(e) => {
                     // Fallback para imagem quebrada
                     const target = e.target as HTMLImageElement;
-                    if (target.src !== "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0yIDEyTDE1IDJ2MjBNMiAxMnoiIHN0cm9rZT0iIzk5OTk5OSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+") {
-                      target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0yIDEyTDE1IDJ2MjBNMiAxMnoiIHN0cm9rZT0iIzk5OTk5OSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+";
+                    if (
+                      target.src !==
+                      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0yIDEyTDE1IDJ2MjBNMiAxMnoiIHN0cm9rZT0iIzk5OTk5OSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+"
+                    ) {
+                      target.src =
+                        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0yIDEyTDE1IDJ2MjBNMiAxMnoiIHN0cm9rZT0iIzk5OTk5OSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+";
                     }
                   }}
                 />
@@ -119,13 +126,17 @@ export default function ExpandablePDMSummary({
               {image.origin_url && (
                 <ImageListItemBar
                   title=""
-                  subtitle={`Fonte: ${image.origin_url ? (() => {
-                    try {
-                      return new URL(image.origin_url!).hostname;
-                    } catch {
-                      return 'Fonte externa';
-                    }
-                  })() : 'Fonte externa'}`}
+                  subtitle={`Fonte: ${
+                    image.origin_url
+                      ? (() => {
+                          try {
+                            return new URL(image.origin_url!).hostname;
+                          } catch {
+                            return "Fonte externa";
+                          }
+                        })()
+                      : "Fonte externa"
+                  }`}
                   sx={{
                     "& .MuiImageListItemBar-subtitle": {
                       fontSize: "0.6rem",

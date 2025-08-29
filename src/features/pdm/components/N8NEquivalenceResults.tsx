@@ -76,7 +76,10 @@ export default function N8NEquivalenceResults({
   const { equivalencias, metadata } = searchResult;
 
   console.log("N8NEquivalenceResults - isLoading:", isLoading);
-  console.log("N8NEquivalenceResults - equivalencias:", equivalencias?.length || 0);
+  console.log(
+    "N8NEquivalenceResults - equivalencias:",
+    equivalencias?.length || 0
+  );
 
   const [state, setState] = useState<N8NEquivalenceState>({
     selectedIds: [],
@@ -170,24 +173,30 @@ export default function N8NEquivalenceResults({
       "Preço Estimado",
       "Disponibilidade",
       "Aplicação",
-      "Especificações Técnicas"
+      "Especificações Técnicas",
     ];
 
     const csvContent = [
       headers.join(","),
-      ...equivalencias.map(eq => [
-        `"${eq.nome}"`,
-        `"${eq.marcaFabricante}"`,
-        `"${eq.grauSimilaridade}%"`,
-        `"${eq.precoEstimado?.valor || 'N/A'} ${eq.precoEstimado?.moeda || ''}"`,
-        `"${eq.disponibilidade}"`,
-        `"${eq.aplicacao}"`,
-        `"${Object.entries(eq.especificacoesTecnicas || {}).map(([k, v]) => `${k}: ${v}`).join('; ')}"`
-      ].join(","))
+      ...equivalencias.map((eq) =>
+        [
+          `"${eq.nome}"`,
+          `"${eq.marcaFabricante}"`,
+          `"${eq.grauSimilaridade}%"`,
+          `"${eq.precoEstimado?.valor || "N/A"} ${
+            eq.precoEstimado?.moeda || ""
+          }"`,
+          `"${eq.disponibilidade}"`,
+          `"${eq.aplicacao}"`,
+          `"${Object.entries(eq.especificacoesTecnicas || {})
+            .map(([k, v]) => `${k}: ${v}`)
+            .join("; ")}"`,
+        ].join(",")
+      ),
     ].join("\n");
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `equivalencias_selecionadas_${Date.now()}.csv`;
     link.click();
@@ -211,23 +220,33 @@ export default function N8NEquivalenceResults({
               <th>Aplicação</th>
               <th>Especificações Técnicas</th>
             </tr>
-            ${equivalencias.map(eq => `
+            ${equivalencias
+              .map(
+                (eq) => `
               <tr>
                 <td>${eq.nome}</td>
                 <td>${eq.marcaFabricante}</td>
                 <td>${eq.grauSimilaridade}%</td>
-                <td>${eq.precoEstimado?.valor || 'N/A'} ${eq.precoEstimado?.moeda || ''}</td>
+                <td>${eq.precoEstimado?.valor || "N/A"} ${
+                  eq.precoEstimado?.moeda || ""
+                }</td>
                 <td>${eq.disponibilidade}</td>
                 <td>${eq.aplicacao}</td>
-                <td>${Object.entries(eq.especificacoesTecnicas || {}).map(([k, v]) => `${k}: ${v}`).join('<br>')}</td>
+                <td>${Object.entries(eq.especificacoesTecnicas || {})
+                  .map(([k, v]) => `${k}: ${v}`)
+                  .join("<br>")}</td>
               </tr>
-            `).join('')}
+            `
+              )
+              .join("")}
           </table>
         </body>
       </html>
     `;
-    const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob([htmlContent], {
+      type: "application/vnd.ms-excel;charset=utf-8;",
+    });
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `equivalencias_selecionadas_${Date.now()}.xlsx`;
     link.click();
@@ -251,29 +270,37 @@ export default function N8NEquivalenceResults({
         </head>
         <body>
           <h1>Equivalências Selecionadas (${equivalencias.length})</h1>
-          ${equivalencias.map((eq, index) => `
+          ${equivalencias
+            .map(
+              (eq, index) => `
             <div class="equivalencia">
               <div class="header">
                 <h3>${index + 1}. ${eq.nome}</h3>
                 <p><strong>Fabricante:</strong> ${eq.marcaFabricante}</p>
-                <p><strong>Grau de Similaridade:</strong> ${eq.grauSimilaridade}%</p>
+                <p><strong>Grau de Similaridade:</strong> ${
+                  eq.grauSimilaridade
+                }%</p>
               </div>
-              <p><strong>Preço Estimado:</strong> ${eq.precoEstimado?.valor || 'N/A'} ${eq.precoEstimado?.moeda || ''}</p>
+              <p><strong>Preço Estimado:</strong> ${
+                eq.precoEstimado?.valor || "N/A"
+              } ${eq.precoEstimado?.moeda || ""}</p>
               <p><strong>Disponibilidade:</strong> ${eq.disponibilidade}</p>
               <p><strong>Aplicação:</strong> ${eq.aplicacao}</p>
               <div class="specs">
                 <strong>Especificações Técnicas:</strong>
-                ${Object.entries(eq.especificacoesTecnicas || {}).map(([k, v]) => 
-                  `<div class="spec-item">• ${k}: ${v}</div>`
-                ).join('')}
+                ${Object.entries(eq.especificacoesTecnicas || {})
+                  .map(([k, v]) => `<div class="spec-item">• ${k}: ${v}</div>`)
+                  .join("")}
               </div>
             </div>
-          `).join('')}
+          `
+            )
+            .join("")}
         </body>
       </html>
     `;
 
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open("", "_blank");
     if (printWindow) {
       printWindow.document.write(htmlContent);
       printWindow.document.close();
@@ -286,24 +313,32 @@ export default function N8NEquivalenceResults({
 ==========================
 Total: ${equivalencias.length} equivalências
 
-${equivalencias.map((eq, index) => `
+${equivalencias
+  .map(
+    (eq, index) => `
 ${index + 1}. ${eq.nome}
 Fabricante: ${eq.marcaFabricante}
 Grau de Similaridade: ${eq.grauSimilaridade}%
-Preço Estimado: ${eq.precoEstimado?.valor || 'N/A'} ${eq.precoEstimado?.moeda || ''}
+Preço Estimado: ${eq.precoEstimado?.valor || "N/A"} ${
+      eq.precoEstimado?.moeda || ""
+    }
 Disponibilidade: ${eq.disponibilidade}
 Aplicação: ${eq.aplicacao}
 
 Especificações Técnicas:
-${Object.entries(eq.especificacoesTecnicas || {}).map(([k, v]) => `  • ${k}: ${v}`).join('\n')}
+${Object.entries(eq.especificacoesTecnicas || {})
+  .map(([k, v]) => `  • ${k}: ${v}`)
+  .join("\n")}
 
 ---
-`).join('\n')}
+`
+  )
+  .join("\n")}
 
-Gerado em: ${new Date().toLocaleString('pt-BR')}
+Gerado em: ${new Date().toLocaleString("pt-BR")}
 `;
-    const blob = new Blob([odtContent], { type: 'text/plain;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob([odtContent], { type: "text/plain;charset=utf-8;" });
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `equivalencias_selecionadas_${Date.now()}.txt`;
     link.click();
@@ -311,25 +346,25 @@ Gerado em: ${new Date().toLocaleString('pt-BR')}
 
   const handleExport = () => {
     if (selectedEquivalencias.length === 0) {
-      alert('Selecione pelo menos uma equivalência para exportar.');
+      alert("Selecione pelo menos uma equivalência para exportar.");
       return;
     }
 
     switch (exportFormat) {
-      case 'csv':
+      case "csv":
         exportToCSV(selectedEquivalencias);
         break;
-      case 'xlsx':
+      case "xlsx":
         exportToXLSX(selectedEquivalencias);
         break;
-      case 'pdf':
+      case "pdf":
         exportToPDF(selectedEquivalencias);
         break;
-      case 'odt':
+      case "odt":
         exportToODT(selectedEquivalencias);
         break;
       default:
-        console.error('Formato não suportado:', exportFormat);
+        console.error("Formato não suportado:", exportFormat);
     }
 
     setExportDialogOpen(false);

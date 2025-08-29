@@ -48,18 +48,29 @@ interface EditableData {
 }
 
 // Utilitário para extrair fabricante de forma robusta
-const extractFabricante = (enriched: unknown, specs: Record<string, unknown>): string => {
+const extractFabricante = (
+  enriched: unknown,
+  specs: Record<string, unknown>
+): string => {
   // 1. Primeiro: campo dedicado marcaFabricante
-  if (enriched && typeof enriched === 'object' && 'marcaFabricante' in enriched) {
+  if (
+    enriched &&
+    typeof enriched === "object" &&
+    "marcaFabricante" in enriched
+  ) {
     const enrichedObj = enriched as Record<string, unknown>;
     const marcaFabricante = enrichedObj.marcaFabricante;
     if (marcaFabricante) return String(marcaFabricante);
   }
 
   // 2. Segundo: procurar em especificações técnicas
-  const fabricanteKeys = ['fabricante', 'marca', 'manufacturer', 'brand'];
+  const fabricanteKeys = ["fabricante", "marca", "manufacturer", "brand"];
   for (const [key, value] of Object.entries(specs)) {
-    if (fabricanteKeys.some(fab => key.toLowerCase().includes(fab.toLowerCase()))) {
+    if (
+      fabricanteKeys.some((fab) =>
+        key.toLowerCase().includes(fab.toLowerCase())
+      )
+    ) {
       return String(value);
     }
   }
@@ -69,12 +80,18 @@ const extractFabricante = (enriched: unknown, specs: Record<string, unknown>): s
 };
 
 // Utilitário para filtrar especificações removendo fabricante
-const filterFabricanteFromSpecs = (specs: Record<string, unknown>): Record<string, unknown> => {
-  const fabricanteKeys = ['fabricante', 'marca', 'manufacturer', 'brand'];
+const filterFabricanteFromSpecs = (
+  specs: Record<string, unknown>
+): Record<string, unknown> => {
+  const fabricanteKeys = ["fabricante", "marca", "manufacturer", "brand"];
   const filtered: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(specs)) {
-    if (!fabricanteKeys.some(fab => key.toLowerCase().includes(fab.toLowerCase()))) {
+    if (
+      !fabricanteKeys.some((fab) =>
+        key.toLowerCase().includes(fab.toLowerCase())
+      )
+    ) {
       filtered[key] = value;
     }
   }
@@ -153,7 +170,7 @@ export default function FieldSelection({
     const nomeOriginal = editableData.informacoes || "Não informado";
     const fabricante = editableData.marca || "Não informado";
     const caracteristicasSelecionadas = editableData.especificacoesTecnicas
-      .filter(spec => spec.checked)
+      .filter((spec) => spec.checked)
       .map((spec) => `${spec.key}: ${spec.value}`)
       .join(", ");
 
@@ -171,9 +188,13 @@ export default function FieldSelection({
 
   // Funções de exportação
   const exportToCSV = (data: string) => {
-    const csvContent = `Nome Original,Fabricante,Características Selecionadas,Resumo\n"${editableData.informacoes}","${editableData.marca}","${data.replace(/\n/g, ' ').replace(/"/g, '""')}","${getResumo()}"`;
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    const csvContent = `Nome Original,Fabricante,Características Selecionadas,Resumo\n"${
+      editableData.informacoes
+    }","${editableData.marca}","${data
+      .replace(/\n/g, " ")
+      .replace(/"/g, '""')}","${getResumo()}"`;
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `dados_produto_${Date.now()}.csv`;
     link.click();
@@ -198,15 +219,17 @@ export default function FieldSelection({
             <tr>
               <td>${editableData.informacoes}</td>
               <td>${editableData.marca}</td>
-              <td>${data.replace(/\n/g, '<br>')}</td>
+              <td>${data.replace(/\n/g, "<br>")}</td>
               <td>${getResumo()}</td>
             </tr>
           </table>
         </body>
       </html>
     `;
-    const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob([htmlContent], {
+      type: "application/vnd.ms-excel;charset=utf-8;",
+    });
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `dados_produto_${Date.now()}.xlsx`;
     link.click();
@@ -238,7 +261,7 @@ export default function FieldSelection({
           </div>
           <div class="section">
             <div class="label">Características Selecionadas:</div>
-            <div>${data.replace(/\n/g, '<br>')}</div>
+            <div>${data.replace(/\n/g, "<br>")}</div>
           </div>
           <div class="section">
             <div class="label">Resumo:</div>
@@ -248,7 +271,7 @@ export default function FieldSelection({
       </html>
     `;
 
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open("", "_blank");
     if (printWindow) {
       printWindow.document.write(htmlContent);
       printWindow.document.close();
@@ -271,10 +294,10 @@ ${data}
 Resumo:
 ${getResumo()}
 
-Gerado em: ${new Date().toLocaleString('pt-BR')}
+Gerado em: ${new Date().toLocaleString("pt-BR")}
 `;
-    const blob = new Blob([odtContent], { type: 'text/plain;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob([odtContent], { type: "text/plain;charset=utf-8;" });
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `dados_produto_${Date.now()}.txt`;
     link.click();
@@ -284,20 +307,20 @@ Gerado em: ${new Date().toLocaleString('pt-BR')}
     const dadosCompletos = getDadosCompletos();
 
     switch (exportFormat) {
-      case 'csv':
+      case "csv":
         exportToCSV(dadosCompletos);
         break;
-      case 'xlsx':
+      case "xlsx":
         exportToXLSX(dadosCompletos);
         break;
-      case 'pdf':
+      case "pdf":
         exportToPDF(dadosCompletos);
         break;
-      case 'odt':
+      case "odt":
         exportToODT(dadosCompletos);
         break;
       default:
-        console.error('Formato não suportado:', exportFormat);
+        console.error("Formato não suportado:", exportFormat);
     }
 
     setExportDialogOpen(false);
@@ -365,7 +388,9 @@ Gerado em: ${new Date().toLocaleString('pt-BR')}
       {/* SEÇÃO 1: Resumo PDM - Card Expansível - Largura Total */}
       {enrichmentResult.enriched.especificacoesTecnicas?.resumoPDM && (
         <ExpandablePDMSummary
-          summaryText={enrichmentResult.enriched.especificacoesTecnicas.resumoPDM}
+          summaryText={
+            enrichmentResult.enriched.especificacoesTecnicas.resumoPDM
+          }
           maxLines={5}
           imagens={enrichmentResult.enriched.imagens}
         />
@@ -380,7 +405,12 @@ Gerado em: ${new Date().toLocaleString('pt-BR')}
         }}
       >
         <Typography variant="h6" sx={{ mb: 2, fontSize: "0.9rem" }}>
-          Características ({editableData.especificacoesTecnicas.filter(spec => spec.checked).length} de {editableData.especificacoesTecnicas.length})
+          Características (
+          {
+            editableData.especificacoesTecnicas.filter((spec) => spec.checked)
+              .length
+          }{" "}
+          de {editableData.especificacoesTecnicas.length})
         </Typography>
 
         {/* Grid de Cards - Mantendo funcionamento original */}
@@ -417,8 +447,8 @@ Gerado em: ${new Date().toLocaleString('pt-BR')}
                 onCheck={(id, checked) => {
                   setEditableData((prev) => ({
                     ...prev,
-                    especificacoesTecnicas: prev.especificacoesTecnicas.map((s) =>
-                      s.id === id ? { ...s, checked } : s
+                    especificacoesTecnicas: prev.especificacoesTecnicas.map(
+                      (s) => (s.id === id ? { ...s, checked } : s)
                     ),
                   }));
                 }}
@@ -492,7 +522,9 @@ Gerado em: ${new Date().toLocaleString('pt-BR')}
             size="small"
             fullWidth
             error={!!marcaError}
-            helperText={marcaError || "Fabricante do produto (preenchido automaticamente)"}
+            helperText={
+              marcaError || "Fabricante do produto (preenchido automaticamente)"
+            }
             required
           />
 

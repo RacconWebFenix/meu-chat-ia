@@ -15,7 +15,9 @@ export class N8NService implements N8NEquivalenceService {
 
   constructor(webhookUrl?: string) {
     this.webhookUrl =
-      webhookUrl || process.env.NEXT_PUBLIC_N8N_PDM_EQUIVALENCE_WEBHOOK_URL || "";
+      webhookUrl ||
+      process.env.NEXT_PUBLIC_N8N_PDM_EQUIVALENCE_WEBHOOK_URL ||
+      "";
   }
 
   /**
@@ -30,7 +32,8 @@ export class N8NService implements N8NEquivalenceService {
 
     try {
       // Verifica se é payload estruturado ou simples
-      const isStructuredPayload = 'nome' in productInfo && 'categoria' in productInfo;
+      const isStructuredPayload =
+        "nome" in productInfo && "categoria" in productInfo;
 
       const response = await fetch(this.webhookUrl, {
         method: "POST",
@@ -60,24 +63,28 @@ export class N8NService implements N8NEquivalenceService {
         const numEquivalencias = data.equivalencias.length;
 
         // Criar novas equivalências com imagens distribuídas corretamente
-        data.equivalencias = data.equivalencias.map((equiv: N8NEquivalence, index: number) => {
-          // Distribui uma imagem diferente para cada equivalência
-          // Se houver mais equivalências que imagens, reutiliza ciclicamente
-          const imageIndex = index % allImages.length;
-          return {
-            ...equiv,
-            images: [allImages[imageIndex]]
-          };
-        });
+        data.equivalencias = data.equivalencias.map(
+          (equiv: N8NEquivalence, index: number) => {
+            // Distribui uma imagem diferente para cada equivalência
+            // Se houver mais equivalências que imagens, reutiliza ciclicamente
+            const imageIndex = index % allImages.length;
+            return {
+              ...equiv,
+              images: [allImages[imageIndex]],
+            };
+          }
+        );
 
         console.log("N8NService - Imagens redistribuídas:", {
           totalEquivalencias: numEquivalencias,
           totalImagensOriginais: allImages.length,
-          distribuicao: data.equivalencias.map((equiv: N8NEquivalence, idx: number) => ({
-            equivalencia: idx,
-            marca: equiv.marcaFabricante,
-            imagem: equiv.images[0]?.image_url
-          }))
+          distribuicao: data.equivalencias.map(
+            (equiv: N8NEquivalence, idx: number) => ({
+              equivalencia: idx,
+              marca: equiv.marcaFabricante,
+              imagem: equiv.images[0]?.image_url,
+            })
+          ),
         });
       }
 
