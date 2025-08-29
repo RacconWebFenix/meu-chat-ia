@@ -17,7 +17,7 @@ import {
   SelectChangeEvent,
   CircularProgress,
 } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { usePageTitle } from "@/contexts";
 import { useGroup } from "@/contexts/GroupContext";
 
@@ -27,9 +27,13 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick }: HeaderProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { pageTitle } = usePageTitle();
   const { groups, selectedGroupId, setSelectedGroupId, isLoading } = useGroup();
+
+  // Verifica se estamos na página principal (com abas PDM/equivalência)
+  const isMainPage = pathname === "/" || pathname === "/app";
 
   const handleSignOut = async () => {
     setIsLoggingOut(true);
@@ -79,26 +83,28 @@ export default function Header({ onMenuClick }: HeaderProps) {
           {pageTitle}
         </Typography>
 
-        <FormControl size="small" sx={{ minWidth: 280, mr: 2 }}>
-          <Select
-            value={isLoading ? "" : selectedGroupId ?? 0}
-            onChange={handleGroupChange}
-            disabled={isLoading}
-            displayEmpty
-          >
-            {isLoading && (
-              <MenuItem value="">
-                {" "}
-                <em>Carregando grupos...</em>{" "}
-              </MenuItem>
-            )}
-            {groups.map((group) => (
-              <MenuItem key={group.id} value={group.id}>
-                {group.nome_do_grupo}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        {!isMainPage && (
+          <FormControl size="small" sx={{ minWidth: 280, mr: 2 }}>
+            <Select
+              value={isLoading ? "" : selectedGroupId ?? 0}
+              onChange={handleGroupChange}
+              disabled={isLoading}
+              displayEmpty
+            >
+              {isLoading && (
+                <MenuItem value="">
+                  {" "}
+                  <em>Carregando grupos...</em>{" "}
+                </MenuItem>
+              )}
+              {groups.map((group) => (
+                <MenuItem key={group.id} value={group.id}>
+                  {group.nome_do_grupo}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
 
         <Button
           color="inherit"
