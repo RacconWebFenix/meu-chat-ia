@@ -19,8 +19,18 @@ export default withAuth({
       }
 
       // Validação robusta adicional para rotas críticas da API
-      const criticalApiRoutes = ['/api/'];
-      const isCriticalRoute = criticalApiRoutes.some(route => 
+      const criticalApiRoutes = [
+        "/api/chatbotquery",
+        "/api/chatpdm",
+        "/api/feedback",
+        "/api/generate-chart",
+        "/api/get-groups",
+        "/api/get-result",
+        "/api/perplexity",
+        "/api/sonar",
+      ];
+
+      const isCriticalRoute = criticalApiRoutes.some((route) =>
         req.nextUrl.pathname.startsWith(route)
       );
 
@@ -28,22 +38,22 @@ export default withAuth({
         try {
           // Extrair token raw da requisição para validação avançada
           const rawToken = TokenValidator.extractTokenFromRequest(req);
-          
+
           if (!rawToken) {
             console.log("🚫 API crítica: Token raw não encontrado");
             return false;
           }
 
           const validation = TokenValidator.validateToken(rawToken);
-          
+
           if (!validation.valid) {
             console.log(`🚫 API crítica: Token inválido - ${validation.error}`);
             return false;
           }
 
           // Log de acesso para auditoria
-          console.log(`✅ Acesso autorizado para usuário: ${validation.payload?.username} em ${req.nextUrl.pathname}`);
-          
+          console.log(`✅ Acesso autorizado para ${req.nextUrl.pathname}`);
+
           return true;
         } catch (error) {
           console.error("❌ Erro na validação de token:", error);

@@ -6,24 +6,27 @@ import MaterialUIProvider from "../components/providers/MaterialUIProvider";
 import { NavigationProvider } from "./NavigationContext";
 import { PageTitleProvider } from "./PageTitleContext";
 import { GridProvider } from "./GridContext";
-import { GroupProvider } from "./GroupContext"; // <<<<<< IMPORTADO AQUI
+import { GroupProvider } from "./GroupContext";
+import { AuthProvider } from "./AuthContext";
 import GlobalNavigationLoading from "../components/shared/GlobalNavigationLoading";
 
 export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <SessionProvider>
-      <MaterialUIProvider>
-        <NavigationProvider>
-          <PageTitleProvider>
-            <GridProvider>
-              <GroupProvider>
-                <GlobalNavigationLoading />
-                {children}
-              </GroupProvider>
-            </GridProvider>
-          </PageTitleProvider>
-        </NavigationProvider>
-      </MaterialUIProvider>
+      <AuthProvider>
+        <MaterialUIProvider>
+          <NavigationProvider>
+            <PageTitleProvider>
+              <GridProvider>
+                <GroupProvider>
+                  <GlobalNavigationLoading />
+                  {children}
+                </GroupProvider>
+              </GridProvider>
+            </PageTitleProvider>
+          </NavigationProvider>
+        </MaterialUIProvider>
+      </AuthProvider>
     </SessionProvider>
   );
 }

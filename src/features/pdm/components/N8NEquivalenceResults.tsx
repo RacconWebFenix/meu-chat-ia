@@ -52,6 +52,7 @@ import {
   N8NEquivalence,
   N8NEquivalenceState,
 } from "../types/n8n.types";
+import { formatTechnicalKey } from "@/Utils/formatUtils";
 
 interface N8NEquivalenceResultsProps {
   readonly searchResult: N8NEquivalenceResponse;
@@ -105,10 +106,6 @@ export default function N8NEquivalenceResults({
         case "similarity":
           aValue = a.grauSimilaridade;
           bValue = b.grauSimilaridade;
-          break;
-        case "price":
-          aValue = a.precoEstimado?.valor || 0;
-          bValue = b.precoEstimado?.valor || 0;
           break;
         case "name":
           aValue = a.nome.toLowerCase();
@@ -170,7 +167,6 @@ export default function N8NEquivalenceResults({
       "Nome",
       "Fabricante",
       "Grau de Similaridade",
-      "Preço Estimado",
       "Disponibilidade",
       "Aplicação",
       "Especificações Técnicas",
@@ -183,13 +179,10 @@ export default function N8NEquivalenceResults({
           `"${eq.nome}"`,
           `"${eq.marcaFabricante}"`,
           `"${eq.grauSimilaridade}%"`,
-          `"${eq.precoEstimado?.valor || "N/A"} ${
-            eq.precoEstimado?.moeda || ""
-          }"`,
           `"${eq.disponibilidade}"`,
           `"${eq.aplicacao}"`,
           `"${Object.entries(eq.especificacoesTecnicas || {})
-            .map(([k, v]) => `${k}: ${v}`)
+            .map(([k, v]) => `${formatTechnicalKey(k)}: ${v}`)
             .join("; ")}"`,
         ].join(",")
       ),
@@ -215,7 +208,6 @@ export default function N8NEquivalenceResults({
               <th>Nome</th>
               <th>Fabricante</th>
               <th>Grau de Similaridade</th>
-              <th>Preço Estimado</th>
               <th>Disponibilidade</th>
               <th>Aplicação</th>
               <th>Especificações Técnicas</th>
@@ -227,13 +219,10 @@ export default function N8NEquivalenceResults({
                 <td>${eq.nome}</td>
                 <td>${eq.marcaFabricante}</td>
                 <td>${eq.grauSimilaridade}%</td>
-                <td>${eq.precoEstimado?.valor || "N/A"} ${
-                  eq.precoEstimado?.moeda || ""
-                }</td>
                 <td>${eq.disponibilidade}</td>
                 <td>${eq.aplicacao}</td>
                 <td>${Object.entries(eq.especificacoesTecnicas || {})
-                  .map(([k, v]) => `${k}: ${v}`)
+                  .map(([k, v]) => `${formatTechnicalKey(k)}: ${v}`)
                   .join("<br>")}</td>
               </tr>
             `
@@ -281,15 +270,17 @@ export default function N8NEquivalenceResults({
                   eq.grauSimilaridade
                 }%</p>
               </div>
-              <p><strong>Preço Estimado:</strong> ${
-                eq.precoEstimado?.valor || "N/A"
-              } ${eq.precoEstimado?.moeda || ""}</p>
               <p><strong>Disponibilidade:</strong> ${eq.disponibilidade}</p>
               <p><strong>Aplicação:</strong> ${eq.aplicacao}</p>
               <div class="specs">
                 <strong>Especificações Técnicas:</strong>
                 ${Object.entries(eq.especificacoesTecnicas || {})
-                  .map(([k, v]) => `<div class="spec-item">• ${k}: ${v}</div>`)
+                  .map(
+                    ([k, v]) =>
+                      `<div class="spec-item">• ${formatTechnicalKey(
+                        k
+                      )}: ${v}</div>`
+                  )
                   .join("")}
               </div>
             </div>
@@ -319,15 +310,12 @@ ${equivalencias
 ${index + 1}. ${eq.nome}
 Fabricante: ${eq.marcaFabricante}
 Grau de Similaridade: ${eq.grauSimilaridade}%
-Preço Estimado: ${eq.precoEstimado?.valor || "N/A"} ${
-      eq.precoEstimado?.moeda || ""
-    }
 Disponibilidade: ${eq.disponibilidade}
 Aplicação: ${eq.aplicacao}
 
 Especificações Técnicas:
 ${Object.entries(eq.especificacoesTecnicas || {})
-  .map(([k, v]) => `  • ${k}: ${v}`)
+  .map(([k, v]) => `  • ${formatTechnicalKey(k)}: ${v}`)
   .join("\n")}
 
 ---
@@ -613,7 +601,7 @@ function EquivalenceCard({
                   {Object.entries(equivalencia.especificacoesTecnicas).map(
                     ([key, value]) => (
                       <Typography key={key} variant="caption" display="block">
-                        {key}: {String(value)}
+                        {formatTechnicalKey(key)}: {String(value)}
                       </Typography>
                     )
                   )}
@@ -632,7 +620,7 @@ function EquivalenceCard({
                             variant="caption"
                             display="block"
                           >
-                            {key}: {String(value)}
+                            {formatTechnicalKey(key)}: {String(value)}
                           </Typography>
                         )
                       )}
