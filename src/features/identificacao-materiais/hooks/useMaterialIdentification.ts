@@ -21,8 +21,9 @@ export const useMaterialIdentification = ({
     isLoading: false,
     searchData: {
       nome: "",
+      caracteristicas: "",
+      fabricanteMarca: "",
       referencia: "",
-      marcaFabricante: "",
     },
     result: null,
     error: null,
@@ -65,8 +66,9 @@ export const useMaterialIdentification = ({
       isLoading: false,
       searchData: {
         nome: "",
+        caracteristicas: "",
+        fabricanteMarca: "",
         referencia: "",
-        marcaFabricante: "",
       },
       result: null,
       error: null,

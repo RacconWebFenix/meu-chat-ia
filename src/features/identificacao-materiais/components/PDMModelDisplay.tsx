@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { Paper, Typography, Box, Alert } from "@mui/material";
+import { Paper, Typography, Box, Alert, CardMedia } from "@mui/material";
 import { MaterialIdentificationResult } from "../types";
 
 interface PDMModelDisplayProps {
@@ -29,38 +29,7 @@ export const PDMModelDisplay: React.FC<PDMModelDisplayProps> = ({
   }
 
   const resumoPDM = result.response.enriched.especificacoesTecnicas.resumoPDM;
-
-  const renderPDMContent = (content: string) => {
-    const items = content.split(",");
-
-    return items.map((item, index) => {
-      const cleanItem = item.trim();
-
-      // Pula itens vazios
-      if (cleanItem === "") {
-        return null;
-      }
-
-      return (
-        <Typography
-          key={index}
-          variant="body2"
-          component="span"
-          sx={{
-            display: "inline-block",
-            mr: 0.3,
-            mb: 0.3,
-            textAlign: "justify",
-            lineHeight: 1.2,
-            fontSize: "0.875rem",
-          }}
-        >
-          {cleanItem}
-          {index < items.length - 1 && ","}
-        </Typography>
-      );
-    });
-  };
+  const primeiraImagem = result.response.enriched.imagens[0]; // Pega a primeira imagem
 
   return (
     <Paper
@@ -71,16 +40,59 @@ export const PDMModelDisplay: React.FC<PDMModelDisplayProps> = ({
         backgroundColor: "background.paper",
       }}
     >
-      <Typography
-        variant="h6"
-        component="h2"
-        gutterBottom
-        sx={{ mb: 1.5, fontSize: "1.1rem" }}
+      <Box
+        sx={{
+          display: "flex",
+          gap: 2,
+          alignItems: "flex-start",
+        }}
       >
-        Modelo de PDM para Produto Identificado
-      </Typography>
+        {/* Conteúdo de texto */}
+        <Box
+          sx={{
+            flex: 1,
+            lineHeight: 1.2,
+            textAlign: "justify",
+            hyphens: "auto",
+            wordBreak: "break-word",
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{
+              fontSize: "0.875rem",
+              lineHeight: 1.2,
+            }}
+          >
+            {resumoPDM}
+          </Typography>
+        </Box>
 
-      <Box sx={{ lineHeight: 1.2 }}>{renderPDMContent(resumoPDM)}</Box>
+        {/* Imagem ao lado */}
+        {primeiraImagem && (
+          <Box
+            sx={{
+              flexShrink: 0,
+              width: 200,
+              height: 150,
+              borderRadius: 1,
+              overflow: "hidden",
+              boxShadow: 1,
+            }}
+          >
+            <CardMedia
+              component="img"
+              image={primeiraImagem.image_url}
+              alt="Imagem do produto identificado"
+              sx={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
+          </Box>
+        )}
+      </Box>
     </Paper>
   );
 };

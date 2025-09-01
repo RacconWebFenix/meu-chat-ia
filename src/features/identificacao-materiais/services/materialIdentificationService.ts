@@ -22,8 +22,9 @@ export class MockMaterialIdentificationService
     // Validate input
     if (
       !searchData.nome &&
-      !searchData.referencia &&
-      !searchData.marcaFabricante
+      !searchData.caracteristicas &&
+      !searchData.fabricanteMarca &&
+      !searchData.referencia
     ) {
       throw new Error(
         "Pelo menos um campo deve ser preenchido para identificação"

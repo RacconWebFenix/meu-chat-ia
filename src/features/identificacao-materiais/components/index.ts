@@ -7,3 +7,4 @@ export { MaterialSearchHeader } from "./MaterialSearchHeader";
 export { PDMModelDisplay } from "./PDMModelDisplay";
 export { MaterialIdentificationLoading } from "./MaterialIdentificationLoading";
 export { MaterialIdentificationContainer } from "./MaterialIdentificationContainer";
+export { CaracteristicasSelectorContainer } from "./CaracteristicasSelectorContainer";

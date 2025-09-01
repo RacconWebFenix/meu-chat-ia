@@ -36,17 +36,17 @@ export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
         backgroundColor: "background.paper",
       }}
     >
-      <Typography variant="h6" component="h2" gutterBottom>
-        Identificação de Materiais
-      </Typography>
-
       <Box
         sx={{
           mt: 2,
-          display: "flex",
+          display: "grid",
           gap: 2,
-          flexDirection: { xs: "column", md: "row" },
-          alignItems: { xs: "stretch", md: "flex-end" },
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: "repeat(2, 1fr)",
+            md: "repeat(5, 1fr)",
+          },
+          alignItems: "flex-start",
         }}
       >
         <TextField
@@ -56,7 +56,26 @@ export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
           onChange={handleInputChange("nome")}
           variant="outlined"
           size="small"
-          sx={{ flex: 1 }}
+          disabled={isLoading}
+        />
+
+        <TextField
+          fullWidth
+          label="Características"
+          value={searchData.caracteristicas}
+          onChange={handleInputChange("caracteristicas")}
+          variant="outlined"
+          size="small"
+          disabled={isLoading}
+        />
+
+        <TextField
+          fullWidth
+          label="Fabricante / Marca"
+          value={searchData.fabricanteMarca}
+          onChange={handleInputChange("fabricanteMarca")}
+          variant="outlined"
+          size="small"
           disabled={isLoading}
         />
 
@@ -67,18 +86,6 @@ export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
           onChange={handleInputChange("referencia")}
           variant="outlined"
           size="small"
-          sx={{ flex: 1 }}
-          disabled={isLoading}
-        />
-
-        <TextField
-          fullWidth
-          label="Marca / Fabricante"
-          value={searchData.marcaFabricante}
-          onChange={handleInputChange("marcaFabricante")}
-          variant="outlined"
-          size="small"
-          sx={{ flex: 1 }}
           disabled={isLoading}
         />
 
@@ -89,8 +96,8 @@ export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
           onClick={onSearch}
           disabled={isLoading}
           sx={{
-            minWidth: { xs: "100%", md: "auto" },
             height: 40,
+            width: "100%",
             whiteSpace: "nowrap",
           }}
         >

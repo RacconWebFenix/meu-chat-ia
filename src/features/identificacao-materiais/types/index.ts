@@ -5,8 +5,9 @@
 
 export interface MaterialSearchData {
   nome: string;
+  caracteristicas: string;
+  fabricanteMarca: string;
   referencia: string;
-  marcaFabricante: string;
 }
 
 export interface MaterialIdentificationResult {
