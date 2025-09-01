@@ -14,6 +14,7 @@ import {
   MaterialIdentificationLoading,
   CaracteristicasSelectorContainer,
 } from "./index";
+import { dynamicFieldParser } from "../../pdm/services";
 
 interface CaracteristicaItem {
   id: string;
@@ -32,41 +33,66 @@ export const MaterialIdentificationContainer: React.FC = () => {
     []
   );
 
-  // Função para extrair características do resultado da API
+  // Função para extrair características do resultado usando o parser dinâmico
   const extractCaracteristicasFromResult = (
     result: MaterialIdentificationResult
   ): CaracteristicaItem[] => {
-    if (!result?.response?.enriched?.especificacoesTecnicas) {
-      return [];
-    }
-
-    const specs = result.response.enriched.especificacoesTecnicas;
     const caracteristicasList: CaracteristicaItem[] = [];
 
-    // Extrair do objeto especificacoesTecnicas
-    if (specs.especificacoesTecnicas) {
-      const techSpecs = specs.especificacoesTecnicas;
+    // Extrair do resumo PDM se disponível
+    if (result?.response?.enriched?.especificacoesTecnicas?.resumoPDM) {
+      const resumoPDM =
+        result.response.enriched.especificacoesTecnicas.resumoPDM;
 
-      // Mapeamento das propriedades técnicas para labels amigáveis
-      const techSpecsMapping: Record<string, string> = {
-        fabricante: "Fabricante",
-        referenciaEncontrada: "Referência Encontrada",
-        ncm: "NCM",
-        unidadeMedida: "Unidade de Medida",
-        diametroInternoMm: "Diâmetro Interno (mm)",
-        diametroExternoMm: "Diâmetro Externo (mm)",
-        larguraMm: "Largura (mm)",
-        materialGaiola: "Material da Gaiola",
-        tipoVedacao: "Tipo de Vedação",
-        capacidadeCargaDinamicaKn: "Capacidade de Carga Dinâmica (kN)",
-        velocidadeMaximaRpm: "Velocidade Máxima (RPM)",
-      };
+      // Procurar por padrões no resumo PDM
+      const lines = resumoPDM.split("\n");
+      lines.forEach((line, index) => {
+        // Procurar linhas que contenham padrões como "Nome do Produto:", "Fabricante:", etc.
+        const patterns = [
+          /Nome do Produto:\s*(.+)/i,
+          /Fabricante:\s*(.+)/i,
+          /Referência:\s*(.+)/i,
+          /NCM:\s*(.+)/i,
+          /(.+?):\s*(.+)/, // Padrão genérico para outras características
+        ];
+
+        for (const pattern of patterns) {
+          const match = line.match(pattern);
+          if (match) {
+            const key = match[1]?.trim();
+            const value = match[2]?.trim() || match[1]?.trim();
+            if (key && value && value !== key) {
+              caracteristicasList.push({
+                id: `pdm-${index}`,
+                label: key,
+                value: value,
+                checked: true,
+              });
+            }
+            break;
+          }
+        }
+      });
+    }
+
+    // Extrair das especificações técnicas usando o parser dinâmico
+    if (
+      result?.response?.enriched?.especificacoesTecnicas?.especificacoesTecnicas
+    ) {
+      const techSpecs =
+        result.response.enriched.especificacoesTecnicas.especificacoesTecnicas;
 
       Object.entries(techSpecs).forEach(([key, value], index) => {
         if (value !== null && value !== undefined && value !== "") {
+          // Usa o parser dinâmico para gerar o label amigável
+          const parsedField = dynamicFieldParser.parseField(
+            key,
+            result.response?.enriched?.categoria
+          );
+
           caracteristicasList.push({
             id: `tech-${index}`,
-            label: techSpecsMapping[key] || key,
+            label: parsedField.friendlyLabel,
             value: String(value),
             checked: true,
           });
@@ -148,6 +174,7 @@ export const MaterialIdentificationContainer: React.FC = () => {
               onCaracteristicaLabelChange={handleCaracteristicaLabelChange}
               onConfirmSelection={handleConfirmSelection}
               onAddCaracteristica={handleAddCaracteristica}
+              result={state.result}
               isLoading={state.isLoading}
             />
           </>

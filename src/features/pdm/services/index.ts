@@ -8,6 +8,18 @@ export { MockExportService, createExportService } from "./exportService";
 export { N8NService, createN8NService } from "./n8nService";
 export type { ExportServiceInterface } from "./exportService";
 
+// --- Serviço de Parser Dinâmico ---
+export {
+  DynamicFieldParser,
+  createDynamicFieldParser,
+  dynamicFieldParser,
+} from "./fieldParserService";
+export type {
+  FieldMappingConfig,
+  ParsedField,
+  ParserStats,
+} from "./fieldParserService";
+
 // --- Serviço de Enriquecimento ---
 
 // Esta função retorna sempre o serviço real que chama o n8n

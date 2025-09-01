@@ -22,6 +22,7 @@ export interface MaterialIdentificationResult {
       especificacoesTecnicas: {
         resumoPDM: string;
         especificacoesTecnicas: {
+          nomeProduto: string;
           fabricante: string;
           referenciaEncontrada: string;
           ncm: string;

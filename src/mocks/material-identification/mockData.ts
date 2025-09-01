@@ -12,6 +12,7 @@ export interface MaterialIdentificationResponse {
       especificacoesTecnicas: {
         resumoPDM: string;
         especificacoesTecnicas: {
+          nomeProduto: string;
           fabricante: string;
           referenciaEncontrada: string;
           ncm: string;
@@ -54,6 +55,7 @@ export const mockMaterialIdentificationData: MaterialIdentificationResponse = {
         resumoPDM:
           "Modelo de PDM para Rolamento de Esferas\n1. Identificação e Classificação do Produto\n   - Nome do Produto: Rolamento de Esferas, Rolamento de Esferas de Contato Angular, Rolamento de Esferas de Alta Precisão\n   - Código/SKU do Fabricante: 6205, 6204, 6305\n   - Tipo: Radial de Esferas, Vedação Simples (ZZ), Vedação Dupla (2RS)\n2. Dados Geométricos e de Dimensão\n   - Diâmetro Interno (d): 25 mm, 30 mm, 35 mm\n   - Diâmetro Externo (D): 52 mm, 62 mm, 72 mm\n   - Largura (B): 15 mm, 16 mm, 17 mm\n3. Dados de Desempenho e Operação\n   - Capacidade de Carga Dinâmica (C): 14 kN, 20 kN, 35 kN\n   - Velocidade Limite (rpm): 13000 rpm (graxa), 18000 rpm (óleo), 15000 rpm (graxa especial)\n   - Folga Interna: C3, CN (Normal), C4\n4. Materiais e Componentes\n   - Anéis: Aço cromo, Aço inoxidável, Aço cementado\n   - Esferas/Rolos: Aço cromo, Cerâmica (Si3N4), Aço Inoxidável\n   - Gaiola: Aço estampado, Latão usinado, Poliamida\n   - Vedação/Proteção: 2RS (borracha), ZZ (metal), Aberto (sem vedação)\n5. Lubrificação\n   - Tipo de Lubrificante Padrão: Graxa à base de Lítio, Graxa de Poliureia, Lubrificação a Óleo\n6. Dados Adicionais e Documentação\n   - Data Sheet (Folha de Dados): Documento técnico com especificações detalhadas\n   - Modelos 3D e 2D: Arquivos CAD para integração em projetos",
         especificacoesTecnicas: {
+          nomeProduto: "Rolamento de Esferas",
           fabricante: "SKF",
           referenciaEncontrada: "6205 ZZ",
           ncm: "84821000",

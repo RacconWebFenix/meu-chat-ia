@@ -8,6 +8,8 @@ import { Paper, Typography, Box, Button, Grid } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import { CheckboxSpecCard } from "../../pdm";
 import AddNewSpecDialog from "../../pdm/components/AddNewSpecDialog";
+import { SelectedSpecificationsSummary } from "./SelectedSpecificationsSummary";
+import { MaterialIdentificationResult } from "../types";
 
 interface CaracteristicaItem {
   id: string;
@@ -23,6 +25,7 @@ interface CaracteristicasSelectorContainerProps {
   onCaracteristicaLabelChange: (id: string, newLabel: string) => void;
   onConfirmSelection: () => void;
   onAddCaracteristica: (key: string, value: string) => void;
+  result: MaterialIdentificationResult;
   isLoading?: boolean;
 }
 
@@ -35,6 +38,7 @@ export const CaracteristicasSelectorContainer: React.FC<
   onCaracteristicaLabelChange,
   onConfirmSelection,
   onAddCaracteristica,
+  result,
   isLoading = false,
 }) => {
   const selectedCount = caracteristicas.filter((item) => item.checked).length;
@@ -98,6 +102,11 @@ export const CaracteristicasSelectorContainer: React.FC<
           </Grid>
         ))}
       </Grid>
+
+      <SelectedSpecificationsSummary
+        caracteristicas={caracteristicas}
+        result={result}
+      />
 
       {/* Dialog para adicionar novas características */}
       <AddNewSpecDialog

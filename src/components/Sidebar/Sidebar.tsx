@@ -53,16 +53,16 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   {
-    text: "Pesquisa de Materiais",
-    icon: <SearchIcon />,
-    path: "/",
-    description: "Chat para pesquisa de materiais",
-  },
-  {
     text: "Identificação de Materiais",
     icon: <ScienceIcon />,
     path: "/identificacao-materiais",
     description: "Análise e identificação de materiais",
+  },
+  {
+    text: "Pesquisa de Materiais",
+    icon: <SearchIcon />,
+    path: "/",
+    description: "Chat para pesquisa de materiais",
   },
   {
     text: "Relatórios",
@@ -126,7 +126,9 @@ export default function Sidebar({
       <List sx={{ p: 1 }}>
         {menuItems.map((item) => {
           const isActive =
-            item.path === "/"
+            item.path === "/identificacao-materiais"
+              ? pathname === "/identificacao-materiais" || pathname === "/"
+              : item.path === "/"
               ? pathname === item.path
               : pathname.startsWith(item.path);
           return (
