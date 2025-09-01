@@ -11,7 +11,13 @@ export default tseslint.config(
   // Configurações Globais
   {
     // --- CORREÇÃO APLICADA AQUI ---
-    ignores: ["node_modules/", ".next/"],
+    ignores: [
+      "node_modules/",
+      ".next/",
+      ".next/**/*",
+      "**/.next/**",
+      ".next/standalone/prisma/lib/prisma.ts",
+    ],
     languageOptions: {
       globals: {
         ...globals.browser,

@@ -103,7 +103,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
           </Box>
         )}
 
-        {!isMainPage && (
+        {pathname === "/relatorios" && (
           <FormControl size="small" sx={{ minWidth: 280, mr: 2 }}>
             <Select
               value={isLoading ? "" : selectedGroupId ?? 0}

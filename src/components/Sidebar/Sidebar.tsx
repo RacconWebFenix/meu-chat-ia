@@ -19,6 +19,7 @@ import {
 import {
   Search as SearchIcon,
   Assessment as AssessmentIcon,
+  Science as ScienceIcon,
 } from "@mui/icons-material";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -56,6 +57,12 @@ const menuItems: MenuItem[] = [
     icon: <SearchIcon />,
     path: "/",
     description: "Chat para pesquisa de materiais",
+  },
+  {
+    text: "Identificação de Materiais",
+    icon: <ScienceIcon />,
+    path: "/identificacao-materiais",
+    description: "Análise e identificação de materiais",
   },
   {
     text: "Relatórios",
