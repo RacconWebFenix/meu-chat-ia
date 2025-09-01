@@ -5,7 +5,6 @@
 
 import React from "react";
 import { Paper, Typography, Box, Grid } from "@mui/material";
-import { CheckboxSpecCard } from "../../pdm";
 import { MaterialIdentificationResult } from "../types";
 
 interface CaracteristicaItem {
@@ -36,17 +35,24 @@ export const SelectedSpecificationsSummary: React.FC<
     <Paper
       elevation={2}
       sx={{
-        p: 2,
-        mt: 2,
+        p: 0,
+        mt: 0,
         backgroundColor: "background.paper",
       }}
     >
       {/* Texto unificado das informações selecionadas */}
-      <Box sx={{ p: 2, backgroundColor: "grey.50", borderRadius: 1 }}>
-        <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: "bold" }}>
-          Informações Unificadas:
+      <Box sx={{ p: 1, backgroundColor: "grey.50", borderRadius: 1 }}>
+        <Typography
+          variant="h6"
+          sx={{ mb: 1, fontWeight: "bold", color: "text.primary" }}
+        >
+          Descrição:
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body1"
+          color="text.primary"
+          sx={{ fontWeight: 500 }}
+        >
           {selectedCaracteristicas
             .map((item) => `${item.label}: ${item.value}`)
             .join(", ")}

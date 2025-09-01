@@ -33,49 +33,13 @@ export const MaterialIdentificationContainer: React.FC = () => {
     []
   );
 
-  // Função para extrair características do resultado usando o parser dinâmico
+  // Função para extrair características do resultado usando apenas especificacoesTecnicas
   const extractCaracteristicasFromResult = (
     result: MaterialIdentificationResult
   ): CaracteristicaItem[] => {
     const caracteristicasList: CaracteristicaItem[] = [];
 
-    // Extrair do resumo PDM se disponível
-    if (result?.response?.enriched?.especificacoesTecnicas?.resumoPDM) {
-      const resumoPDM =
-        result.response.enriched.especificacoesTecnicas.resumoPDM;
-
-      // Procurar por padrões no resumo PDM
-      const lines = resumoPDM.split("\n");
-      lines.forEach((line, index) => {
-        // Procurar linhas que contenham padrões como "Nome do Produto:", "Fabricante:", etc.
-        const patterns = [
-          /Nome do Produto:\s*(.+)/i,
-          /Fabricante:\s*(.+)/i,
-          /Referência:\s*(.+)/i,
-          /NCM:\s*(.+)/i,
-          /(.+?):\s*(.+)/, // Padrão genérico para outras características
-        ];
-
-        for (const pattern of patterns) {
-          const match = line.match(pattern);
-          if (match) {
-            const key = match[1]?.trim();
-            const value = match[2]?.trim() || match[1]?.trim();
-            if (key && value && value !== key) {
-              caracteristicasList.push({
-                id: `pdm-${index}`,
-                label: key,
-                value: value,
-                checked: true,
-              });
-            }
-            break;
-          }
-        }
-      });
-    }
-
-    // Extrair das especificações técnicas usando o parser dinâmico
+    // Extrair apenas da chave especificacoesTecnicas
     if (
       result?.response?.enriched?.especificacoesTecnicas?.especificacoesTecnicas
     ) {
