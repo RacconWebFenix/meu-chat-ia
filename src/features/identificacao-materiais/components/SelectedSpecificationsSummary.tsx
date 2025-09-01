@@ -43,8 +43,8 @@ export const SelectedSpecificationsSummary: React.FC<
       {/* Texto unificado das informações selecionadas */}
       <Box sx={{ p: 1, backgroundColor: "grey.50", borderRadius: 1 }}>
         <Typography
-          variant="h6"
-          sx={{ mb: 1, fontWeight: "bold", color: "text.primary" }}
+          variant="body1"
+          sx={{ mb: 0, fontWeight: "bold", color: "text.primary" }}
         >
           Descrição:
         </Typography>

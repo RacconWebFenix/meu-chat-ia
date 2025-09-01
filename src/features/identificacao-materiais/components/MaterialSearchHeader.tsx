@@ -34,6 +34,11 @@ export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
         p: 3,
         mb: 3,
         backgroundColor: "background.paper",
+        position: "sticky",
+        top: 50, // Altura típica do header/app bar
+        zIndex: 1000,
+        borderRadius: 0,
+        boxShadow: (theme) => `0 2px 8px ${theme.palette.grey[300]}`,
       }}
     >
       <Box
