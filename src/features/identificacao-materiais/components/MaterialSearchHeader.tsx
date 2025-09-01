@@ -1,39 +1,31 @@
-"use client";
+/**
+ * Material Search Header Component
+ * Following Single Responsibility Principle
+ */
 
-import React, { useState } from "react";
+import React from "react";
 import { Box, TextField, Button, Paper, Typography } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
+import { MaterialSearchData } from "../types";
 
-interface MaterialSearchData {
-  nome: string;
-  referencia: string;
-  marcaFabricante: string;
+interface MaterialSearchHeaderProps {
+  searchData: MaterialSearchData;
+  onSearchDataChange: (field: keyof MaterialSearchData, value: string) => void;
+  onSearch: () => void;
+  isLoading: boolean;
 }
 
-interface MaterialSearchHeaderProps {}
-
-export default function MaterialSearchHeader(
-  _props: MaterialSearchHeaderProps
-) {
-  const [searchData, setSearchData] = useState<MaterialSearchData>({
-    nome: "",
-    referencia: "",
-    marcaFabricante: "",
-  });
-
+export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
+  searchData,
+  onSearchDataChange,
+  onSearch,
+  isLoading,
+}) => {
   const handleInputChange =
     (field: keyof MaterialSearchData) =>
-    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setSearchData((prev) => ({
-        ...prev,
-        [field]: event.target.value,
-      }));
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      onSearchDataChange(field, event.target.value);
     };
-
-  const handleSearch = () => {
-    console.log("Dados da pesquisa:", searchData);
-    // TODO: Implementar lógica de pesquisa
-  };
 
   return (
     <Paper
@@ -65,6 +57,7 @@ export default function MaterialSearchHeader(
           variant="outlined"
           size="small"
           sx={{ flex: 1 }}
+          disabled={isLoading}
         />
 
         <TextField
@@ -75,6 +68,7 @@ export default function MaterialSearchHeader(
           variant="outlined"
           size="small"
           sx={{ flex: 1 }}
+          disabled={isLoading}
         />
 
         <TextField
@@ -85,22 +79,24 @@ export default function MaterialSearchHeader(
           variant="outlined"
           size="small"
           sx={{ flex: 1 }}
+          disabled={isLoading}
         />
 
         <Button
           variant="contained"
           color="primary"
           startIcon={<SearchIcon />}
-          onClick={handleSearch}
+          onClick={onSearch}
+          disabled={isLoading}
           sx={{
             minWidth: { xs: "100%", md: "auto" },
             height: 40,
             whiteSpace: "nowrap",
           }}
         >
-          Identificar
+          {isLoading ? "Identificando..." : "Identificar"}
         </Button>
       </Box>
     </Paper>
   );
-}
+};

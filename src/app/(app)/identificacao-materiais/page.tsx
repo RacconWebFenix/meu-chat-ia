@@ -1,14 +1,7 @@
 "use client";
 
-import { Container, Box } from "@mui/material";
-import MaterialSearchHeader from "@/components/MaterialSearchHeader";
+import { MaterialIdentificationContainer } from "@/features/identificacao-materiais";
 
 export default function IdentificacaoMateriaisPage() {
-  return (
-    <Container maxWidth="xl" disableGutters>
-      <Box sx={{ width: "100%", p: 2 }}>
-        <MaterialSearchHeader />
-      </Box>
-    </Container>
-  );
+  return <MaterialIdentificationContainer />;
 }
