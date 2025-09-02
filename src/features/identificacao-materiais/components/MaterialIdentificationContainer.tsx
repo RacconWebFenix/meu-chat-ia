@@ -1,9 +1,40 @@
 /**
  * Material Identification Container
- * Following Single Responsibility Principle and Dependency Inversion
+ * Following Single Respon      // Função para converter camelCase em labels amigáveis
+  const convertCamelCaseToLabel = (key: string): string => {
+    return key
+      .replace(/([A-Z])/g, ' $1') // Espaço antes de maiúsculas
+      .replace(/^./, str => str.toUpperCase()) // Primeira letra maiúscula
+      .replace(/Mm$/, ' (mm)') // Unidades de medida
+      .replace(/Kn$/, ' (kN)')
+      .replace(/Rpm$/, ' (RPM)')
+      .replace(/Dpi$/, ' (DPI)') // Resolução
+      .replace(/Usb$/, ' (USB)') // Conectividade
+      .replace(/Os$/, ' (OS)') // Sistema Operacional
+      .replace(/M\d+x[\d.]+$/, match => ` ${match}`) // Rosca (ex: M20x1.5)
+      .replace(/Ncm$/, ' (NCM)') // Código NCM
+      .trim();
+  };tries(techSpecs).forEach(([key, value], index) => {
+        if (value !== null && value !== undefined && value !== "") {
+          // Criar label amigável diretamente da chave, sem usar parser hardcoded
+          const friendlyLabel = key
+            .replace(/([A-Z])/g, ' $1') // Adicionar espaço antes de maiúsculas
+            .replace(/^./, str => str.toUpperCase()) // Primeira letra maiúscula
+            .replace(/Mm$/, ' (mm)') // Adicionar unidade para medidas
+            .replace(/Kn$/, ' (kN)') // Adicionar unidade para forças
+            .replace(/Rpm$/, ' (RPM)'); // Adicionar unidade para rotações
+
+          caracteristicasList.push({
+            id: `dynamic-${key}-${index}`,
+            label: friendlyLabel,
+            value: String(value),
+            checked: true,
+          });
+        }
+      });le and Dependency Inversion
  */
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Container, Box } from "@mui/material";
 import { useMaterialIdentification } from "../hooks";
 import { createMaterialIdentificationService } from "../services";
@@ -15,7 +46,6 @@ import {
   CaracteristicasSelectorContainer,
   EquivalenciasTableContainer,
 } from "./index";
-import { dynamicFieldParser } from "../../pdm/services";
 import { mockEquivalenciasData } from "../mocks/mockEquivalenciasData";
 
 interface CaracteristicaItem {
@@ -42,49 +72,151 @@ export const MaterialIdentificationContainer: React.FC = () => {
   // Estado para controlar a exibição da tabela de equivalências
   const [showEquivalenciasTable, setShowEquivalenciasTable] = useState(false);
 
-  // Função para extrair características do resultado usando apenas especificacoesTecnicas
-  const extractCaracteristicasFromResult = (
-    result: MaterialIdentificationResult
-  ): CaracteristicaItem[] => {
-    const caracteristicasList: CaracteristicaItem[] = [];
+  // Função para validar se um campo deve ser exibido
+  const shouldDisplayField = (
+    key: string,
+    value: string | number | null
+  ): boolean => {
+    // Regras de validação - ser mais permissivo
+    const invalidKeys = ["id", "createdAt", "updatedAt"]; // Campos técnicos
 
-    // Extrair apenas da chave especificacoesTecnicas
-    if (
-      result?.response?.enriched?.especificacoesTecnicas?.especificacoesTecnicas
-    ) {
-      const techSpecs =
-        result.response.enriched.especificacoesTecnicas.especificacoesTecnicas;
+    // Não permitir null ou undefined
+    if (value === null || value === undefined) {
+      return false;
+    }
 
-      Object.entries(techSpecs).forEach(([key, value], index) => {
-        if (value !== null && value !== undefined && value !== "") {
-          // Usa o parser dinâmico para gerar o label amigável
-          const parsedField = dynamicFieldParser.parseField(
-            key,
-            result.response?.enriched?.categoria
-          );
+    // Não permitir campos técnicos
+    if (invalidKeys.includes(key)) {
+      return false;
+    }
 
+    // Permitir tudo o resto (incluindo strings vazias e números 0)
+    return true;
+  };
+
+  // Função para converter camelCase em labels amigáveis
+  const convertCamelCaseToLabel = (key: string): string => {
+    return key
+      .replace(/([A-Z])/g, " $1") // Espaço antes de maiúsculas
+      .replace(/^./, (str) => str.toUpperCase()) // Primeira letra maiúscula
+      .replace(/Mm$/, " (mm)") // Unidades de medida
+      .replace(/Kn$/, " (kN)")
+      .replace(/Rpm$/, " (RPM)")
+      .replace(/M\d+x[\d.]+$/, (match) => ` ${match}`) // Rosca (ex: M20x1.5)
+      .trim();
+  };
+
+  // Função para extrair características do resultado
+  const extractCaracteristicasFromResult = useCallback(
+    (result: MaterialIdentificationResult): CaracteristicaItem[] => {
+      const caracteristicasList: CaracteristicaItem[] = [];
+
+      // 1. Adicionar nomeProdutoEncontrado se existir
+      if (result?.response?.enriched?.nomeProdutoEncontrado) {
+        caracteristicasList.push({
+          id: "nome-produto-encontrado",
+          label: "Nome do Produto Encontrado",
+          value: result.response.enriched.nomeProdutoEncontrado,
+          checked: true,
+        });
+      }
+
+      // 2. Adicionar campos de nível superior relevantes
+      const enriched = result?.response?.enriched;
+      if (enriched) {
+        // Adicionar categoria se existir e não estiver vazia
+        if (enriched.categoria && enriched.categoria.trim() !== "") {
           caracteristicasList.push({
-            id: `tech-${index}`,
-            label: parsedField.friendlyLabel,
-            value: String(value),
+            id: "categoria",
+            label: "Categoria",
+            value: enriched.categoria,
             checked: true,
           });
         }
-      });
-    }
 
-    return caracteristicasList;
-  };
+        // Adicionar subcategoria se existir e não estiver vazia
+        if (enriched.subcategoria && enriched.subcategoria.trim() !== "") {
+          caracteristicasList.push({
+            id: "subcategoria",
+            label: "Subcategoria",
+            value: enriched.subcategoria,
+            checked: true,
+          });
+        }
+
+        // Adicionar marca fabricante
+        if (
+          enriched.marcaFabricante &&
+          enriched.marcaFabricante.trim() !== ""
+        ) {
+          caracteristicasList.push({
+            id: "marca-fabricante",
+            label: "Marca Fabricante",
+            value: enriched.marcaFabricante,
+            checked: true,
+          });
+        }
+      }
+
+      // 3. Processar campos de especificacoesTecnicas
+      const techSpecs =
+        result?.response?.enriched?.especificacoesTecnicas
+          ?.especificacoesTecnicas;
+
+      if (techSpecs) {
+        console.log("Tech specs found:", Object.keys(techSpecs));
+        Object.entries(techSpecs).forEach(([key, value]) => {
+          // Filtrar apenas valores válidos usando shouldDisplayField
+          if (shouldDisplayField(key, value)) {
+            const friendlyLabel = convertCamelCaseToLabel(key);
+            console.log(
+              `Adding characteristic: ${key} -> ${friendlyLabel}: ${value}`
+            );
+
+            caracteristicasList.push({
+              id: `dynamic-${key}`,
+              label: friendlyLabel,
+              value: String(value),
+              checked: true,
+            });
+          } else {
+            console.log(`Skipping characteristic: ${key} = ${value}`);
+          }
+        });
+      }
+
+      console.log(
+        "Total characteristics extracted:",
+        caracteristicasList.length
+      );
+      return caracteristicasList;
+    },
+    []
+  );
 
   // Atualizar características quando o resultado muda
   React.useEffect(() => {
     if (state.result) {
+      console.log(
+        "🔍 State result received:",
+        JSON.stringify(state.result, null, 2)
+      );
+      console.log("🔍 Enriched data:", state.result?.response?.enriched);
+      console.log(
+        "🔍 Tech specs in result:",
+        state.result?.response?.enriched?.especificacoesTecnicas
+          ?.especificacoesTecnicas
+      );
+
       const extractedCaracteristicas = extractCaracteristicasFromResult(
         state.result
       );
+      console.log("🔍 Extracted characteristics:", extractedCaracteristicas);
       setCaracteristicas(extractedCaracteristicas);
+    } else {
+      console.log("❌ No state result available");
     }
-  }, [state.result]);
+  }, [state.result, extractCaracteristicasFromResult]);
 
   const handleSearch = async () => {
     await identifyMaterial();

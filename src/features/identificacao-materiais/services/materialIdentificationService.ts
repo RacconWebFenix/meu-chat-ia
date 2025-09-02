@@ -48,7 +48,10 @@ export class ApiMaterialIdentificationService
       console.log("API response data:", JSON.stringify(data, null, 2));
 
       // Map the API response to MaterialIdentificationResult
-      return this.mapApiResponseToResult(data, searchData);
+      const mappedResult = this.mapApiResponseToResult(data, searchData);
+      console.log("Mapped result:", JSON.stringify(mappedResult, null, 2));
+
+      return mappedResult;
     } catch (error) {
       console.error("Error calling material identification API:", error);
       throw new Error("Falha na identificação do material");
@@ -62,9 +65,10 @@ export class ApiMaterialIdentificationService
           categoria?: string;
           subcategoria?: string;
           marcaFabricante?: string;
+          nomeProdutoEncontrado?: string;
           especificacoesTecnicas?: {
             resumoPDM?: string;
-            especificacoesTecnicas?: Record<string, unknown>;
+            especificacoesTecnicas?: Record<string, string | number | null>;
           };
           imagens?: Array<{
             image_url: string;
@@ -89,6 +93,7 @@ export class ApiMaterialIdentificationService
           categoria?: string;
           subcategoria?: string;
           marcaFabricante?: string;
+          nomeProdutoEncontrado?: string;
           especificacoesTecnicas?: {
             resumoPDM?: string;
             especificacoesTecnicas?: Record<string, string | number | null>;
@@ -119,72 +124,15 @@ export class ApiMaterialIdentificationService
           categoria: response.response?.enriched?.categoria || "",
           subcategoria: response.response?.enriched?.subcategoria || "",
           marcaFabricante: response.response?.enriched?.marcaFabricante || "",
+          nomeProdutoEncontrado:
+            response.response?.enriched?.nomeProdutoEncontrado || "",
           especificacoesTecnicas: {
             resumoPDM:
               response.response?.enriched?.especificacoesTecnicas?.resumoPDM ||
               "",
-            especificacoesTecnicas: {
-              nomeProduto:
-                ((
-                  apiResponse.response?.enriched?.especificacoesTecnicas
-                    ?.especificacoesTecnicas as Record<string, unknown>
-                )?.nomeProduto as string) || "",
-              fabricante:
-                ((
-                  apiResponse.response?.enriched?.especificacoesTecnicas
-                    ?.especificacoesTecnicas as Record<string, unknown>
-                )?.fabricante as string) || "",
-              referenciaEncontrada:
-                ((
-                  apiResponse.response?.enriched?.especificacoesTecnicas
-                    ?.especificacoesTecnicas as Record<string, unknown>
-                )?.referenciaEncontrada as string) || "",
-              ncm:
-                ((
-                  apiResponse.response?.enriched?.especificacoesTecnicas
-                    ?.especificacoesTecnicas as Record<string, unknown>
-                )?.ncm as string) || "",
-              unidadeMedida:
-                ((
-                  apiResponse.response?.enriched?.especificacoesTecnicas
-                    ?.especificacoesTecnicas as Record<string, unknown>
-                )?.unidadeMedida as string) || "",
-              diametroInternoMm:
-                ((
-                  apiResponse.response?.enriched?.especificacoesTecnicas
-                    ?.especificacoesTecnicas as Record<string, unknown>
-                )?.diametroInternoMm as number) || 0,
-              diametroExternoMm:
-                ((
-                  apiResponse.response?.enriched?.especificacoesTecnicas
-                    ?.especificacoesTecnicas as Record<string, unknown>
-                )?.diametroExternoMm as number) || 0,
-              larguraMm:
-                ((
-                  apiResponse.response?.enriched?.especificacoesTecnicas
-                    ?.especificacoesTecnicas as Record<string, unknown>
-                )?.larguraMm as number) || 0,
-              materialGaiola:
-                ((
-                  apiResponse.response?.enriched?.especificacoesTecnicas
-                    ?.especificacoesTecnicas as Record<string, unknown>
-                )?.materialGaiola as string) || "",
-              tipoVedacao:
-                ((
-                  apiResponse.response?.enriched?.especificacoesTecnicas
-                    ?.especificacoesTecnicas as Record<string, unknown>
-                )?.tipoVedacao as string) || "",
-              capacidadeCargaDinamicaKn:
-                ((
-                  apiResponse.response?.enriched?.especificacoesTecnicas
-                    ?.especificacoesTecnicas as Record<string, unknown>
-                )?.capacidadeCargaDinamicaKn as number) || 0,
-              velocidadeMaximaRpm:
-                ((
-                  apiResponse.response?.enriched?.especificacoesTecnicas
-                    ?.especificacoesTecnicas as Record<string, unknown>
-                )?.velocidadeMaximaRpm as number) || 0,
-            },
+            especificacoesTecnicas:
+              response.response?.enriched?.especificacoesTecnicas
+                ?.especificacoesTecnicas || {},
           },
           imagens: response.response?.enriched?.imagens || [],
         },

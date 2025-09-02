@@ -3,6 +3,12 @@
  * Following Single Responsibility Principle
  */
 
+// Tipo para especificações técnicas dinâmicas
+export type EspecificacoesTecnicasDinamicas = Record<
+  string,
+  string | number | null
+>;
+
 // Existing types...
 export interface MaterialSearchData {
   nome: string;
@@ -20,22 +26,10 @@ export interface MaterialIdentificationResult {
       categoria: string;
       subcategoria: string;
       marcaFabricante: string;
+      nomeProdutoEncontrado: string;
       especificacoesTecnicas: {
         resumoPDM: string;
-        especificacoesTecnicas: {
-          nomeProduto: string;
-          fabricante: string;
-          referenciaEncontrada: string;
-          ncm: string;
-          unidadeMedida: string;
-          diametroInternoMm: number;
-          diametroExternoMm: number;
-          larguraMm: number;
-          materialGaiola: string;
-          tipoVedacao: string;
-          capacidadeCargaDinamicaKn: number;
-          velocidadeMaximaRpm: number;
-        };
+        especificacoesTecnicas: EspecificacoesTecnicasDinamicas;
       };
       imagens: Array<{
         image_url: string;

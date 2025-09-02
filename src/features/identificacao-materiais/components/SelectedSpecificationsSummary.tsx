@@ -58,7 +58,7 @@ export const SelectedSpecificationsSummary: React.FC<
         if (productInfo.nomeProduto) {
           exportData.unshift({
             Campo: "Nome do Produto",
-            Valor: productInfo.nomeProduto,
+            Valor: String(productInfo.nomeProduto),
             Ordem: 0,
           });
         }
