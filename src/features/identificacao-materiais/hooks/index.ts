@@ -5,3 +5,4 @@
 export { useMaterialIdentification } from "./useMaterialIdentification";
 export { useN8NMaterialIdentification } from "./useN8NMaterialIdentification";
 export { useN8NEquivalenceSearch } from "./useN8NEquivalenceSearch";
+export { useEquivalenceSearch } from "./useEquivalenceSearch";

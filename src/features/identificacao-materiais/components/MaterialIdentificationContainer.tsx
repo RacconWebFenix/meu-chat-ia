@@ -35,10 +35,13 @@
  */
 
 import React, { useState, useCallback } from "react";
-import { Container, Box } from "@mui/material";
-import { useMaterialIdentification } from "../hooks";
-import { createMaterialIdentificationService } from "../services";
-import { MaterialIdentificationResult } from "../types";
+import { Container, Box, Paper, Typography } from "@mui/material";
+import { useMaterialIdentification, useEquivalenceSearch } from "../hooks";
+import {
+  createMaterialIdentificationService,
+  createEquivalenceSearchService,
+} from "../services";
+import { MaterialIdentificationResult, EquivalenceSearchData } from "../types";
 import {
   MaterialSearchHeader,
   PDMModelDisplay,
@@ -46,7 +49,6 @@ import {
   CaracteristicasSelectorContainer,
   EquivalenciasTableContainer,
 } from "./index";
-import { mockEquivalenciasData } from "../mocks/mockEquivalenciasData";
 
 interface CaracteristicaItem {
   id: string;
@@ -56,13 +58,19 @@ interface CaracteristicaItem {
 }
 
 export const MaterialIdentificationContainer: React.FC = () => {
-  // Create service
-  const service = React.useMemo(() => {
+  // Create services
+  const materialService = React.useMemo(() => {
     return createMaterialIdentificationService();
   }, []);
 
+  const equivalenceService = React.useMemo(() => {
+    return createEquivalenceSearchService();
+  }, []);
+
   const { state, updateSearchData, identifyMaterial } =
-    useMaterialIdentification({ service });
+    useMaterialIdentification({ service: materialService });
+
+  const equivalenceState = useEquivalenceSearch(equivalenceService);
 
   // Estado para características selecionáveis
   const [caracteristicas, setCaracteristicas] = useState<CaracteristicaItem[]>(
@@ -111,15 +119,38 @@ export const MaterialIdentificationContainer: React.FC = () => {
     (result: MaterialIdentificationResult): CaracteristicaItem[] => {
       const caracteristicasList: CaracteristicaItem[] = [];
 
-      // 1. Adicionar nomeProdutoEncontrado se existir
-      if (result?.response?.enriched?.nomeProdutoEncontrado) {
-        caracteristicasList.push({
-          id: "nome-produto-encontrado",
-          label: "Nome do Produto Encontrado",
-          value: result.response.enriched.nomeProdutoEncontrado,
-          checked: true,
-        });
+      // 1. Adicionar nome do produto (sempre deve existir)
+      let nomeProduto = result?.response?.enriched?.nomeProdutoEncontrado || "";
+
+      // Se não houver nomeProdutoEncontrado, construir a partir de referência e fabricante
+      if (!nomeProduto.trim()) {
+        const referencia =
+          result?.response?.enriched?.especificacoesTecnicas
+            ?.especificacoesTecnicas?.["Referencia Encontrada"] ||
+          result?.response?.enriched?.especificacoesTecnicas
+            ?.especificacoesTecnicas?.["Referência Encontrada"] ||
+          result?.response?.enriched?.especificacoesTecnicas
+            ?.especificacoesTecnicas?.["referenciaEncontrada"] ||
+          "";
+        const fabricante = result?.response?.enriched?.marcaFabricante || "";
+
+        if (referencia && fabricante) {
+          nomeProduto = `${String(referencia)} ${fabricante}`.trim();
+        } else if (referencia) {
+          nomeProduto = String(referencia);
+        } else if (fabricante) {
+          nomeProduto = fabricante;
+        } else {
+          nomeProduto = "Produto não identificado";
+        }
       }
+
+      caracteristicasList.push({
+        id: "nome-produto",
+        label: "Nome do Produto",
+        value: nomeProduto,
+        checked: true,
+      });
 
       // 2. Adicionar campos de nível superior relevantes
       const enriched = result?.response?.enriched;
@@ -158,13 +189,45 @@ export const MaterialIdentificationContainer: React.FC = () => {
         }
       }
 
-      // 3. Processar campos de especificacoesTecnicas
+      // 3. Adicionar campos específicos importantes das especificações técnicas
       const techSpecs =
         result?.response?.enriched?.especificacoesTecnicas
           ?.especificacoesTecnicas;
 
       if (techSpecs) {
+        // Campos prioritários que sempre devem aparecer
+        const priorityFields = [
+          "Referencia Encontrada",
+          "Referência Encontrada",
+          "referenciaEncontrada",
+          "N",
+          "Ncm",
+          "Unidade Medida",
+          "unidadeMedida",
+        ];
+
+        priorityFields.forEach((fieldKey) => {
+          const value = techSpecs[fieldKey];
+          if (
+            value !== null &&
+            value !== undefined &&
+            String(value).trim() !== ""
+          ) {
+            const friendlyLabel = convertCamelCaseToLabel(fieldKey);
+            caracteristicasList.push({
+              id: `priority-${fieldKey}`,
+              label: friendlyLabel,
+              value: String(value),
+              checked: true,
+            });
+          }
+        });
+
+        // 4. Processar campos dinâmicos restantes
         Object.entries(techSpecs).forEach(([key, value]) => {
+          // Pular campos já adicionados como prioridade
+          if (priorityFields.includes(key)) return;
+
           // Filtrar apenas valores válidos usando shouldDisplayField
           if (shouldDisplayField(key, value)) {
             const friendlyLabel = convertCamelCaseToLabel(key);
@@ -216,9 +279,62 @@ export const MaterialIdentificationContainer: React.FC = () => {
     );
   };
 
-  const handleConfirmSelection = () => {
+  const handleConfirmSelection = async () => {
     const selected = caracteristicas.filter((item) => item.checked);
-    // Aqui você pode implementar a lógica para processar as características selecionadas
+
+    if (selected.length === 0) {
+      alert(
+        "Selecione pelo menos uma característica para buscar equivalências"
+      );
+      return;
+    }
+
+    // Preparar dados para busca de equivalências
+    // Pegar o nome do produto das características selecionadas
+    const nomeProdutoCaracteristica = selected.find(
+      (item) => item.id === "nome-produto"
+    );
+    const referenciaCaracteristica = selected.find(
+      (item) =>
+        item.label.toLowerCase().includes("referencia") ||
+        item.label.toLowerCase().includes("referência")
+    );
+    const fabricanteCaracteristica = selected.find(
+      (item) => item.id === "marca-fabricante"
+    );
+
+    const nome =
+      nomeProdutoCaracteristica?.value ||
+      (referenciaCaracteristica && fabricanteCaracteristica
+        ? `${referenciaCaracteristica.value} ${fabricanteCaracteristica.value}`.trim()
+        : referenciaCaracteristica?.value ||
+          fabricanteCaracteristica?.value ||
+          state.result?.response?.enriched?.nomeProdutoEncontrado ||
+          "Produto não identificado");
+
+    const searchData: EquivalenceSearchData = {
+      nome: nome,
+      marcaFabricante:
+        fabricanteCaracteristica?.value ||
+        state.result?.response?.enriched?.marcaFabricante ||
+        "",
+      categoria: state.result?.response?.enriched?.categoria || "",
+      subcategoria: state.result?.response?.enriched?.subcategoria || "",
+      especificacoesTecnicas:
+        state.result?.response?.enriched?.especificacoesTecnicas
+          ?.especificacoesTecnicas || {},
+      aplicacao: "",
+      unidadeMedida: "",
+      breveDescricao:
+        state.result?.response?.enriched?.especificacoesTecnicas?.resumoPDM ||
+        "",
+      normas: [],
+      imagens: state.result?.response?.enriched?.imagens || [],
+    };
+
+    // Buscar equivalências
+    await equivalenceState.searchEquivalences(searchData);
+    setShowEquivalenciasTable(true);
   };
 
   const handleAddCaracteristica = (key: string, value: string) => {
@@ -256,14 +372,21 @@ export const MaterialIdentificationContainer: React.FC = () => {
               onAddCaracteristica={handleAddCaracteristica}
               result={state.result}
               isLoading={state.isLoading}
-              onShowEquivalenciasTable={() => setShowEquivalenciasTable(true)}
+              onShowEquivalenciasTable={handleConfirmSelection}
             />
 
             {showEquivalenciasTable && (
               <EquivalenciasTableContainer
-                equivalencias={mockEquivalenciasData}
-                isLoading={state.isLoading}
+                equivalencias={equivalenceState.results}
+                isLoading={equivalenceState.isLoading}
               />
+            )}
+
+            {/* Loading para busca de equivalências */}
+            {equivalenceState.isLoading && !showEquivalenciasTable && (
+              <Paper sx={{ p: 2, mt: 2 }}>
+                <Typography>Carregando equivalências...</Typography>
+              </Paper>
             )}
           </>
         )}

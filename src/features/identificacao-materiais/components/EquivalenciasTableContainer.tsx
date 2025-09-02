@@ -21,30 +21,35 @@ import {
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowRight } from "@mui/icons-material";
 import Image from "next/image";
-import {
-  EquivalenciasData,
-  EquivalenciaItem,
-  CaracteristicaItem,
-  ImagemItem,
-  CitacaoItem,
-} from "../mocks/mockEquivalenciasData";
+import { EquivalenceSearchResult } from "../types";
 import { formatTechnicalKey } from "@/Utils/formatUtils";
 
 interface EquivalenciasTableContainerProps {
-  equivalencias: EquivalenciasData[];
+  equivalencias: EquivalenceSearchResult | null;
   isLoading?: boolean;
 }
 
 interface CaracteristicasSubRowProps {
-  caracteristicas: CaracteristicaItem[];
+  caracteristicas: Array<Record<string, string>>;
 }
 
 interface ImagensSubRowProps {
-  imagens: ImagemItem[];
+  imagens: Array<{
+    image_url: string;
+    origin_url: string;
+    height: number;
+    width: number;
+  }>;
 }
 
 interface CitacoesSubRowProps {
-  citacoes: CitacaoItem[];
+  citacoes: Array<{
+    title: string;
+    url: string;
+    date: string | null;
+    last_updated: string | null;
+    snippet: string;
+  }>;
 }
 
 const CaracteristicasSubRow: React.FC<CaracteristicasSubRowProps> = ({
@@ -176,9 +181,9 @@ export const EquivalenciasTableContainer: React.FC<
   };
 
   const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      const allIds = equivalencias.flatMap((data) =>
-        data.equivalencias.map((equiv) => `${equiv.nome}-${equiv.fabricante}`)
+    if (checked && equivalencias?.equivalencias) {
+      const allIds = equivalencias.equivalencias.map(
+        (equiv) => `${equiv.nome}-${equiv.fabricante}`
       );
       setSelectedRows(new Set(allIds));
     } else {
@@ -194,6 +199,18 @@ export const EquivalenciasTableContainer: React.FC<
     );
   }
 
+  if (
+    !equivalencias ||
+    !equivalencias.equivalencias ||
+    equivalencias.equivalencias.length === 0
+  ) {
+    return (
+      <Paper sx={{ p: 2 }}>
+        <Typography>Nenhuma equivalência encontrada.</Typography>
+      </Paper>
+    );
+  }
+
   return (
     <TableContainer component={Paper} sx={{ mt: 2 }}>
       <Table>
@@ -202,14 +219,14 @@ export const EquivalenciasTableContainer: React.FC<
             <TableCell>
               <Checkbox
                 checked={
-                  selectedRows.size ===
-                    equivalencias.flatMap((d) => d.equivalencias).length &&
-                  equivalencias.flatMap((d) => d.equivalencias).length > 0
+                  equivalencias?.equivalencias &&
+                  selectedRows.size === equivalencias.equivalencias.length &&
+                  equivalencias.equivalencias.length > 0
                 }
                 indeterminate={
                   selectedRows.size > 0 &&
-                  selectedRows.size <
-                    equivalencias.flatMap((d) => d.equivalencias).length
+                  equivalencias?.equivalencias &&
+                  selectedRows.size < equivalencias.equivalencias.length
                 }
                 onChange={(e) => handleSelectAll(e.target.checked)}
                 aria-label="Selecionar todas as linhas"
@@ -244,69 +261,65 @@ export const EquivalenciasTableContainer: React.FC<
           </TableRow>
         </TableHead>
         <TableBody>
-          {equivalencias.flatMap((data) =>
-            data.equivalencias.map((equiv) => {
-              const rowId = `${equiv.nome}-${equiv.fabricante}`;
-              const isExpanded = expandedRows.has(rowId);
-              return (
-                <React.Fragment key={rowId}>
-                  <TableRow>
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedRows.has(rowId)}
-                        onChange={(e) =>
-                          handleRowSelect(rowId, e.target.checked)
-                        }
-                        aria-label={`Selecionar ${equiv.nome}`}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <IconButton
-                        aria-expanded={isExpanded}
-                        aria-label={`Expandir ${equiv.nome}`}
-                        onClick={() => handleRowToggle(rowId)}
-                        size="small"
-                      >
-                        {isExpanded ? (
-                          <KeyboardArrowDown />
-                        ) : (
-                          <KeyboardArrowRight />
-                        )}
-                      </IconButton>
-                    </TableCell>
-                    <TableCell>
-                      <Typography>{equiv.nome}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography>{equiv.fabricante}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography>{equiv.NCM}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography>{equiv.referencia}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography>{equiv.tipo_de_unidade}</Typography>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell colSpan={7} sx={{ p: 0 }}>
-                      <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-                        <Box sx={{ display: "flex", gap: 2, p: 2 }}>
-                          <CaracteristicasSubRow
-                            caracteristicas={equiv.caracteristicas}
-                          />
-                          <ImagensSubRow imagens={equiv.imagens} />
-                          <CitacoesSubRow citacoes={equiv.citacoes} />
-                        </Box>
-                      </Collapse>
-                    </TableCell>
-                  </TableRow>
-                </React.Fragment>
-              );
-            })
-          )}
+          {equivalencias?.equivalencias?.map((equiv) => {
+            const rowId = `${equiv.nome}-${equiv.fabricante}`;
+            const isExpanded = expandedRows.has(rowId);
+            return (
+              <React.Fragment key={rowId}>
+                <TableRow>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedRows.has(rowId)}
+                      onChange={(e) => handleRowSelect(rowId, e.target.checked)}
+                      aria-label={`Selecionar ${equiv.nome}`}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      aria-expanded={isExpanded}
+                      aria-label={`Expandir ${equiv.nome}`}
+                      onClick={() => handleRowToggle(rowId)}
+                      size="small"
+                    >
+                      {isExpanded ? (
+                        <KeyboardArrowDown />
+                      ) : (
+                        <KeyboardArrowRight />
+                      )}
+                    </IconButton>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{equiv.nome}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{equiv.fabricante}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{equiv.NCM}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{equiv.referencia}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{equiv.tipo_de_unidade}</Typography>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell colSpan={7} sx={{ p: 0 }}>
+                    <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+                      <Box sx={{ display: "flex", gap: 2, p: 2 }}>
+                        <CaracteristicasSubRow
+                          caracteristicas={equiv.caracteristicas}
+                        />
+                        <ImagensSubRow imagens={equiv.imagens} />
+                        <CitacoesSubRow citacoes={equiv.citacoes} />
+                      </Box>
+                    </Collapse>
+                  </TableCell>
+                </TableRow>
+              </React.Fragment>
+            );
+          })}
         </TableBody>
       </Table>
     </TableContainer>
