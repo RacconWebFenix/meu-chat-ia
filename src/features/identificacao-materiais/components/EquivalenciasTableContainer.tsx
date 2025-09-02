@@ -238,7 +238,7 @@ export const EquivalenciasTableContainer: React.FC<
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
-                Tipo de Unidade
+                Unidade
               </Typography>
             </TableCell>
           </TableRow>
