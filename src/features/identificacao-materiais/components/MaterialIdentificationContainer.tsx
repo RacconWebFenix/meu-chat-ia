@@ -102,6 +102,80 @@ export const MaterialIdentificationContainer: React.FC = () => {
     return true;
   };
 
+  // Função para extrair nome do produto do resumoPDM
+  const extractProductNameFromResumoPDM = useCallback(
+    (resumoPDM: string): string => {
+      if (!resumoPDM || typeof resumoPDM !== "string") {
+        return "";
+      }
+
+      // Procurar por "Nome do Produto:" no resumo
+      const nomeMatch = resumoPDM.match(/Nome do Produto:\s*([^\n\r]+)/i);
+      if (nomeMatch && nomeMatch[1]) {
+        return nomeMatch[1].trim();
+      }
+
+      // Se não encontrar, tentar extrair da primeira linha após "Resumo Técnico para"
+      const resumoMatch = resumoPDM.match(/Resumo Técnico para\s+([^\n\r]+)/i);
+      if (resumoMatch && resumoMatch[1]) {
+        return resumoMatch[1].trim();
+      }
+
+      // Fallback: retornar o resumoPDM completo se for curto, ou vazio se for longo
+      return resumoPDM.length < 100 ? resumoPDM : "";
+    },
+    []
+  );
+
+  // Função para obter nome do produto com múltiplas fontes
+  const getProductName = useCallback(
+    (result: MaterialIdentificationResult): string => {
+      // Primeiro tentar nomeProdutoEncontrado direto
+      let nomeProduto = result?.response?.enriched?.nomeProdutoEncontrado || "";
+
+      // Se não estiver vazio e não parecer um resumo longo, usar diretamente
+      if (
+        nomeProduto &&
+        nomeProduto.length < 100 &&
+        !nomeProduto.includes("Resumo Técnico")
+      ) {
+        return nomeProduto.trim();
+      }
+
+      // Tentar extrair do resumoPDM se disponível
+      const resumoPDM =
+        result?.response?.enriched?.especificacoesTecnicas?.resumoPDM;
+      if (resumoPDM) {
+        const extractedName = extractProductNameFromResumoPDM(resumoPDM);
+        if (extractedName) {
+          return extractedName;
+        }
+      }
+
+      // Fallback: construir a partir de referência e fabricante
+      const referencia =
+        result?.response?.enriched?.especificacoesTecnicas
+          ?.especificacoesTecnicas?.["Referencia Encontrada"] ||
+        result?.response?.enriched?.especificacoesTecnicas
+          ?.especificacoesTecnicas?.["Referência Encontrada"] ||
+        result?.response?.enriched?.especificacoesTecnicas
+          ?.especificacoesTecnicas?.["referenciaEncontrada"] ||
+        "";
+      const fabricante = result?.response?.enriched?.marcaFabricante || "";
+
+      if (referencia && fabricante) {
+        return `${String(referencia)} ${fabricante}`.trim();
+      } else if (referencia) {
+        return String(referencia);
+      } else if (fabricante) {
+        return fabricante;
+      }
+
+      return "Produto não identificado";
+    },
+    [extractProductNameFromResumoPDM]
+  );
+
   // Função para converter camelCase em labels amigáveis
   const convertCamelCaseToLabel = (key: string): string => {
     return key
@@ -120,30 +194,7 @@ export const MaterialIdentificationContainer: React.FC = () => {
       const caracteristicasList: CaracteristicaItem[] = [];
 
       // 1. Adicionar nome do produto (sempre deve existir)
-      let nomeProduto = result?.response?.enriched?.nomeProdutoEncontrado || "";
-
-      // Se não houver nomeProdutoEncontrado, construir a partir de referência e fabricante
-      if (!nomeProduto.trim()) {
-        const referencia =
-          result?.response?.enriched?.especificacoesTecnicas
-            ?.especificacoesTecnicas?.["Referencia Encontrada"] ||
-          result?.response?.enriched?.especificacoesTecnicas
-            ?.especificacoesTecnicas?.["Referência Encontrada"] ||
-          result?.response?.enriched?.especificacoesTecnicas
-            ?.especificacoesTecnicas?.["referenciaEncontrada"] ||
-          "";
-        const fabricante = result?.response?.enriched?.marcaFabricante || "";
-
-        if (referencia && fabricante) {
-          nomeProduto = `${String(referencia)} ${fabricante}`.trim();
-        } else if (referencia) {
-          nomeProduto = String(referencia);
-        } else if (fabricante) {
-          nomeProduto = fabricante;
-        } else {
-          nomeProduto = "Produto não identificado";
-        }
-      }
+      const nomeProduto = getProductName(result);
 
       caracteristicasList.push({
         id: "nome-produto",
@@ -244,7 +295,7 @@ export const MaterialIdentificationContainer: React.FC = () => {
 
       return caracteristicasList;
     },
-    []
+    [getProductName]
   );
 
   // Atualizar características quando o resultado muda
@@ -309,7 +360,9 @@ export const MaterialIdentificationContainer: React.FC = () => {
         ? `${referenciaCaracteristica.value} ${fabricanteCaracteristica.value}`.trim()
         : referenciaCaracteristica?.value ||
           fabricanteCaracteristica?.value ||
-          state.result?.response?.enriched?.nomeProdutoEncontrado ||
+          (state.result
+            ? getProductName(state.result)
+            : "Produto não identificado") ||
           "Produto não identificado");
 
     const searchData: EquivalenceSearchData = {
