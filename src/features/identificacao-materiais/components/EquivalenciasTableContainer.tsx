@@ -28,6 +28,7 @@ import {
   ImagemItem,
   CitacaoItem,
 } from "../mocks/mockEquivalenciasData";
+import { formatTechnicalKey } from "@/Utils/formatUtils";
 
 interface EquivalenciasTableContainerProps {
   equivalencias: EquivalenciasData[];
@@ -66,7 +67,7 @@ const CaracteristicasSubRow: React.FC<CaracteristicasSubRowProps> = ({
       >
         {Object.entries(carac).map(([key, value]) => (
           <Typography key={key} variant="body2" sx={{ mb: 0.5 }}>
-            <strong>{key.replace(/_/g, " ").toUpperCase()}:</strong> {value}
+            <strong>{formatTechnicalKey(key)}:</strong> {value}
           </Typography>
         ))}
       </Box>

@@ -1,39 +1,106 @@
 // Define um mapa de unidades conhecidas para sua formatação correta
 const unitMap: Record<string, string> = {
-  mm: '(mm)',
-  cm: '(cm)',
-  kg: '(kg)',
-  unf: '(UNF)',
+  mm: "(mm)",
+  cm: "(cm)",
+  kg: "(kg)",
+  g: "(g)",
+  m: "(m)",
+  km: "(km)",
+  l: "(L)",
+  ml: "(mL)",
+  rpm: "(RPM)",
+  hz: "(Hz)",
+  khz: "(kHz)",
+  mhz: "(MHz)",
+  v: "(V)",
+  kv: "(kV)",
+  mv: "(mV)",
+  a: "(A)",
+  ma: "(mA)",
+  w: "(W)",
+  kw: "(kW)",
+  mw: "(mW)",
+  hp: "(HP)",
+  c: "(°C)",
+  f: "(°F)",
+  k: "(K)",
+  pa: "(Pa)",
+  kpa: "(kPa)",
+  mpa: "(MPa)",
+  bar: "(bar)",
+  psi: "(PSI)",
+  nm: "(N·m)",
+  kn: "(kN)",
+  n: "(N)",
+  j: "(J)",
+  kj: "(kJ)",
+  db: "(dB)",
+  "%": "(%)",
+  unm: "(UNM)",
+  unf: "(UNF)",
+  unc: "(UNC)",
   // Adicione outras unidades conforme necessário
 };
 
 /**
- * Formata uma string camelCase para um formato legível por humanos.
- * Ex: 'compatibilidadeVeiculos' se torna 'Compatibilidade Veiculos'
- * Ex: 'alturaMm' se torna 'Altura (mm)'
+ * Formata uma string técnica para um formato legível por humanos.
+ * Suporta diferentes formatos de entrada:
+ * - camelCase: 'diametroInternoMm' -> 'Diametro Interno (mm)'
+ * - UPPER_CASE: 'DIAMETRO_INTERNO_MM' -> 'Diametro Interno (mm)'
+ * - PascalCase: 'DiametroInternoMm' -> 'Diametro Interno (mm)'
+ * - Espaçado: 'DIAMETRO INTERNO MM' -> 'Diametro Interno (mm)'
  *
- * @param key A string em camelCase a ser formatada.
+ * @param key A string a ser formatada.
  * @returns A string formatada.
  */
 export const formatTechnicalKey = (key: string): string => {
-  if (!key) return '';
+  if (!key) return "";
 
-  // Verifica se a chave termina com uma unidade conhecida
+  let processedKey = key;
+
+  // Primeiro, verifica se a chave termina com uma unidade conhecida
   for (const unit in unitMap) {
-    if (key.toLowerCase().endsWith(unit)) {
-      const baseKey = key.slice(0, -unit.length);
-      const formattedBase = baseKey
-        .replace(/([A-Z])/g, ' $1') // Adiciona espaço antes de letras maiúsculas
-        .replace(/^./, (str) => str.toUpperCase()); // Capitaliza o primeiro caractere
+    if (
+      processedKey.toLowerCase().endsWith(` ${unit}`) ||
+      processedKey.toLowerCase().endsWith(`_${unit}`) ||
+      processedKey.toLowerCase().endsWith(unit)
+    ) {
+      let baseKey = processedKey;
 
-      return `${formattedBase.trim()} ${unitMap[unit]}`;
+      // Remove a unidade do final
+      if (processedKey.toLowerCase().endsWith(` ${unit}`)) {
+        baseKey = processedKey.slice(0, -unit.length - 1);
+      } else if (processedKey.toLowerCase().endsWith(`_${unit}`)) {
+        baseKey = processedKey.slice(0, -unit.length - 1);
+      } else if (processedKey.toLowerCase().endsWith(unit)) {
+        baseKey = processedKey.slice(0, -unit.length);
+      }
+
+      // Formata a parte base
+      const formattedBase = formatKeyBase(baseKey);
+      return `${formattedBase} ${unitMap[unit]}`;
     }
   }
 
   // Se nenhuma unidade for encontrada, aplica a formatação padrão
-  const formattedKey = key
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, (str) => str.toUpperCase());
+  return formatKeyBase(processedKey);
+};
 
-  return formattedKey.trim();
+/**
+ * Função auxiliar para formatar a parte base da chave
+ */
+const formatKeyBase = (key: string): string => {
+  if (!key) return "";
+
+  // Converte underscores para espaços
+  let formatted = key.replace(/_/g, " ");
+
+  // Adiciona espaços antes de letras maiúsculas (para camelCase e PascalCase)
+  formatted = formatted.replace(/([A-Z])/g, " $1");
+
+  // Remove espaços extras e capitaliza a primeira letra
+  formatted = formatted.trim().replace(/\s+/g, " ");
+  formatted = formatted.replace(/^./, (str) => str.toUpperCase());
+
+  return formatted;
 };
