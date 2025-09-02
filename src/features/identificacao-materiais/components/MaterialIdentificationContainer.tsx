@@ -13,8 +13,10 @@ import {
   PDMModelDisplay,
   MaterialIdentificationLoading,
   CaracteristicasSelectorContainer,
+  EquivalenciasTableContainer,
 } from "./index";
 import { dynamicFieldParser } from "../../pdm/services";
+import { mockEquivalenciasData } from "../mocks/mockEquivalenciasData";
 
 interface CaracteristicaItem {
   id: string;
@@ -32,6 +34,9 @@ export const MaterialIdentificationContainer: React.FC = () => {
   const [caracteristicas, setCaracteristicas] = useState<CaracteristicaItem[]>(
     []
   );
+
+  // Estado para controlar a exibição da tabela de equivalências
+  const [showEquivalenciasTable, setShowEquivalenciasTable] = useState(false);
 
   // Função para extrair características do resultado usando apenas especificacoesTecnicas
   const extractCaracteristicasFromResult = (
@@ -140,7 +145,15 @@ export const MaterialIdentificationContainer: React.FC = () => {
               onAddCaracteristica={handleAddCaracteristica}
               result={state.result}
               isLoading={state.isLoading}
+              onShowEquivalenciasTable={() => setShowEquivalenciasTable(true)}
             />
+
+            {showEquivalenciasTable && (
+              <EquivalenciasTableContainer
+                equivalencias={mockEquivalenciasData}
+                isLoading={state.isLoading}
+              />
+            )}
           </>
         )}
       </Box>

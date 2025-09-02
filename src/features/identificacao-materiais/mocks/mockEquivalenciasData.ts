@@ -1,5 +1,3 @@
-export interface CaracteristicaItem extends Record<string, string> {}
-
 /**
  * Mock data for Equivalencias Table
  * Following Single Responsibility Principle: Provides test data for equivalencias

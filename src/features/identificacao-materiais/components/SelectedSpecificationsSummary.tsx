@@ -22,11 +22,12 @@ interface CaracteristicaItem {
 interface SelectedSpecificationsSummaryProps {
   caracteristicas: CaracteristicaItem[];
   result: MaterialIdentificationResult;
+  onShowEquivalenciasTable?: () => void;
 }
 
 export const SelectedSpecificationsSummary: React.FC<
   SelectedSpecificationsSummaryProps
-> = ({ caracteristicas, result }) => {
+> = ({ caracteristicas, result, onShowEquivalenciasTable }) => {
   // Obter características selecionadas
   const selectedCaracteristicas = caracteristicas.filter(
     (item) => item.checked
@@ -97,11 +98,14 @@ export const SelectedSpecificationsSummary: React.FC<
 
   // Função para pesquisar equivalência
   const handleSearchEquivalence = () => {
-    // Por enquanto, apenas um log. Pode ser implementado futuramente
-    console.log("Pesquisar equivalência para:", selectedCaracteristicas);
-    alert(
-      "Funcionalidade de pesquisa de equivalência será implementada em breve!"
-    );
+    if (onShowEquivalenciasTable) {
+      onShowEquivalenciasTable();
+    } else {
+      console.log("Pesquisar equivalência para:", selectedCaracteristicas);
+      alert(
+        "Funcionalidade de pesquisa de equivalência será implementada em breve!"
+      );
+    }
   };
 
   return (

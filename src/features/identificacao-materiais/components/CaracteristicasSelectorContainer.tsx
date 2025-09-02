@@ -27,6 +27,7 @@ interface CaracteristicasSelectorContainerProps {
   onAddCaracteristica: (key: string, value: string) => void;
   result: MaterialIdentificationResult;
   isLoading?: boolean;
+  onShowEquivalenciasTable?: () => void;
 }
 
 export const CaracteristicasSelectorContainer: React.FC<
@@ -40,6 +41,7 @@ export const CaracteristicasSelectorContainer: React.FC<
   onAddCaracteristica,
   result,
   isLoading = false,
+  onShowEquivalenciasTable,
 }) => {
   const selectedCount = caracteristicas.filter((item) => item.checked).length;
 
@@ -106,6 +108,7 @@ export const CaracteristicasSelectorContainer: React.FC<
       <SelectedSpecificationsSummary
         caracteristicas={caracteristicas}
         result={result}
+        onShowEquivalenciasTable={onShowEquivalenciasTable}
       />
 
       {/* Dialog para adicionar novas características */}
