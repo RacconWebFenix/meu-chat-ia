@@ -22,15 +22,27 @@ export class MaterialIdentificationService
 
   async enrichData(req: EnrichmentRequest): Promise<EnrichmentResponse> {
     try {
-      const payload: N8NPayload = mapToN8NPayload(req);
+      // Send in the format expected by N8N webhook
+      const n8nPayload = {
+        headers: {
+          "content-type": "application/json",
+          "user-agent": "axios/1.11.0",
+        },
+        params: {},
+        query: {},
+        body: req,
+        webhookUrl: "https://n8n.cib2b.com.br/webhook/enrichmentdata",
+        executionMode: "production",
+      };
 
-      const response = await axios.post(this.n8nUrl, payload, {
+      const response = await axios.post(this.n8nUrl, n8nPayload, {
         headers: {
           "Content-Type": "application/json",
         },
         timeout: 80000, // Match N8N timeout
       });
 
+      console.log("N8N raw response:", JSON.stringify(response.data, null, 2));
       const parsed = parseN8NResponse(response.data);
       if (!parsed) {
         throw new Error("Failed to parse N8N response");
@@ -39,7 +51,7 @@ export class MaterialIdentificationService
       return parsed;
     } catch (error) {
       console.error("Error calling N8N:", error);
-      // Fallback to mock or throw error
+      // No fallback, throw error
       throw new Error("Failed to enrich data from N8N");
     }
   }

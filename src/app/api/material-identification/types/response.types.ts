@@ -9,15 +9,20 @@ export interface EnrichmentResponse {
   response: {
     original: EnrichmentRequest;
     enriched: {
-      categoria?: string;
-      subcategoria?: string;
-      marcaFabricante?: string;
-      nomeProdutoEncontrado?: string;
+      categoria: string;
+      subcategoria: string;
+      marcaFabricante: string;
+      nomeProdutoEncontrado: string;
       especificacoesTecnicas: {
-        resumoPDM?: string;
+        resumoPDM: string;
         especificacoesTecnicas: Record<string, string | number | null>;
       };
-      imagens?: string[];
+      imagens: Array<{
+        image_url: string;
+        origin_url: string;
+        height: number;
+        width: number;
+      }>;
     };
     metrics: {
       confidence: number;
@@ -30,5 +35,9 @@ export interface EnrichmentResponse {
 
 export interface N8NResponse {
   output?: string;
+  response?: EnrichmentResponse["response"];
   [key: string]: unknown;
 }
+
+// Also allow array format
+export type N8NResponseArray = N8NResponse[];

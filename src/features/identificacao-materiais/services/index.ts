@@ -3,7 +3,7 @@
  */
 
 export {
-  MockMaterialIdentificationService,
+  ApiMaterialIdentificationService,
   createMaterialIdentificationService,
 } from "./materialIdentificationService";
 export type { MaterialIdentificationService } from "../types";
