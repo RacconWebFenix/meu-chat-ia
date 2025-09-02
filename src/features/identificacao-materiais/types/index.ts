@@ -3,6 +3,7 @@
  * Following Single Responsibility Principle
  */
 
+// Existing types...
 export interface MaterialSearchData {
   nome: string;
   caracteristicas: string;
