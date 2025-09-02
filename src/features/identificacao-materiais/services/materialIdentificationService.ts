@@ -29,7 +29,6 @@ export class ApiMaterialIdentificationService
 
     try {
       // Call the internal API
-      console.log("Calling API with data:", searchData);
       const response = await fetch("/api/material-identification", {
         method: "POST",
         headers: {
@@ -40,20 +39,16 @@ export class ApiMaterialIdentificationService
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("API error response:", errorText);
         throw new Error(`API error: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
-      console.log("API response data:", JSON.stringify(data, null, 2));
 
       // Map the API response to MaterialIdentificationResult
       const mappedResult = this.mapApiResponseToResult(data, searchData);
-      console.log("Mapped result:", JSON.stringify(mappedResult, null, 2));
 
       return mappedResult;
     } catch (error) {
-      console.error("Error calling material identification API:", error);
       throw new Error("Falha na identificação do material");
     }
   }

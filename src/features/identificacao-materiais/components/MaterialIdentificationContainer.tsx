@@ -164,14 +164,10 @@ export const MaterialIdentificationContainer: React.FC = () => {
           ?.especificacoesTecnicas;
 
       if (techSpecs) {
-        console.log("Tech specs found:", Object.keys(techSpecs));
         Object.entries(techSpecs).forEach(([key, value]) => {
           // Filtrar apenas valores válidos usando shouldDisplayField
           if (shouldDisplayField(key, value)) {
             const friendlyLabel = convertCamelCaseToLabel(key);
-            console.log(
-              `Adding characteristic: ${key} -> ${friendlyLabel}: ${value}`
-            );
 
             caracteristicasList.push({
               id: `dynamic-${key}`,
@@ -179,16 +175,10 @@ export const MaterialIdentificationContainer: React.FC = () => {
               value: String(value),
               checked: true,
             });
-          } else {
-            console.log(`Skipping characteristic: ${key} = ${value}`);
           }
         });
       }
 
-      console.log(
-        "Total characteristics extracted:",
-        caracteristicasList.length
-      );
       return caracteristicasList;
     },
     []
@@ -197,24 +187,10 @@ export const MaterialIdentificationContainer: React.FC = () => {
   // Atualizar características quando o resultado muda
   React.useEffect(() => {
     if (state.result) {
-      console.log(
-        "🔍 State result received:",
-        JSON.stringify(state.result, null, 2)
-      );
-      console.log("🔍 Enriched data:", state.result?.response?.enriched);
-      console.log(
-        "🔍 Tech specs in result:",
-        state.result?.response?.enriched?.especificacoesTecnicas
-          ?.especificacoesTecnicas
-      );
-
       const extractedCaracteristicas = extractCaracteristicasFromResult(
         state.result
       );
-      console.log("🔍 Extracted characteristics:", extractedCaracteristicas);
       setCaracteristicas(extractedCaracteristicas);
-    } else {
-      console.log("❌ No state result available");
     }
   }, [state.result, extractCaracteristicasFromResult]);
 
@@ -242,7 +218,6 @@ export const MaterialIdentificationContainer: React.FC = () => {
 
   const handleConfirmSelection = () => {
     const selected = caracteristicas.filter((item) => item.checked);
-    console.log("Características selecionadas:", selected);
     // Aqui você pode implementar a lógica para processar as características selecionadas
   };
 
