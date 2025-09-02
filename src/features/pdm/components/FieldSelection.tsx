@@ -32,7 +32,6 @@ import { Add as AddIcon, GetApp as ExportIcon } from "@mui/icons-material";
 import { v4 as uuidv4 } from "uuid";
 import { EnrichmentResponse, EnrichedProductData } from "../types";
 import { formatTechnicalKey } from "@/Utils/formatUtils";
-import { useLayout } from "@/contexts/LayoutContext";
 import CheckboxSpecCard from "./CheckboxSpecCard";
 import AddNewSpecDialog from "./AddNewSpecDialog";
 import ExpandablePDMSummary from "./ExpandablePDMSummary";
@@ -135,8 +134,6 @@ export default function FieldSelection({
   onBack,
   onContinue,
 }: FieldSelectionProps) {
-  const { currentLayout } = useLayout();
-
   // Estado para dados editáveis
   const [editableData, setEditableData] = useState<EditableData>(() => {
     // Acessar as especificações técnicas da nova estrutura
@@ -393,7 +390,7 @@ Gerado em: ${new Date().toLocaleString("pt-BR")}
         width: "100%",
       }}
     >
-      {currentLayout === "layout1" && (
+      {true && (
         <>
           {/* SEÇÃO 1: Resumo PDM - Card Expansível - Largura Total */}
           {enrichmentResult.enriched.especificacoesTecnicas?.resumoPDM && (
@@ -639,7 +636,7 @@ Gerado em: ${new Date().toLocaleString("pt-BR")}
         </>
       )}
 
-      {currentLayout === "layout2" && (
+      {false && (
         <CompactFieldSelection
           enrichmentResult={enrichmentResult}
           editableData={editableData}
@@ -656,7 +653,7 @@ Gerado em: ${new Date().toLocaleString("pt-BR")}
         />
       )}
 
-      {currentLayout === "layout3" && (
+      {false && (
         <DashboardFieldSelection
           enrichmentResult={enrichmentResult}
           editableData={editableData}

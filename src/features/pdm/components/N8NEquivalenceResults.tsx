@@ -54,7 +54,6 @@ import {
   N8NEquivalenceState,
 } from "../types/n8n.types";
 import { formatTechnicalKey } from "@/Utils/formatUtils";
-import { useLayout } from "@/contexts/LayoutContext";
 
 interface N8NEquivalenceResultsProps {
   readonly searchResult: N8NEquivalenceResponse;
@@ -77,7 +76,6 @@ export default function N8NEquivalenceResults({
   originalProduct,
 }: N8NEquivalenceResultsProps) {
   const { equivalencias, metadata } = searchResult;
-  const { currentLayout } = useLayout();
 
   console.log("N8NEquivalenceResults - isLoading:", isLoading);
   console.log(
@@ -445,7 +443,7 @@ Gerado em: ${new Date().toLocaleString("pt-BR")}
       </Stack>
 
       {/* Lista de Equivalências */}
-      {currentLayout === "layout1" && (
+      {true && (
         <Grid container spacing={3}>
           {sortedEquivalencias.map((equivalencia) => (
             <Grid size={{ xs: 12, md: 6, lg: 4 }} key={equivalencia.id}>
@@ -459,7 +457,7 @@ Gerado em: ${new Date().toLocaleString("pt-BR")}
         </Grid>
       )}
 
-      {currentLayout === "layout2" && (
+      {false && (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
           {sortedEquivalencias.map((equivalencia) => (
             <CompactEquivalenceCard
@@ -472,7 +470,7 @@ Gerado em: ${new Date().toLocaleString("pt-BR")}
         </Box>
       )}
 
-      {currentLayout === "layout3" && (
+      {false && (
         <Box sx={{ display: "flex", gap: 3, height: "100%" }}>
           <DashboardSidebar equivalencias={sortedEquivalencias} />
           <Box flex={1}>

@@ -8,7 +8,6 @@ import { PageTitleProvider } from "./PageTitleContext";
 import { GridProvider } from "./GridContext";
 import { GroupProvider } from "./GroupContext";
 import { AuthProvider } from "./AuthContext";
-import { LayoutProvider } from "./LayoutContext";
 import GlobalNavigationLoading from "../components/shared/GlobalNavigationLoading";
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -20,10 +19,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
             <PageTitleProvider>
               <GridProvider>
                 <GroupProvider>
-                  <LayoutProvider>
-                    <GlobalNavigationLoading />
-                    {children}
-                  </LayoutProvider>
+                  <GlobalNavigationLoading />
+                  {children}
                 </GroupProvider>
               </GridProvider>
             </PageTitleProvider>

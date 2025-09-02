@@ -18,7 +18,6 @@ import { createEnrichmentService, createN8NService } from "../services";
 import EntryForm from "./EntryForm";
 import FieldSelection from "./FieldSelection";
 import N8NEquivalenceResults from "./N8NEquivalenceResults";
-import { useLayout } from "@/contexts/LayoutContext";
 
 interface PDMFlowProps {
   readonly className?: string;
@@ -32,7 +31,6 @@ const STEPS = [
 
 export default function PDMFlow({ className }: PDMFlowProps) {
   const { state, goToStep, setStatus, setError } = usePDMFlow();
-  const { currentLayout } = useLayout();
   const [enrichmentResult, setEnrichmentResult] =
     React.useState<EnrichmentResponse | null>(null);
   const [n8nResult, setN8nResult] =
