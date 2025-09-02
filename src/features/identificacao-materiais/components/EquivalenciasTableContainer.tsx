@@ -53,9 +53,18 @@ const CaracteristicasSubRow: React.FC<CaracteristicasSubRowProps> = ({
       Características Técnicas:
     </Typography>
     {caracteristicas.map((carac, index) => (
-      <Box key={index} sx={{ mb: 1 }}>
+      <Box
+        key={index}
+        sx={{
+          mb: 2,
+          p: 1,
+          border: 1,
+          borderColor: "grey.300",
+          borderRadius: 1,
+        }}
+      >
         {Object.entries(carac).map(([key, value]) => (
-          <Typography key={key} variant="body2">
+          <Typography key={key} variant="body2" sx={{ mb: 0.5 }}>
             <strong>{key.replace(/_/g, " ").toUpperCase()}:</strong> {value}
           </Typography>
         ))}
@@ -69,15 +78,28 @@ const ImagensSubRow: React.FC<ImagensSubRowProps> = ({ imagens }) => (
     <Typography variant="subtitle2" gutterBottom>
       Imagens:
     </Typography>
-    <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
       {imagens.map((img, index) => (
-        <Box key={index}>
+        <Box key={index} sx={{ textAlign: "center" }}>
           <img
             src={img.image_url}
             alt={`Imagem ${index + 1}`}
-            style={{ width: 100, height: 100, objectFit: "cover" }}
+            style={{
+              width: 120,
+              height: 120,
+              objectFit: "cover",
+              borderRadius: 4,
+            }}
           />
-          <Link href={img.origin_url} target="_blank" rel="noopener">
+          <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+            {img.width}x{img.height}
+          </Typography>
+          <Link
+            href={img.origin_url}
+            target="_blank"
+            rel="noopener"
+            sx={{ fontSize: "0.75rem" }}
+          >
             Ver original
           </Link>
         </Box>
@@ -92,18 +114,22 @@ const CitacoesSubRow: React.FC<CitacoesSubRowProps> = ({ citacoes }) => (
       Citações:
     </Typography>
     {citacoes.map((cit, index) => (
-      <Box key={index} sx={{ mb: 2 }}>
-        <Typography variant="body2" component="div">
-          <strong>{cit.title}</strong>
+      <Box key={index} sx={{ mb: 1 }}>
+        <Typography
+          variant="body2"
+          component="div"
+          sx={{ mb: 0.5, fontWeight: "bold" }}
+        >
+          {cit.title}
         </Typography>
-        <Link href={cit.url} target="_blank" rel="noopener">
+        <Link
+          href={cit.url}
+          target="_blank"
+          rel="noopener"
+          sx={{ fontSize: "0.875rem" }}
+        >
           {cit.url}
         </Link>
-        <Typography variant="caption" display="block">
-          Data: {cit.date || "N/A"} | Última atualização:{" "}
-          {cit.last_updated || "N/A"}
-        </Typography>
-        <Typography variant="body2">{cit.snippet}</Typography>
       </Box>
     ))}
   </Box>
