@@ -20,6 +20,7 @@ import {
   Checkbox,
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowRight } from "@mui/icons-material";
+import Image from "next/image";
 import {
   EquivalenciasData,
   EquivalenciaItem,
@@ -48,7 +49,7 @@ interface CitacoesSubRowProps {
 const CaracteristicasSubRow: React.FC<CaracteristicasSubRowProps> = ({
   caracteristicas,
 }) => (
-  <Box sx={{ p: 2, bgcolor: "grey.50" }}>
+  <Box sx={{ p: 2, bgcolor: "grey.50", flex: 1 }}>
     <Typography variant="subtitle2" gutterBottom>
       Características Técnicas:
     </Typography>
@@ -74,34 +75,46 @@ const CaracteristicasSubRow: React.FC<CaracteristicasSubRowProps> = ({
 );
 
 const ImagensSubRow: React.FC<ImagensSubRowProps> = ({ imagens }) => (
-  <Box sx={{ p: 2, bgcolor: "grey.100" }}>
-    <Typography variant="subtitle2" gutterBottom>
-      Imagens:
-    </Typography>
-    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+  <Box sx={{ p: 2, bgcolor: "grey.100", flex: 1 }}>
+    <Box
+      sx={{
+        display: "flex",
+        gap: 2,
+        flexWrap: "wrap",
+        justifyContent: "center",
+      }}
+    >
       {imagens.map((img, index) => (
         <Box key={index} sx={{ textAlign: "center" }}>
-          <img
-            src={img.image_url}
-            alt={`Imagem ${index + 1}`}
-            style={{
-              width: 120,
-              height: 120,
-              objectFit: "cover",
-              borderRadius: 4,
+          <Box
+            onClick={() => window.open(img.origin_url, "_blank")}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                window.open(img.origin_url, "_blank");
+              }
             }}
-          />
-          <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-            {img.width}x{img.height}
-          </Typography>
-          <Link
-            href={img.origin_url}
-            target="_blank"
-            rel="noopener"
-            sx={{ fontSize: "0.75rem" }}
+            tabIndex={0}
+            role="button"
+            aria-label={`Abrir imagem ${index + 1} em nova aba`}
+            sx={{
+              cursor: "pointer",
+              borderRadius: 1,
+              "&:hover": { opacity: 0.8 },
+              "&:focus": { outline: "2px solid #1976d2" },
+            }}
           >
-            Ver original
-          </Link>
+            <Image
+              src={img.image_url}
+              alt={`Imagem ${index + 1}`}
+              width={120}
+              height={120}
+              style={{
+                objectFit: "cover",
+                borderRadius: 4,
+              }}
+            />
+          </Box>
         </Box>
       ))}
     </Box>
@@ -109,7 +122,7 @@ const ImagensSubRow: React.FC<ImagensSubRowProps> = ({ imagens }) => (
 );
 
 const CitacoesSubRow: React.FC<CitacoesSubRowProps> = ({ citacoes }) => (
-  <Box sx={{ p: 2, bgcolor: "grey.50" }}>
+  <Box sx={{ p: 2, bgcolor: "grey.50", flex: 1 }}>
     <Typography variant="subtitle2" gutterBottom>
       Citações:
     </Typography>
@@ -279,11 +292,13 @@ export const EquivalenciasTableContainer: React.FC<
                   <TableRow>
                     <TableCell colSpan={7} sx={{ p: 0 }}>
                       <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-                        <CaracteristicasSubRow
-                          caracteristicas={equiv.caracteristicas}
-                        />
-                        <ImagensSubRow imagens={equiv.imagens} />
-                        <CitacoesSubRow citacoes={equiv.citacoes} />
+                        <Box sx={{ display: "flex", gap: 2, p: 2 }}>
+                          <CaracteristicasSubRow
+                            caracteristicas={equiv.caracteristicas}
+                          />
+                          <ImagensSubRow imagens={equiv.imagens} />
+                          <CitacoesSubRow citacoes={equiv.citacoes} />
+                        </Box>
                       </Collapse>
                     </TableCell>
                   </TableRow>
