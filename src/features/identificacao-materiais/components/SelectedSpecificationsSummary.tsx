@@ -11,6 +11,7 @@ import {
 } from "@mui/icons-material";
 import * as XLSX from "xlsx";
 import { MaterialIdentificationResult } from "../types";
+import { useMockMode } from "../contexts/MockModeContext";
 
 interface CaracteristicaItem {
   id: string;
@@ -28,6 +29,7 @@ interface SelectedSpecificationsSummaryProps {
 export const SelectedSpecificationsSummary: React.FC<
   SelectedSpecificationsSummaryProps
 > = ({ caracteristicas, result, onShowEquivalenciasTable }) => {
+  const { isMockMode } = useMockMode();
   // Obter características selecionadas
   const selectedCaracteristicas = caracteristicas.filter(
     (item) => item.checked
@@ -98,12 +100,18 @@ export const SelectedSpecificationsSummary: React.FC<
 
   // Função para pesquisar equivalência
   const handleSearchEquivalence = () => {
-    if (onShowEquivalenciasTable) {
-      onShowEquivalenciasTable();
+    if (isMockMode) {
+      if (onShowEquivalenciasTable) {
+        onShowEquivalenciasTable();
+      } else {
+        console.log("Pesquisar equivalência para:", selectedCaracteristicas);
+        alert(
+          "Funcionalidade de pesquisa de equivalência será implementada em breve!"
+        );
+      }
     } else {
-      console.log("Pesquisar equivalência para:", selectedCaracteristicas);
       alert(
-        "Funcionalidade de pesquisa de equivalência será implementada em breve!"
+        "Implementação da API N8N para busca de equivalências em andamento. Use o modo Mock para testar."
       );
     }
   };

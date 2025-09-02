@@ -15,6 +15,11 @@ import {
   CaracteristicasSelectorContainer,
   EquivalenciasTableContainer,
 } from "./index";
+import { useMockMode } from "../contexts/MockModeContext";
+import {
+  N8NHttpClient,
+  N8NMaterialIdentificationApiImpl,
+} from "../services/n8n";
 import { dynamicFieldParser } from "../../pdm/services";
 import { mockEquivalenciasData } from "../mocks/mockEquivalenciasData";
 
@@ -26,7 +31,22 @@ interface CaracteristicaItem {
 }
 
 export const MaterialIdentificationContainer: React.FC = () => {
-  const service = createMaterialIdentificationService();
+  const { isMockMode } = useMockMode();
+
+  // Create service based on mock mode
+  const service = React.useMemo(() => {
+    if (isMockMode) {
+      return createMaterialIdentificationService(true);
+    } else {
+      // For now, still use mock but show message
+      const httpClient = new N8NHttpClient(
+        process.env.NEXT_PUBLIC_N8N_BASE_URL || "http://localhost:3001"
+      );
+      const n8nApi = new N8NMaterialIdentificationApiImpl(httpClient);
+      return createMaterialIdentificationService(false, n8nApi);
+    }
+  }, [isMockMode]);
+
   const { state, updateSearchData, identifyMaterial } =
     useMaterialIdentification({ service });
 

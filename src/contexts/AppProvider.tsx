@@ -9,6 +9,7 @@ import { GridProvider } from "./GridContext";
 import { GroupProvider } from "./GroupContext";
 import { AuthProvider } from "./AuthContext";
 import GlobalNavigationLoading from "../components/shared/GlobalNavigationLoading";
+import { MockModeProvider } from "../features/identificacao-materiais/contexts/MockModeContext";
 
 export function AppProvider({ children }: { children: ReactNode }) {
   return (
@@ -19,8 +20,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
             <PageTitleProvider>
               <GridProvider>
                 <GroupProvider>
-                  <GlobalNavigationLoading />
-                  {children}
+                  <MockModeProvider>
+                    <GlobalNavigationLoading />
+                    {children}
+                  </MockModeProvider>
                 </GroupProvider>
               </GridProvider>
             </PageTitleProvider>

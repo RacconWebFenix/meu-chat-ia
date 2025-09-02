@@ -16,10 +16,13 @@ import {
   FormControl,
   SelectChangeEvent,
   CircularProgress,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
 import { usePageTitle } from "@/contexts";
 import { useGroup } from "@/contexts/GroupContext";
+import { useMockMode } from "@/features/identificacao-materiais/contexts/MockModeContext";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -31,6 +34,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { pageTitle } = usePageTitle();
   const { groups, selectedGroupId, setSelectedGroupId, isLoading } = useGroup();
+  const { isMockMode, toggleMockMode } = useMockMode();
 
   // Verifica se estamos na página principal (com abas PDM/equivalência)
   const isMainPage = pathname === "/" || pathname === "/app";
@@ -105,6 +109,23 @@ export default function Header({ onMenuClick }: HeaderProps) {
             </Select>
           </FormControl>
         )}
+
+        {/* Mock Mode Switch */}
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isMockMode}
+              onChange={toggleMockMode}
+              color="primary"
+            />
+          }
+          label={
+            <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+              {isMockMode ? "Mock" : "API Real"}
+            </Typography>
+          }
+          sx={{ mr: 2, color: "text.primary" }}
+        />
 
         <Button
           color="inherit"
