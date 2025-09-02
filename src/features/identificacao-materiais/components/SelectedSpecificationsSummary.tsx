@@ -132,7 +132,7 @@ export const SelectedSpecificationsSummary: React.FC<
         >
           {selectedCaracteristicas
             .map((item) => `${item.label}: ${item.value}`)
-            .join(", ")}
+            .join("; ")}
         </Typography>
       </Box>
 
