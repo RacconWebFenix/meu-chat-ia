@@ -3,8 +3,16 @@
  * Following Single Responsibility Principle
  */
 
-import React from "react";
-import { Paper, Typography, Box, Alert, CardMedia } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Paper,
+  Typography,
+  Box,
+  Alert,
+  CardMedia,
+  IconButton,
+} from "@mui/material";
+import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { MaterialIdentificationResult } from "../types";
 
 interface PDMModelDisplayProps {
@@ -16,6 +24,8 @@ export const PDMModelDisplay: React.FC<PDMModelDisplayProps> = ({
   result,
   error,
 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   if (error) {
     return (
       <Alert severity="error" sx={{ mt: 2 }}>
@@ -30,6 +40,34 @@ export const PDMModelDisplay: React.FC<PDMModelDisplayProps> = ({
 
   const resumoPDM = result.response.enriched.especificacoesTecnicas.resumoPDM;
   const primeiraImagem = result.response.enriched.imagens[0]; // Pega a primeira imagem
+
+  // Função para renderizar o texto com títulos em negrito
+  const renderPDMText = (text: string, expanded: boolean = false) => {
+    const lines = text.split("\n");
+
+    // Se não estiver expandido, mostra apenas título + primeira seção
+    const displayLines = expanded ? lines : lines.slice(0, 5); // Mostra título + primeira seção completa
+
+    return displayLines.map((line, index) => {
+      // Verifica se a linha é um título (começa com número + ponto + espaço)
+      const isTitle = /^\d+\.\s/.test(line.trim());
+
+      return (
+        <Typography
+          key={index}
+          variant="body2"
+          sx={{
+            fontSize: "0.875rem",
+            lineHeight: 1.2,
+            fontWeight: isTitle ? "bold" : "normal",
+            mb: index < displayLines.length - 1 ? 0.5 : 0,
+          }}
+        >
+          {line}
+        </Typography>
+      );
+    });
+  };
 
   return (
     <Paper
@@ -57,15 +95,44 @@ export const PDMModelDisplay: React.FC<PDMModelDisplayProps> = ({
             wordBreak: "break-word",
           }}
         >
-          <Typography
-            variant="body2"
-            sx={{
-              fontSize: "0.875rem",
-              lineHeight: 1.2,
-            }}
-          >
-            {resumoPDM}
-          </Typography>
+          {renderPDMText(resumoPDM, isExpanded)}
+
+          {/* Indicador de conteúdo truncado */}
+          {!isExpanded && (
+            <Typography
+              variant="caption"
+              sx={{
+                display: "block",
+                textAlign: "center",
+                color: "text.secondary",
+                mt: 1,
+                fontStyle: "italic",
+              }}
+            >
+              Clique na seta para ver mais detalhes...
+            </Typography>
+          )}
+
+          {/* Botão de expansão */}
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+            <IconButton
+              onClick={() => setIsExpanded(!isExpanded)}
+              aria-expanded={isExpanded}
+              aria-label={
+                isExpanded ? "Recolher conteúdo" : "Expandir conteúdo"
+              }
+              size="small"
+              sx={{
+                color: "primary.main",
+                "&:hover": {
+                  backgroundColor: "primary.light",
+                  color: "primary.contrastText",
+                },
+              }}
+            >
+              {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+            </IconButton>
+          </Box>
         </Box>
 
         {/* Imagem ao lado */}
