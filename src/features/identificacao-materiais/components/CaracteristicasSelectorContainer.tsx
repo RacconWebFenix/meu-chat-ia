@@ -49,9 +49,7 @@ export const CaracteristicasSelectorContainer: React.FC<
   // Ordenar características para que nomeProduto apareça sempre em primeiro lugar
   const sortedCaracteristicas = React.useMemo(() => {
     const nomeProdutoIndex = caracteristicas.findIndex(
-      (item) =>
-        item.id === "priority-nomeProduto" ||
-        item.label.toLowerCase().includes("nome do produto")
+      (item) => item.id === "priority-nomeProduto"
     );
 
     if (nomeProdutoIndex === -1) {

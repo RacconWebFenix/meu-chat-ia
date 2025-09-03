@@ -127,6 +127,7 @@ export const MaterialIdentificationContainer: React.FC = () => {
       if (techSpecs) {
         // Campos prioritários que sempre devem aparecer
         const priorityFields = [
+          "nomeProduto", // Adicionar nomeProduto como prioritário
           "Referencia Encontrada",
           "Referência Encontrada",
           "referenciaEncontrada",
