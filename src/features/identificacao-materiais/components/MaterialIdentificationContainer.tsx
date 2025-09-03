@@ -41,7 +41,11 @@ import {
   createMaterialIdentificationService,
   createEquivalenceSearchService,
 } from "../services";
-import { MaterialIdentificationResult, EquivalenceSearchData } from "../types";
+import {
+  MaterialIdentificationResult,
+  EquivalenceSearchData,
+  EquivalenceSearchResult,
+} from "../types";
 import {
   MaterialSearchHeader,
   PDMModelDisplay,
@@ -80,6 +84,10 @@ export const MaterialIdentificationContainer: React.FC = () => {
 
   // Estado para controlar a exibição da tabela de equivalências
   const [showEquivalenciasTable, setShowEquivalenciasTable] = useState(false);
+
+  // Estado para armazenar os resultados modificados com linha original
+  const [modifiedEquivalences, setModifiedEquivalences] =
+    useState<EquivalenceSearchResult | null>(null);
 
   // Função para validar se um campo deve ser exibido
   const shouldDisplayField = (
@@ -208,6 +216,8 @@ export const MaterialIdentificationContainer: React.FC = () => {
     setCaracteristicas([]);
     // Resetar estado de equivalências
     equivalenceState.reset();
+    // Limpar equivalências modificadas
+    setModifiedEquivalences(null);
 
     await identifyMaterial();
   };
@@ -243,7 +253,7 @@ export const MaterialIdentificationContainer: React.FC = () => {
     // Preparar dados para busca de equivalências
     // Pegar o nome do produto das características selecionadas
     const nomeProdutoCaracteristica = selected.find(
-      (item) => item.id === "nome-produto"
+      (item) => item.id === "priority-nomeProduto" || item.id === "nome-produto"
     );
     const referenciaCaracteristica = selected.find(
       (item) =>
@@ -252,6 +262,14 @@ export const MaterialIdentificationContainer: React.FC = () => {
     );
     const fabricanteCaracteristica = selected.find(
       (item) => item.id === "priority-fabricante" // Usar fabricante das especificações técnicas
+    );
+    const ncmCaracteristica = selected.find(
+      (item) => item.id === "priority-Ncm" || item.id === "priority-N"
+    );
+    const unidadeMedidaCaracteristica = selected.find(
+      (item) =>
+        item.id === "priority-unidadeMedida" ||
+        item.id === "priority-Unidade Medida"
     );
 
     const nome =
@@ -273,7 +291,7 @@ export const MaterialIdentificationContainer: React.FC = () => {
         state.result?.response?.enriched?.especificacoesTecnicas
           ?.especificacoesTecnicas || {},
       aplicacao: "",
-      unidadeMedida: "",
+      unidadeMedida: unidadeMedidaCaracteristica?.value || "",
       breveDescricao:
         state.result?.response?.enriched?.especificacoesTecnicas?.resumoPDM ||
         "",
@@ -283,6 +301,46 @@ export const MaterialIdentificationContainer: React.FC = () => {
 
     // Buscar equivalências
     await equivalenceState.searchEquivalences(searchData);
+
+    // Criar linha original com os dados da busca
+    const linhaOriginal = {
+      nome: nomeProdutoCaracteristica?.value || searchData.nome,
+      fabricante: fabricanteCaracteristica?.value || searchData.marcaFabricante,
+      NCM:
+        ncmCaracteristica?.value ||
+        String(searchData.especificacoesTecnicas?.ncm || ""),
+      referencia: String(
+        searchData.especificacoesTecnicas?.referenciaEncontrada || ""
+      ),
+      tipo_de_unidade:
+        unidadeMedidaCaracteristica?.value ||
+        String(searchData.especificacoesTecnicas?.unidadeMedida || ""),
+      caracteristicas: [
+        {
+          ...Object.fromEntries(
+            Object.entries(searchData.especificacoesTecnicas || {}).map(
+              ([key, value]) => [key, String(value || "")]
+            )
+          ),
+        },
+      ],
+      imagens: searchData.imagens || [],
+      citacoes: [],
+    };
+
+    // Adicionar linha original no início dos resultados
+    if (equivalenceState.results?.equivalencias) {
+      const resultadosComOriginal = {
+        equivalencias: [
+          linhaOriginal,
+          ...equivalenceState.results.equivalencias,
+        ],
+      };
+
+      // Atualizar o estado local com a linha original incluída
+      setModifiedEquivalences(resultadosComOriginal);
+    }
+
     setShowEquivalenciasTable(true);
   };
 
@@ -328,7 +386,7 @@ export const MaterialIdentificationContainer: React.FC = () => {
 
             {showEquivalenciasTable && (
               <EquivalenciasTableContainer
-                equivalencias={equivalenceState.results}
+                equivalencias={modifiedEquivalences}
               />
             )}
           </>

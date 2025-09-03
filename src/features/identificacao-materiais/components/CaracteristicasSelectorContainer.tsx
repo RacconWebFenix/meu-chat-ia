@@ -46,22 +46,37 @@ export const CaracteristicasSelectorContainer: React.FC<
   // Estado para controlar o dialog de adicionar
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Ordenar características para que nomeProduto apareça sempre em primeiro lugar
+  // Ordenar características para que campos prioritários apareçam sempre em primeiro lugar
   const sortedCaracteristicas = React.useMemo(() => {
-    const nomeProdutoIndex = caracteristicas.findIndex(
-      (item) => item.id === "priority-nomeProduto"
-    );
+    const priorityOrder = [
+      "priority-nomeProduto",
+      "priority-fabricante",
+      "priority-Ncm",
+      "priority-N",
+      "priority-unidadeMedida",
+      "priority-Unidade Medida",
+    ];
 
-    if (nomeProdutoIndex === -1) {
-      return caracteristicas;
-    }
+    // Separar itens prioritários e não prioritários
+    const priorityItems: CaracteristicaItem[] = [];
+    const otherItems: CaracteristicaItem[] = [];
 
-    const nomeProdutoItem = caracteristicas[nomeProdutoIndex];
-    const otherItems = caracteristicas.filter(
-      (_, index) => index !== nomeProdutoIndex
-    );
+    caracteristicas.forEach((item) => {
+      if (priorityOrder.includes(item.id)) {
+        priorityItems.push(item);
+      } else {
+        otherItems.push(item);
+      }
+    });
 
-    return [nomeProdutoItem, ...otherItems];
+    // Ordenar itens prioritários pela ordem definida
+    const sortedPriorityItems = priorityItems.sort((a, b) => {
+      const indexA = priorityOrder.indexOf(a.id);
+      const indexB = priorityOrder.indexOf(b.id);
+      return indexA - indexB;
+    });
+
+    return [...sortedPriorityItems, ...otherItems];
   }, [caracteristicas]);
 
   const selectedCount = sortedCaracteristicas.filter(
