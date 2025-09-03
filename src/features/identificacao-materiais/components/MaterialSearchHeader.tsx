@@ -21,10 +21,21 @@ export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
   onSearch,
   isLoading,
 }) => {
+  // Função para sanitizar entrada removendo aspas e caracteres problemáticos
+  const sanitizeInput = (value: string): string => {
+    return value
+      .trim()
+      .replace(/["']/g, "") // Remove aspas simples e duplas
+      .replace(/\s+/g, " ") // Substitui múltiplos espaços por um único
+      .replace(/[<>\[\]{}]/g, "") // Remove caracteres potencialmente problemáticos
+      .slice(0, 500); // Limita o tamanho para evitar inputs muito longos
+  };
+
   const handleInputChange =
     (field: keyof MaterialSearchData) =>
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      onSearchDataChange(field, event.target.value);
+      const sanitizedValue = sanitizeInput(event.target.value);
+      onSearchDataChange(field, sanitizedValue);
     };
 
   return (
