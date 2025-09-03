@@ -34,7 +34,7 @@
       });le and Dependency Inversion
  */
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Container, Box, Paper, Typography } from "@mui/material";
 import { useMaterialIdentification, useEquivalenceSearch } from "../hooks";
 import {
@@ -49,6 +49,7 @@ import {
   CaracteristicasSelectorContainer,
   EquivalenciasTableContainer,
 } from "./index";
+import GlobalLoading from "../../../components/shared/GlobalLoading/GlobalLoading";
 
 interface CaracteristicaItem {
   id: string;
@@ -189,7 +190,25 @@ export const MaterialIdentificationContainer: React.FC = () => {
     }
   }, [state.result, extractCaracteristicasFromResult]);
 
+  // Scroll para o fim da página quando qualquer loading terminar
+  React.useEffect(() => {
+    if (
+      !state.isLoading &&
+      !equivalenceState.isLoading &&
+      showEquivalenciasTable
+    ) {
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+  }, [state.isLoading, equivalenceState.isLoading, showEquivalenciasTable]);
+
   const handleSearch = async () => {
+    // Limpar estados de equivalências antes de nova pesquisa
+    setShowEquivalenciasTable(false);
+    // Resetar características para nova pesquisa
+    setCaracteristicas([]);
+    // Resetar estado de equivalências
+    equivalenceState.reset();
+
     await identifyMaterial();
   };
 
@@ -284,10 +303,13 @@ export const MaterialIdentificationContainer: React.FC = () => {
           searchData={state.searchData}
           onSearchDataChange={updateSearchData}
           onSearch={handleSearch}
-          isLoading={state.isLoading}
+          isLoading={false}
         />
 
-        {state.isLoading && <MaterialIdentificationLoading />}
+        {/* Loading global para todas as operações */}
+        {(state.isLoading || equivalenceState.isLoading) && (
+          <GlobalLoading open={true} />
+        )}
 
         {!state.isLoading && state.result && (
           <>
@@ -301,22 +323,13 @@ export const MaterialIdentificationContainer: React.FC = () => {
               onConfirmSelection={handleConfirmSelection}
               onAddCaracteristica={handleAddCaracteristica}
               result={state.result}
-              isLoading={state.isLoading}
               onShowEquivalenciasTable={handleConfirmSelection}
             />
 
             {showEquivalenciasTable && (
               <EquivalenciasTableContainer
                 equivalencias={equivalenceState.results}
-                isLoading={equivalenceState.isLoading}
               />
-            )}
-
-            {/* Loading para busca de equivalências */}
-            {equivalenceState.isLoading && !showEquivalenciasTable && (
-              <Paper sx={{ p: 2, mt: 2 }}>
-                <Typography>Carregando equivalências...</Typography>
-              </Paper>
             )}
           </>
         )}
