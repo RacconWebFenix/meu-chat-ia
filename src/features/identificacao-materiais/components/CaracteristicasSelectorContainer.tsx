@@ -49,7 +49,9 @@ export const CaracteristicasSelectorContainer: React.FC<
   // Ordenar características para que nomeProduto apareça sempre em primeiro lugar
   const sortedCaracteristicas = React.useMemo(() => {
     const nomeProdutoIndex = caracteristicas.findIndex(
-      (item) => item.id === "priority-nomeProduto" || item.label.toLowerCase().includes("nome do produto")
+      (item) =>
+        item.id === "priority-nomeProduto" ||
+        item.label.toLowerCase().includes("nome do produto")
     );
 
     if (nomeProdutoIndex === -1) {
@@ -57,12 +59,16 @@ export const CaracteristicasSelectorContainer: React.FC<
     }
 
     const nomeProdutoItem = caracteristicas[nomeProdutoIndex];
-    const otherItems = caracteristicas.filter((_, index) => index !== nomeProdutoIndex);
+    const otherItems = caracteristicas.filter(
+      (_, index) => index !== nomeProdutoIndex
+    );
 
     return [nomeProdutoItem, ...otherItems];
   }, [caracteristicas]);
 
-  const selectedCount = sortedCaracteristicas.filter((item) => item.checked).length;
+  const selectedCount = sortedCaracteristicas.filter(
+    (item) => item.checked
+  ).length;
 
   // Função para adicionar nova característica
   const handleAddCaracteristica = (key: string, value: string) => {
