@@ -119,44 +119,7 @@ export const MaterialIdentificationContainer: React.FC = () => {
     (result: MaterialIdentificationResult): CaracteristicaItem[] => {
       const caracteristicasList: CaracteristicaItem[] = [];
 
-      // 2. Adicionar campos de nível superior relevantes
-      const enriched = result?.response?.enriched;
-      if (enriched) {
-        // Adicionar categoria se existir e não estiver vazia
-        if (enriched.categoria && enriched.categoria.trim() !== "") {
-          caracteristicasList.push({
-            id: "categoria",
-            label: "Categoria",
-            value: enriched.categoria,
-            checked: true,
-          });
-        }
-
-        // Adicionar subcategoria se existir e não estiver vazia
-        if (enriched.subcategoria && enriched.subcategoria.trim() !== "") {
-          caracteristicasList.push({
-            id: "subcategoria",
-            label: "Subcategoria",
-            value: enriched.subcategoria,
-            checked: true,
-          });
-        }
-
-        // Adicionar marca fabricante
-        if (
-          enriched.marcaFabricante &&
-          enriched.marcaFabricante.trim() !== ""
-        ) {
-          caracteristicasList.push({
-            id: "marca-fabricante",
-            label: "Marca Fabricante",
-            value: enriched.marcaFabricante,
-            checked: true,
-          });
-        }
-      }
-
-      // 3. Adicionar campos específicos importantes das especificações técnicas
+      // 2. Adicionar apenas campos das especificações técnicas (removendo duplicação)
       const techSpecs =
         result?.response?.enriched?.especificacoesTecnicas
           ?.especificacoesTecnicas;
@@ -167,6 +130,7 @@ export const MaterialIdentificationContainer: React.FC = () => {
           "Referencia Encontrada",
           "Referência Encontrada",
           "referenciaEncontrada",
+          "fabricante", // Manter fabricante das especificações técnicas
           "N",
           "Ncm",
           "Unidade Medida",
@@ -190,7 +154,7 @@ export const MaterialIdentificationContainer: React.FC = () => {
           }
         });
 
-        // 4. Processar campos dinâmicos restantes
+        // 3. Processar campos dinâmicos restantes
         Object.entries(techSpecs).forEach(([key, value]) => {
           // Pular campos já adicionados como prioridade
           if (priorityFields.includes(key)) return;
@@ -267,7 +231,7 @@ export const MaterialIdentificationContainer: React.FC = () => {
         item.label.toLowerCase().includes("referência")
     );
     const fabricanteCaracteristica = selected.find(
-      (item) => item.id === "marca-fabricante"
+      (item) => item.id === "priority-fabricante" // Usar fabricante das especificações técnicas
     );
 
     const nome =
@@ -281,8 +245,7 @@ export const MaterialIdentificationContainer: React.FC = () => {
     const searchData: EquivalenceSearchData = {
       nome: nome,
       marcaFabricante:
-        fabricanteCaracteristica?.value ||
-        state.result?.response?.enriched?.marcaFabricante ||
+        fabricanteCaracteristica?.value || // Usar fabricante das specs técnicas
         "",
       categoria: state.result?.response?.enriched?.categoria || "",
       subcategoria: state.result?.response?.enriched?.subcategoria || "",
