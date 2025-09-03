@@ -43,10 +43,26 @@ export const CaracteristicasSelectorContainer: React.FC<
   isLoading = false,
   onShowEquivalenciasTable,
 }) => {
-  const selectedCount = caracteristicas.filter((item) => item.checked).length;
-
   // Estado para controlar o dialog de adicionar
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Ordenar características para que nomeProduto apareça sempre em primeiro lugar
+  const sortedCaracteristicas = React.useMemo(() => {
+    const nomeProdutoIndex = caracteristicas.findIndex(
+      (item) => item.id === "priority-nomeProduto" || item.label.toLowerCase().includes("nome do produto")
+    );
+
+    if (nomeProdutoIndex === -1) {
+      return caracteristicas;
+    }
+
+    const nomeProdutoItem = caracteristicas[nomeProdutoIndex];
+    const otherItems = caracteristicas.filter((_, index) => index !== nomeProdutoIndex);
+
+    return [nomeProdutoItem, ...otherItems];
+  }, [caracteristicas]);
+
+  const selectedCount = sortedCaracteristicas.filter((item) => item.checked).length;
 
   // Função para adicionar nova característica
   const handleAddCaracteristica = (key: string, value: string) => {
@@ -89,7 +105,7 @@ export const CaracteristicasSelectorContainer: React.FC<
       </Box>
 
       <Grid container spacing={1} sx={{ mb: 2 }}>
-        {caracteristicas.map((item) => (
+        {sortedCaracteristicas.map((item) => (
           <Grid key={item.id} size={{ xs: 12, sm: 6, md: 3, lg: 3 }}>
             <CheckboxSpecCard
               id={item.id}
@@ -106,7 +122,7 @@ export const CaracteristicasSelectorContainer: React.FC<
       </Grid>
 
       <SelectedSpecificationsSummary
-        caracteristicas={caracteristicas}
+        caracteristicas={sortedCaracteristicas}
         result={result}
         onShowEquivalenciasTable={onShowEquivalenciasTable}
       />
