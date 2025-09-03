@@ -198,6 +198,112 @@ export const MaterialIdentificationContainer: React.FC = () => {
     }
   }, [state.result, extractCaracteristicasFromResult]);
 
+  // Atualizar equivalências modificadas quando os resultados chegam da API
+  React.useEffect(() => {
+    if (equivalenceState.results?.equivalencias && showEquivalenciasTable) {
+      // Criar linha original com os dados da busca atual
+      const selected = caracteristicas.filter((item) => item.checked);
+
+      const nomeProdutoCaracteristica = selected.find(
+        (item) =>
+          item.id === "priority-nomeProduto" || item.id === "nome-produto"
+      );
+      const fabricanteCaracteristica = selected.find(
+        (item) => item.id === "priority-fabricante"
+      );
+      const ncmCaracteristica = selected.find(
+        (item) => item.id === "priority-Ncm" || item.id === "priority-N"
+      );
+      const unidadeMedidaCaracteristica = selected.find(
+        (item) =>
+          item.id === "priority-unidadeMedida" ||
+          item.id === "priority-Unidade Medida"
+      );
+
+      // Recriar searchData baseado nas características selecionadas
+      const nome =
+        nomeProdutoCaracteristica?.value ||
+        (selected.find(
+          (item) =>
+            item.label.toLowerCase().includes("referencia") ||
+            item.label.toLowerCase().includes("referência")
+        ) && fabricanteCaracteristica
+          ? `${
+              selected.find(
+                (item) =>
+                  item.label.toLowerCase().includes("referencia") ||
+                  item.label.toLowerCase().includes("referência")
+              )?.value
+            } ${fabricanteCaracteristica.value}`.trim()
+          : selected.find(
+              (item) =>
+                item.label.toLowerCase().includes("referencia") ||
+                item.label.toLowerCase().includes("referência")
+            )?.value ||
+            fabricanteCaracteristica?.value ||
+            "Produto não identificado");
+
+      const searchData = {
+        nome: nome,
+        marcaFabricante: fabricanteCaracteristica?.value || "",
+        categoria: state.result?.response?.enriched?.categoria || "",
+        subcategoria: state.result?.response?.enriched?.subcategoria || "",
+        especificacoesTecnicas:
+          state.result?.response?.enriched?.especificacoesTecnicas
+            ?.especificacoesTecnicas || {},
+        aplicacao: "",
+        unidadeMedida: unidadeMedidaCaracteristica?.value || "",
+        breveDescricao:
+          state.result?.response?.enriched?.especificacoesTecnicas?.resumoPDM ||
+          "",
+        normas: [],
+        imagens: state.result?.response?.enriched?.imagens || [],
+      };
+
+      // Criar linha original com os dados da busca
+      const linhaOriginal = {
+        nome: nomeProdutoCaracteristica?.value || searchData.nome,
+        fabricante:
+          fabricanteCaracteristica?.value || searchData.marcaFabricante,
+        NCM:
+          ncmCaracteristica?.value ||
+          String(searchData.especificacoesTecnicas?.ncm || ""),
+        referencia: String(
+          searchData.especificacoesTecnicas?.referenciaEncontrada || ""
+        ),
+        tipo_de_unidade:
+          unidadeMedidaCaracteristica?.value ||
+          String(searchData.especificacoesTecnicas?.unidadeMedida || ""),
+        caracteristicas: [
+          {
+            ...Object.fromEntries(
+              Object.entries(searchData.especificacoesTecnicas || {}).map(
+                ([key, value]) => [key, String(value || "")]
+              )
+            ),
+          },
+        ],
+        imagens: searchData.imagens || [],
+        citacoes: [],
+      };
+
+      // Adicionar linha original no início dos resultados
+      const resultadosComOriginal = {
+        equivalencias: [
+          linhaOriginal,
+          ...equivalenceState.results.equivalencias,
+        ],
+      };
+
+      setModifiedEquivalences(resultadosComOriginal);
+    }
+  }, [
+    equivalenceState.results,
+    showEquivalenciasTable,
+    caracteristicas,
+    state.result,
+  ]);
+
   // Scroll para o fim da página quando qualquer loading terminar
   React.useEffect(() => {
     if (
@@ -301,45 +407,6 @@ export const MaterialIdentificationContainer: React.FC = () => {
 
     // Buscar equivalências
     await equivalenceState.searchEquivalences(searchData);
-
-    // Criar linha original com os dados da busca
-    const linhaOriginal = {
-      nome: nomeProdutoCaracteristica?.value || searchData.nome,
-      fabricante: fabricanteCaracteristica?.value || searchData.marcaFabricante,
-      NCM:
-        ncmCaracteristica?.value ||
-        String(searchData.especificacoesTecnicas?.ncm || ""),
-      referencia: String(
-        searchData.especificacoesTecnicas?.referenciaEncontrada || ""
-      ),
-      tipo_de_unidade:
-        unidadeMedidaCaracteristica?.value ||
-        String(searchData.especificacoesTecnicas?.unidadeMedida || ""),
-      caracteristicas: [
-        {
-          ...Object.fromEntries(
-            Object.entries(searchData.especificacoesTecnicas || {}).map(
-              ([key, value]) => [key, String(value || "")]
-            )
-          ),
-        },
-      ],
-      imagens: searchData.imagens || [],
-      citacoes: [],
-    };
-
-    // Adicionar linha original no início dos resultados
-    if (equivalenceState.results?.equivalencias) {
-      const resultadosComOriginal = {
-        equivalencias: [
-          linhaOriginal,
-          ...equivalenceState.results.equivalencias,
-        ],
-      };
-
-      // Atualizar o estado local com a linha original incluída
-      setModifiedEquivalences(resultadosComOriginal);
-    }
 
     setShowEquivalenciasTable(true);
   };
