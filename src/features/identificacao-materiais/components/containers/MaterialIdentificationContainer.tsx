@@ -292,6 +292,13 @@ export const MaterialIdentificationContainer: React.FC = () => {
     await identifyMaterial();
   };
 
+  const handleClear = () => {
+    updateSearchData("nome", "");
+    updateSearchData("caracteristicas", "");
+    updateSearchData("fabricanteMarca", "");
+    updateSearchData("referencia", "");
+  };
+
   const handleCaracteristicaChange = (id: string, checked: boolean) => {
     setCaracteristicas((prev) =>
       prev.map((item) => (item.id === id ? { ...item, checked } : item))
@@ -392,6 +399,7 @@ export const MaterialIdentificationContainer: React.FC = () => {
           searchData={state.searchData}
           onSearchDataChange={updateSearchData}
           onSearch={handleSearch}
+          onClear={handleClear}
           isLoading={false}
         />
 
