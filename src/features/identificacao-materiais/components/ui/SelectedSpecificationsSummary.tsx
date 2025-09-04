@@ -49,8 +49,8 @@ export const SelectedSpecificationsSummary: React.FC<
           ?.especificacoesTecnicas?.nomeProduto
       ) {
         exportRow["Nome do Produto"] = String(
-          result.response.enriched.especificacoesTecnicas
-            .especificacoesTecnicas.nomeProduto
+          result.response.enriched.especificacoesTecnicas.especificacoesTecnicas
+            .nomeProduto
         );
       }
 
