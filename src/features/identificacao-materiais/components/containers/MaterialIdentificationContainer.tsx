@@ -396,9 +396,9 @@ export const MaterialIdentificationContainer: React.FC = () => {
         />
 
         {/* Loading global para todas as operações */}
-        {/* {(state.isLoading || equivalenceState.isLoading) && ( */}
+        {(state.isLoading || equivalenceState.isLoading) && (
           <GlobalLoading open={true} />
-        {/* )} */}
+        )}
 
         {!state.isLoading && state.result && (
           <>
