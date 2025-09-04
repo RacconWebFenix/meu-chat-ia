@@ -8,6 +8,7 @@ import {
   MaterialIdentificationResult,
   MaterialSearchData,
 } from "../types";
+import { MockMaterialIdentificationService } from "./mockMaterialIdentificationService";
 
 export class ApiMaterialIdentificationService
   implements MaterialIdentificationService
@@ -145,5 +146,6 @@ export class ApiMaterialIdentificationService
 // Factory function following Dependency Inversion
 export const createMaterialIdentificationService =
   (): MaterialIdentificationService => {
-    return new ApiMaterialIdentificationService();
+    // Using mock service for development/testing
+    return new MockMaterialIdentificationService();
   };

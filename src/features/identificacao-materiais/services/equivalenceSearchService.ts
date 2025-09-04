@@ -8,6 +8,7 @@ import {
   EquivalenceSearchData,
   EquivalenceSearchResult,
 } from "../types";
+import { MockEquivalenceSearchService } from "./mockEquivalenceSearchService";
 
 export class ApiEquivalenceSearchService implements EquivalenceSearchService {
   async searchEquivalences(
@@ -37,5 +38,6 @@ export class ApiEquivalenceSearchService implements EquivalenceSearchService {
 
 // Factory function following Dependency Inversion
 export const createEquivalenceSearchService = (): EquivalenceSearchService => {
-  return new ApiEquivalenceSearchService();
+  // Using mock service for development/testing
+  return new MockEquivalenceSearchService();
 };
