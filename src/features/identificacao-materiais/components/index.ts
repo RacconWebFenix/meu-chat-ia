@@ -3,9 +3,16 @@
  * Following Dependency Inversion Principle
  */
 
-export { MaterialSearchHeader } from "./MaterialSearchHeader";
-export { PDMModelDisplay } from "./PDMModelDisplay";
-export { MaterialIdentificationLoading } from "./MaterialIdentificationLoading";
-export { MaterialIdentificationContainer } from "./MaterialIdentificationContainer";
-export { CaracteristicasSelectorContainer } from "./CaracteristicasSelectorContainer";
-export { EquivalenciasTableContainer } from "./EquivalenciasTableContainer";
+// Containers - High-level business logic components
+export { MaterialIdentificationContainer } from "./containers/MaterialIdentificationContainer";
+export { CaracteristicasSelectorContainer } from "./containers/CaracteristicasSelectorContainer";
+export { EquivalenciasTableContainer } from "./containers/EquivalenciasTableContainer";
+
+// UI Components - Presentation components
+export { MaterialSearchHeader } from "./ui/MaterialSearchHeader";
+export { PDMModelDisplay } from "./ui/PDMModelDisplay";
+export { MaterialIdentificationLoading } from "./ui/MaterialIdentificationLoading";
+export { SelectedSpecificationsSummary } from "./ui/SelectedSpecificationsSummary";
+
+// ERP Export Feature - Complete feature components
+export * from "./erp-export";

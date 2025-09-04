@@ -36,24 +36,25 @@
 
 import React, { useState, useCallback, useEffect } from "react";
 import { Container, Box, Paper, Typography } from "@mui/material";
-import { useMaterialIdentification, useEquivalenceSearch } from "../hooks";
+import { useMaterialIdentification, useEquivalenceSearch } from "../../hooks";
 import {
   createMaterialIdentificationService,
   createEquivalenceSearchService,
-} from "../services";
+} from "../../services";
 import {
   MaterialIdentificationResult,
   EquivalenceSearchData,
   EquivalenceSearchResult,
-} from "../types";
+} from "../../types";
 import {
   MaterialSearchHeader,
   PDMModelDisplay,
   MaterialIdentificationLoading,
   CaracteristicasSelectorContainer,
   EquivalenciasTableContainer,
-} from "./index";
-import GlobalLoading from "../../../components/shared/GlobalLoading/GlobalLoading";
+  ERPExportContainer,
+} from "../index";
+import GlobalLoading from "../../../../components/shared/GlobalLoading/GlobalLoading";
 
 interface CaracteristicaItem {
   id: string;
@@ -450,6 +451,9 @@ export const MaterialIdentificationContainer: React.FC = () => {
               result={state.result}
               onShowEquivalenciasTable={handleConfirmSelection}
             />
+
+            {/* ERP Export Component */}
+            <ERPExportContainer />
 
             {showEquivalenciasTable && (
               <EquivalenciasTableContainer

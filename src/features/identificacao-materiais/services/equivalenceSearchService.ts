@@ -38,6 +38,6 @@ export class ApiEquivalenceSearchService implements EquivalenceSearchService {
 
 // Factory function following Dependency Inversion
 export const createEquivalenceSearchService = (): EquivalenceSearchService => {
-  // Using mock service for development/testing
-  return new MockEquivalenceSearchService();
+  // ✅ Using real API service - MVC architecture implemented
+  return new ApiEquivalenceSearchService();
 };

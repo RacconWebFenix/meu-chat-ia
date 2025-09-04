@@ -146,6 +146,6 @@ export class ApiMaterialIdentificationService
 // Factory function following Dependency Inversion
 export const createMaterialIdentificationService =
   (): MaterialIdentificationService => {
-    // Using mock service for development/testing
-    return new MockMaterialIdentificationService();
+    // ✅ Using real API service - MVC architecture implemented
+    return new ApiMaterialIdentificationService();
   };

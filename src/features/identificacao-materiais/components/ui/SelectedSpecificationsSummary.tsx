@@ -10,7 +10,7 @@ import {
   Search as SearchIcon,
 } from "@mui/icons-material";
 import * as XLSX from "xlsx";
-import { MaterialIdentificationResult } from "../types";
+import { MaterialIdentificationResult } from "../../types";
 
 interface CaracteristicaItem {
   id: string;

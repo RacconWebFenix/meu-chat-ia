@@ -13,7 +13,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
-import { MaterialIdentificationResult } from "../types";
+import { MaterialIdentificationResult } from "../../types";
 
 interface PDMModelDisplayProps {
   result: MaterialIdentificationResult | null;

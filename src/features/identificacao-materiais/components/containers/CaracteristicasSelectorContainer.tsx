@@ -6,10 +6,10 @@
 import React, { useState } from "react";
 import { Paper, Typography, Box, Button, Grid } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
-import { CheckboxSpecCard } from "../../pdm";
-import AddNewSpecDialog from "../../pdm/components/AddNewSpecDialog";
-import { SelectedSpecificationsSummary } from "./SelectedSpecificationsSummary";
-import { MaterialIdentificationResult } from "../types";
+import { CheckboxSpecCard } from "../../../pdm";
+import AddNewSpecDialog from "../../../pdm/components/AddNewSpecDialog";
+import { SelectedSpecificationsSummary } from "../ui/SelectedSpecificationsSummary";
+import { MaterialIdentificationResult } from "../../types";
 
 interface CaracteristicaItem {
   id: string;

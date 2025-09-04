@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowRight } from "@mui/icons-material";
 import Image from "next/image";
-import { EquivalenceSearchResult } from "../types";
+import { EquivalenceSearchResult } from "../../types";
 import { formatTechnicalKey } from "@/Utils/formatUtils";
 
 interface EquivalenciasTableContainerProps {

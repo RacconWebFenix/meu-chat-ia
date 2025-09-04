@@ -6,7 +6,7 @@
 import React from "react";
 import { Box, TextField, Button, Paper, Typography } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
-import { MaterialSearchData } from "../types";
+import { MaterialSearchData } from "../../types";
 
 interface MaterialSearchHeaderProps {
   searchData: MaterialSearchData;
