@@ -40,54 +40,47 @@ export const SelectedSpecificationsSummary: React.FC<
   // Função para exportar dados para XLSX
   const handleExportToXLSX = () => {
     try {
-      // Preparar dados para exportação
-      const exportData = selectedCaracteristicas.map((item, index) => ({
-        Campo: item.label,
-        Valor: item.value,
-        Ordem: index + 1,
-      }));
+      // Preparar dados seguindo o mesmo formato do useERPExport
+      const exportRow: Record<string, string> = {};
 
-      // Adicionar informações do produto se disponível
+      // Adicionar nome do produto se disponível
       if (
         result?.response?.enriched?.especificacoesTecnicas
-          ?.especificacoesTecnicas
+          ?.especificacoesTecnicas?.nomeProduto
       ) {
-        const productInfo =
+        exportRow["Nome do Produto"] = String(
           result.response.enriched.especificacoesTecnicas
-            .especificacoesTecnicas;
-        if (productInfo.nomeProduto) {
-          exportData.unshift({
-            Campo: "Nome do Produto",
-            Valor: String(productInfo.nomeProduto),
-            Ordem: 0,
-          });
-        }
+            .especificacoesTecnicas.nomeProduto
+        );
       }
 
-      // Criar workbook e worksheet
+      // Adicionar características selecionadas
+      selectedCaracteristicas.forEach((item) => {
+        exportRow[item.label] = item.value;
+      });
+
+      // Criar worksheet com uma única linha (igual ao useERPExport)
+      const ws = XLSX.utils.json_to_sheet([exportRow]);
+
+      // Ajustar largura das colunas dinamicamente (igual ao useERPExport)
+      const columnWidths = Object.keys(exportRow).map((key) => ({
+        wch: Math.max(key.length, exportRow[key].length, 15), // Largura mínima de 15
+      }));
+      ws["!cols"] = columnWidths;
+
+      // Criar workbook
       const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.json_to_sheet(exportData);
-
-      // Ajustar largura das colunas
-      const colWidths = [
-        { wch: 30 }, // Campo
-        { wch: 40 }, // Valor
-        { wch: 10 }, // Ordem
-      ];
-      ws["!cols"] = colWidths;
-
-      // Adicionar worksheet ao workbook
       XLSX.utils.book_append_sheet(wb, ws, "Especificações");
 
       // Gerar nome do arquivo com timestamp
-      const timestamp = new Date()
-        .toISOString()
-        .slice(0, 19)
-        .replace(/:/g, "-");
+      const timestamp = new Date().toISOString().split("T")[0];
       const fileName = `especificacoes_produto_${timestamp}.xlsx`;
 
-      // Salvar arquivo
-      XLSX.writeFile(wb, fileName);
+      // Salvar arquivo com configurações UTF-8 (igual ao useERPExport)
+      XLSX.writeFile(wb, fileName, {
+        bookSST: false, // Desabilitar Shared String Table para preservar UTF-8
+        type: "binary", // Usar tipo binário para melhor suporte a caracteres
+      });
 
       console.log(`Arquivo exportado com sucesso: ${fileName}`);
     } catch (error) {
