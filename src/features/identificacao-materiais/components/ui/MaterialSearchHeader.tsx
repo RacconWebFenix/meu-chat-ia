@@ -79,7 +79,6 @@ export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
           onChange={handleInputChange("nome")}
           variant="outlined"
           size="small"
-          disabled={isLoading}
         />
 
         <TextField
@@ -89,7 +88,6 @@ export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
           onChange={handleInputChange("caracteristicas")}
           variant="outlined"
           size="small"
-          disabled={isLoading}
         />
 
         <TextField
@@ -99,7 +97,6 @@ export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
           onChange={handleInputChange("fabricanteMarca")}
           variant="outlined"
           size="small"
-          disabled={isLoading}
         />
 
         <TextField
@@ -109,13 +106,12 @@ export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
           onChange={handleInputChange("referencia")}
           variant="outlined"
           size="small"
-          disabled={isLoading}
         />
 
         <Box
           sx={{
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
             gap: 1,
             width: "100%",
           }}
@@ -125,10 +121,11 @@ export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
             color="primary"
             startIcon={<SearchIcon />}
             onClick={onSearch}
-            disabled={isLoading}
+            disabled={!hasData}
             sx={{
               height: 40,
               whiteSpace: "nowrap",
+              flex: 1,
             }}
           >
             {isLoading ? "Identificando..." : "Identificar"}
@@ -139,10 +136,11 @@ export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
             color="secondary"
             startIcon={<ClearIcon />}
             onClick={onClear}
-            disabled={isLoading || !hasData}
+            disabled={!hasData}
             sx={{
               height: 40,
               whiteSpace: "nowrap",
+              flex: 1,
             }}
           >
             Limpar
