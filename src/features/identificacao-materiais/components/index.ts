@@ -11,7 +11,7 @@ export { EquivalenciasTableContainer } from "./containers/EquivalenciasTableCont
 // UI Components - Presentation components
 export { MaterialSearchHeader } from "./ui/MaterialSearchHeader";
 export { PDMModelDisplay } from "./ui/PDMModelDisplay";
-export { MaterialIdentificationLoading } from "./ui/MaterialIdentificationLoading";
+
 export { SelectedSpecificationsSummary } from "./ui/SelectedSpecificationsSummary";
 
 // ERP Export Feature - Complete feature components

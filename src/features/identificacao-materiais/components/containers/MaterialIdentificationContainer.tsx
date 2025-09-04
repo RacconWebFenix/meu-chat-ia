@@ -1,39 +1,3 @@
-/**
- * Material Identification Container
- * Following Single Respon      // Função para converter camelCase em labels amigáveis
-  const convertCamelCaseToLabel = (key: string): string => {
-    return key
-      .replace(/([A-Z])/g, ' $1') // Espaço antes de maiúsculas
-      .replace(/^./, str => str.toUpperCase()) // Primeira letra maiúscula
-      .replace(/Mm$/, ' (mm)') // Unidades de medida
-      .replace(/Kn$/, ' (kN)')
-      .replace(/Rpm$/, ' (RPM)')
-      .replace(/Dpi$/, ' (DPI)') // Resolução
-      .replace(/Usb$/, ' (USB)') // Conectividade
-      .replace(/Os$/, ' (OS)') // Sistema Operacional
-      .replace(/M\d+x[\d.]+$/, match => ` ${match}`) // Rosca (ex: M20x1.5)
-      .replace(/Ncm$/, ' (NCM)') // Código NCM
-      .trim();
-  };tries(techSpecs).forEach(([key, value], index) => {
-        if (value !== null && value !== undefined && value !== "") {
-          // Criar label amigável diretamente da chave, sem usar parser hardcoded
-          const friendlyLabel = key
-            .replace(/([A-Z])/g, ' $1') // Adicionar espaço antes de maiúsculas
-            .replace(/^./, str => str.toUpperCase()) // Primeira letra maiúscula
-            .replace(/Mm$/, ' (mm)') // Adicionar unidade para medidas
-            .replace(/Kn$/, ' (kN)') // Adicionar unidade para forças
-            .replace(/Rpm$/, ' (RPM)'); // Adicionar unidade para rotações
-
-          caracteristicasList.push({
-            id: `dynamic-${key}-${index}`,
-            label: friendlyLabel,
-            value: String(value),
-            checked: true,
-          });
-        }
-      });le and Dependency Inversion
- */
-
 import React, { useState, useCallback, useEffect } from "react";
 import { Container, Box, Paper, Typography } from "@mui/material";
 import { useMaterialIdentification, useEquivalenceSearch } from "../../hooks";
@@ -49,7 +13,6 @@ import {
 import {
   MaterialSearchHeader,
   PDMModelDisplay,
-  MaterialIdentificationLoading,
   CaracteristicasSelectorContainer,
   EquivalenciasTableContainer,
   ERPExportContainer,
@@ -433,9 +396,9 @@ export const MaterialIdentificationContainer: React.FC = () => {
         />
 
         {/* Loading global para todas as operações */}
-        {(state.isLoading || equivalenceState.isLoading) && (
+        {/* {(state.isLoading || equivalenceState.isLoading) && ( */}
           <GlobalLoading open={true} />
-        )}
+        {/* )} */}
 
         {!state.isLoading && state.result && (
           <>

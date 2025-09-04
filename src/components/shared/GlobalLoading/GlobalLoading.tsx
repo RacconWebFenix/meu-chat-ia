@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Box, Backdrop, CircularProgress } from "@mui/material";
+import { Box, Backdrop } from "@mui/material";
 import Image from "next/image";
 
 interface GlobalLoadingProps {
@@ -14,7 +14,7 @@ export default function GlobalLoading({ open }: GlobalLoadingProps) {
       sx={{
         color: "#1976d2",
         zIndex: (theme) => theme.zIndex.drawer + 1000,
-        backgroundColor: "rgba(255, 255, 255, 0.9)",
+        backgroundColor: "rgba(255, 255, 255, 0.0)",
         backdropFilter: "blur(4px)",
       }}
       open={open}
@@ -61,12 +61,6 @@ export default function GlobalLoading({ open }: GlobalLoadingProps) {
         >
           Carregando...
         </Box>
-
-        <CircularProgress
-          size={32}
-          thickness={4}
-          sx={{ color: "primary.main" }}
-        />
       </Box>
     </Backdrop>
   );
