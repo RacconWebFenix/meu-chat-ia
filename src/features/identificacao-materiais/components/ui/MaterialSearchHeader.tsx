@@ -5,13 +5,14 @@
 
 import React from "react";
 import { Box, TextField, Button, Paper, Typography } from "@mui/material";
-import { Search as SearchIcon } from "@mui/icons-material";
+import { Search as SearchIcon, Clear as ClearIcon } from "@mui/icons-material";
 import { MaterialSearchData } from "../../types";
 
 interface MaterialSearchHeaderProps {
   searchData: MaterialSearchData;
   onSearchDataChange: (field: keyof MaterialSearchData, value: string) => void;
   onSearch: () => void;
+  onClear: () => void;
   isLoading: boolean;
 }
 
@@ -19,6 +20,7 @@ export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
   searchData,
   onSearchDataChange,
   onSearch,
+  onClear,
   isLoading,
 }) => {
   // Função para sanitizar entrada removendo aspas e caracteres problemáticos
@@ -105,20 +107,42 @@ export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
           disabled={isLoading}
         />
 
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<SearchIcon />}
-          onClick={onSearch}
-          disabled={isLoading}
+        <Box
           sx={{
-            height: 40,
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
             width: "100%",
-            whiteSpace: "nowrap",
           }}
         >
-          {isLoading ? "Identificando..." : "Identificar"}
-        </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<SearchIcon />}
+            onClick={onSearch}
+            disabled={isLoading}
+            sx={{
+              height: 40,
+              whiteSpace: "nowrap",
+            }}
+          >
+            {isLoading ? "Identificando..." : "Identificar"}
+          </Button>
+
+          <Button
+            variant="outlined"
+            color="secondary"
+            startIcon={<ClearIcon />}
+            onClick={onClear}
+            disabled={isLoading}
+            sx={{
+              height: 40,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Limpar
+          </Button>
+        </Box>
       </Box>
     </Paper>
   );
