@@ -40,6 +40,11 @@ export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
       onSearchDataChange(field, sanitizedValue);
     };
 
+  // Verifica se há algum valor preenchido nos campos de busca
+  const hasData = Object.values(searchData).some(
+    (value) => value.trim() !== ""
+  );
+
   return (
     <Paper
       elevation={2}
@@ -134,7 +139,7 @@ export const MaterialSearchHeader: React.FC<MaterialSearchHeaderProps> = ({
             color="secondary"
             startIcon={<ClearIcon />}
             onClick={onClear}
-            disabled={isLoading}
+            disabled={isLoading || !hasData}
             sx={{
               height: 40,
               whiteSpace: "nowrap",
