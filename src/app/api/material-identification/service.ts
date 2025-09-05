@@ -25,7 +25,7 @@ export class MaterialIdentificationService
     this.equivalenceCrossUrl =
       equivalenceCrossUrl ||
       process.env.NEXT_PUBLIC_N8N_EQUIVALENCE_CROSS_WEBHOOK_URL ||
-      "https://n8n.cib2b.com.br/webhook/referenciacruzada";
+      "https://n8n.cib2b.com.br/webhook/enrichmentdata";
   }
 
   async enrichData(req: EnrichmentRequest): Promise<EnrichmentResponse> {
