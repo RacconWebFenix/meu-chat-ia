@@ -39,7 +39,7 @@ export const PDMModelDisplay: React.FC<PDMModelDisplayProps> = ({
   }
 
   const resumoPDM = result.response.enriched.especificacoesTecnicas.resumoPDM;
-  const primeiraImagem = result.response.enriched.imagens[0]; // Pega a primeira imagem
+  const imagens = result.response.enriched.imagens; // Array completo de imagens
 
   // Função para renderizar o texto com títulos em negrito
   const renderPDMText = (text: string, expanded: boolean = false) => {
@@ -81,14 +81,13 @@ export const PDMModelDisplay: React.FC<PDMModelDisplayProps> = ({
       <Box
         sx={{
           display: "flex",
+          flexDirection: "column", // Mudança para coluna para acomodar texto e imagens verticalmente
           gap: 2,
-          alignItems: "flex-start",
         }}
       >
         {/* Conteúdo de texto */}
         <Box
           sx={{
-            flex: 1,
             lineHeight: 1.2,
             textAlign: "justify",
             hyphens: "auto",
@@ -135,28 +134,41 @@ export const PDMModelDisplay: React.FC<PDMModelDisplayProps> = ({
           </Box>
         </Box>
 
-        {/* Imagem ao lado */}
-        {primeiraImagem && (
+        {/* Galeria de imagens */}
+        {imagens && imagens.length > 0 && (
           <Box
             sx={{
-              flexShrink: 0,
-              width: 200,
-              height: 150,
-              borderRadius: 1,
-              overflow: "hidden",
-              boxShadow: 1,
+              display: "flex",
+              flexDirection: "row",
+              gap: 1,
+              overflowX: "auto", // Scroll horizontal se houver muitas imagens
+              pb: 1, // Padding bottom para scrollbar
             }}
           >
-            <CardMedia
-              component="img"
-              image={primeiraImagem.image_url}
-              alt="Imagem do produto identificado"
-              sx={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-            />
+            {imagens.map((imagem, index) => (
+              <Box
+                key={index} // Chave única baseada no índice
+                sx={{
+                  flexShrink: 0,
+                  width: 150, // Largura fixa para consistência
+                  height: 150,
+                  borderRadius: 1,
+                  overflow: "hidden",
+                  boxShadow: 1,
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  image={imagem.image_url}
+                  alt={`Imagem do produto identificado ${index + 1}`}
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              </Box>
+            ))}
           </Box>
         )}
       </Box>
