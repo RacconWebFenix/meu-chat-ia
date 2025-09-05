@@ -81,51 +81,14 @@ export const PDMModelDisplay: React.FC<PDMModelDisplayProps> = ({
       <Box
         sx={{
           display: "flex",
-          flexDirection: "row", // Lado a lado: imagens à esquerda, texto à direita
+          flexDirection: "row", // Lado a lado: texto à esquerda, imagens à direita
           gap: 2,
         }}
       >
-        {/* Galeria de imagens */}
-        {imagens && imagens.length > 0 && (
-          <Box
-            sx={{
-              flexShrink: 0,
-              width: 320, // Largura fixa para a coluna de imagens
-              display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)", // 2 colunas
-              gap: 1,
-            }}
-          >
-            {imagens.map((imagem, index) => (
-              <Box
-                key={index} // Chave única baseada no índice
-                sx={{
-                  width: 150, // Largura de cada imagem
-                  height: 150,
-                  borderRadius: 1,
-                  overflow: "hidden",
-                  boxShadow: 1,
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  image={imagem.image_url}
-                  alt={`Imagem do produto identificado ${index + 1}`}
-                  sx={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
-              </Box>
-            ))}
-          </Box>
-        )}
-
         {/* Conteúdo de texto */}
         <Box
           sx={{
-            flex: 1, // Ocupa o espaço disponível à direita
+            flex: 1, // Ocupa o espaço disponível à esquerda
             lineHeight: 1.2,
             textAlign: "justify",
             hyphens: "auto",
@@ -171,6 +134,43 @@ export const PDMModelDisplay: React.FC<PDMModelDisplayProps> = ({
             </IconButton>
           </Box>
         </Box>
+
+        {/* Galeria de imagens */}
+        {imagens && imagens.length > 0 && (
+          <Box
+            sx={{
+              flexShrink: 0,
+              width: 320, // Largura fixa para a coluna de imagens
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)", // 2 colunas
+              gap: 1,
+            }}
+          >
+            {imagens.map((imagem, index) => (
+              <Box
+                key={index} // Chave única baseada no índice
+                sx={{
+                  width: 150, // Largura de cada imagem
+                  height: 150,
+                  borderRadius: 1,
+                  overflow: "hidden",
+                  boxShadow: 1,
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  image={imagem.image_url}
+                  alt={`Imagem do produto identificado ${index + 1}`}
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              </Box>
+            ))}
+          </Box>
+        )}
       </Box>
     </Paper>
   );
