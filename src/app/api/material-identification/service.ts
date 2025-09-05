@@ -15,13 +15,27 @@ export class MaterialIdentificationService
   implements IMaterialIdentificationService
 {
   private readonly n8nUrl: string;
+  private readonly equivalenceCrossUrl: string;
 
-  constructor(n8nUrl?: string) {
-    this.n8nUrl = n8nUrl || "https://n8n.cib2b.com.br/webhook/enrichmentdata";
+  constructor(n8nUrl?: string, equivalenceCrossUrl?: string) {
+    this.n8nUrl =
+      n8nUrl ||
+      process.env.NEXT_PUBLIC_N8N_MATERIAL_IDENTIFICATION_WEBHOOK_URL ||
+      "https://n8n.cib2b.com.br/webhook/enrichmentdata";
+    this.equivalenceCrossUrl =
+      equivalenceCrossUrl ||
+      process.env.NEXT_PUBLIC_N8N_EQUIVALENCE_CROSS_WEBHOOK_URL ||
+      "https://n8n.cib2b.com.br/webhook/referenciacruzada";
   }
 
   async enrichData(req: EnrichmentRequest): Promise<EnrichmentResponse> {
     try {
+      // Choose webhook URL based on whether referencia has a value
+      const webhookUrl =
+        req.referencia && req.referencia.trim() !== ""
+          ? this.equivalenceCrossUrl
+          : this.n8nUrl;
+
       // Send in the format expected by N8N webhook
       const n8nPayload = {
         headers: {
@@ -31,11 +45,11 @@ export class MaterialIdentificationService
         params: {},
         query: {},
         body: req,
-        webhookUrl: "https://n8n.cib2b.com.br/webhook/enrichmentdata",
+        webhookUrl,
         executionMode: "production",
       };
 
-      const response = await axios.post(this.n8nUrl, n8nPayload, {
+      const response = await axios.post(webhookUrl, n8nPayload, {
         headers: {
           "Content-Type": "application/json",
         },
