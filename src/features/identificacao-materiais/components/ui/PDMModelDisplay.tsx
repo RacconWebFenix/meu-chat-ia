@@ -41,9 +41,6 @@ export const PDMModelDisplay: React.FC<PDMModelDisplayProps> = ({
   const resumoPDM = result.response.enriched.especificacoesTecnicas.resumoPDM;
   const imagens = result.response.enriched.imagens; // Array completo de imagens
 
-  console.log("Número de imagens recebidas:", imagens?.length || 0);
-  console.log("Imagens:", imagens);
-
   // Função para renderizar o texto com títulos em negrito
   const renderPDMText = (text: string, expanded: boolean = false) => {
     const lines = text.split("\n");
@@ -84,13 +81,14 @@ export const PDMModelDisplay: React.FC<PDMModelDisplayProps> = ({
       <Box
         sx={{
           display: "flex",
-          flexDirection: "column", // Mudança para coluna para acomodar texto e imagens verticalmente
+          flexDirection: "row", // Lado a lado: texto à esquerda, imagens à direita
           gap: 2,
         }}
       >
         {/* Conteúdo de texto */}
         <Box
           sx={{
+            flex: 1, // Ocupa o espaço disponível à esquerda
             lineHeight: 1.2,
             textAlign: "justify",
             hyphens: "auto",
@@ -141,19 +139,18 @@ export const PDMModelDisplay: React.FC<PDMModelDisplayProps> = ({
         {imagens && imagens.length > 0 && (
           <Box
             sx={{
-              display: "flex",
-              flexDirection: "row",
+              flexShrink: 0,
+              width: 320, // Largura fixa para a coluna de imagens
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)", // 2 colunas
               gap: 1,
-              overflowX: "auto", // Scroll horizontal se houver muitas imagens
-              pb: 1, // Padding bottom para scrollbar
             }}
           >
             {imagens.map((imagem, index) => (
               <Box
                 key={index} // Chave única baseada no índice
                 sx={{
-                  flexShrink: 0,
-                  width: 150, // Largura fixa para consistência
+                  width: 150, // Largura de cada imagem
                   height: 150,
                   borderRadius: 1,
                   overflow: "hidden",
