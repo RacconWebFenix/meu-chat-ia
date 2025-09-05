@@ -41,6 +41,9 @@ export const PDMModelDisplay: React.FC<PDMModelDisplayProps> = ({
   const resumoPDM = result.response.enriched.especificacoesTecnicas.resumoPDM;
   const imagens = result.response.enriched.imagens; // Array completo de imagens
 
+  console.log('Número de imagens recebidas:', imagens?.length || 0);
+  console.log('Imagens:', imagens);
+
   // Função para renderizar o texto com títulos em negrito
   const renderPDMText = (text: string, expanded: boolean = false) => {
     const lines = text.split("\n");
