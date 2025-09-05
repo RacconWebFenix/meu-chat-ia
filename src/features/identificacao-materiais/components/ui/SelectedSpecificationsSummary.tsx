@@ -141,7 +141,7 @@ export const SelectedSpecificationsSummary: React.FC<
           >
             Exportar
           </Button>
-          <Button
+          {/* <Button
             variant="contained"
             size="small"
             startIcon={<SearchIcon />}
@@ -149,7 +149,7 @@ export const SelectedSpecificationsSummary: React.FC<
             sx={{ minWidth: 140 }}
           >
             Pesquisar Equivalência
-          </Button>
+          </Button> */}
         </Stack>
       </Box>
     </Paper>
