@@ -17,15 +17,12 @@ export class MaterialIdentificationService
   private readonly n8nUrl: string;
   private readonly equivalenceCrossUrl: string;
 
-  constructor(n8nUrl?: string, equivalenceCrossUrl?: string) {
+  constructor(n8nUrl?: string) {
     this.n8nUrl =
       n8nUrl ||
       process.env.NEXT_PUBLIC_N8N_MATERIAL_IDENTIFICATION_WEBHOOK_URL ||
-      "https://n8n.cib2b.com.br/webhook/enrichmentdata";
-    this.equivalenceCrossUrl =
-      equivalenceCrossUrl ||
-      process.env.NEXT_PUBLIC_N8N_EQUIVALENCE_CROSS_WEBHOOK_URL ||
-      "https://n8n.cib2b.com.br/webhook/enrichmentdata";
+      "";
+    this.equivalenceCrossUrl = this.n8nUrl; // Use the same URL for both
   }
 
   async enrichData(req: EnrichmentRequest): Promise<EnrichmentResponse> {
